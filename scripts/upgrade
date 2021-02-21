@@ -58,9 +58,9 @@ then
 	ynh_script_progression --message="Upgrading source files..."  --weight=1
 
 	# Download, check integrity, uncompress and patch the source from app.src
-	cp -f ../conf/default.yml "$final_path/docker-compose.yml"
-	cp -f ../conf/default.yml "$final_path/lemmy.hjson"
-	cp -f ../conf/default.yml "$final_path/iframely.config.local.js"
+	cp -f ../conf/docker-compose.yml       "$final_path/docker-compose.yml"
+	cp -f ../conf/lemmy.hjson              "$final_path/lemmy.hjson"
+	cp -f ../conf/iframely.config.local.js "$final_path/iframely.config.local.js"
 	pushd "$final_path"
 		chown -R 991:991 volumes/pictrs
 	popd

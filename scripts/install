@@ -95,9 +95,9 @@ ynh_script_progression --message="Setting up source files..." --weight=1
 ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 
 mkdir "$final_path"
-cp -f ../conf/default.yml "$final_path/docker-compose.yml"
-cp -f ../conf/default.yml "$final_path/lemmy.hjson"
-cp -f ../conf/default.yml "$final_path/iframely.config.local.js"
+cp -f ../conf/docker-compose.yml "$final_path/docker-compose.yml"
+cp -f ../conf/lemmy.hjson "$final_path/lemmy.hjson"
+cp -f ../conf/iframely.config.local.js "$final_path/iframely.config.local.js"
 pushd "$final_path"
 	mkdir -p volumes/pictrs
 	chown -R 991:991 volumes/pictrs
@@ -149,6 +149,23 @@ ynh_systemd_action --service_name=nginx --action=reload
 # Run Lemmy through Docker
 #=================================================
 cd "$final_path" && docker-compose up -d
+
+
+#=================================================
+# SEND A README FOR THE ADMIN
+#=================================================
+
+message="Lemmy was successfully installed :)
+
+Please open https://$domain$path_url
+
+Your credentials for the admin panel are:
+- admin username: $admin
+- admin password: $password
+
+If you facing an issue or want to improve Lemmy, please open a new issue in this project: https://github.com/YunoHost-Apps/lemmy_ynh/issues"
+
+ynh_send_readme_to_admin "$message"
 
 
 #=================================================
