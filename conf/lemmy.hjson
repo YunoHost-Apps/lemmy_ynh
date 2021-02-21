@@ -1,0 +1,46 @@
+{
+  # for more info about the config, check out the documentation
+  # https://join.lemmy.ml/docs/en/administration/configuration.html
+
+  setup: {
+    # username for the admin user
+    admin_username: "__ADMIN__"
+    # password for the admin user
+    admin_password: "__ADMIN_PASS__"
+    # name of the site (can be changed later)
+    site_name: "__NAME__"
+  }
+
+  # the domain name of your instance (eg "lemmy.ml")
+  hostname: "__DOMAIN__"
+  # address where lemmy should listen for incoming requests
+  bind: "0.0.0.0"
+  # port where lemmy should listen for incoming requests
+  port: 8536
+  # json web token for authorization between server and client
+  jwt_secret: "__RANDOM__"
+  # settings related to the postgresql database
+  database: {
+    # name of the postgres database for lemmy
+    database: "lemmy"
+    # username to connect to postgres
+    user: "lemmy"
+    # password to connect to postgres
+    password: "password"
+    # host where postgres is running
+    host: "postgres"
+  }
+#  # optional: email sending configuration
+#  email: {
+#    # hostname and port of the smtp server
+     smtp_server: "127.0.0.1:25"
+#    # login name for smtp server
+     smtp_login: ""
+#    # password to login to the smtp server
+     smtp_password: ""
+#    # address to send emails from, eg "noreply@your-instance.com"
+     smtp_from_address: "lemmy@__DOMAIN__"
+#    # whether or not smtp connections should use tls
+     use_tls: true
+#  }
+}

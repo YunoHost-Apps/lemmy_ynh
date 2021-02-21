@@ -1,0 +1,130 @@
+#!/bin/bash
+
+#=================================================
+# GENERIC START
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
+source _common.sh
+source /usr/share/yunohost/helpers
+
+#=================================================
+# LOAD SETTINGS
+#=================================================
+ynh_script_progression --message="Loading installation settings..."  --weight=1
+
+app=$YNH_APP_INSTANCE_NAME
+
+domain=$(ynh_app_setting_get --app=$app --key=domain)
+path_url=$(ynh_app_setting_get --app=$app --key=path)
+admin=$(ynh_app_setting_get --app=$app --key=admin)
+final_path=$(ynh_app_setting_get --app=$app --key=final_path)
+password=$(ynh_app_setting_get --app=$app --key=password)
+sitename=$(ynh_app_setting_get --app=$app --key=sitename)
+random=$(ynh_app_setting_get --app=$app --key=random)
+port_lemmy=$(ynh_app_setting_get --app=$app --key=port_lemmy)
+port_ui=$(ynh_app_setting_get --app=$app --key=port_ui)
+port_pictrs=$(ynh_app_setting_get --app=$app --key=port_pictrs)
+port_iframely=$(ynh_app_setting_get --app=$app --key=port_iframely)
+version=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep 'tag_name' | cut -d\" -f4)
+
+
+#=================================================
+# BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
+#=================================================
+ynh_script_progression --message="Backing up the app before upgrading (may take a while)..."  --weight=1
+
+# Backup the current version of the app
+ynh_backup_before_upgrade
+ynh_clean_setup () {
+	# Restore it if the upgrade fails
+	ynh_restore_upgradebackup
+}
+# Exit if an error occurs during the execution of the script
+ynh_abort_if_errors
+
+#=================================================
+# STANDARD UPGRADE STEPS
+#=================================================
+
+
+#=================================================
+# DOWNLOAD, CHECK AND UNPACK SOURCE
+#=================================================
+
+if [ "$upgrade_type" == "UPGRADE_APP" ]
+then
+	ynh_script_progression --message="Upgrading source files..."  --weight=1
+
+	# Download, check integrity, uncompress and patch the source from app.src
+	cp -f ../conf/default.yml "$final_path/docker-compose.yml"
+	cp -f ../conf/default.yml "$final_path/lemmy.hjson"
+	cp -f ../conf/default.yml "$final_path/iframely.config.local.js"
+	pushd "$final_path"
+		chown -R 991:991 volumes/pictrs
+	popd
+fi
+
+#=================================================
+# NGINX CONFIGURATION
+#=================================================
+ynh_script_progression --message="Upgrading NGINX web server configuration..." --time --weight=1
+
+# Create a dedicated NGINX config
+ynh_add_nginx_config 'port_lemmy port_ui port_pictrs port_iframely'
+
+#=================================================
+# UPGRADE DEPENDENCIES
+#=================================================
+ynh_script_progression --message="Upgrading dependencies..." --time --weight=1
+
+#ynh_install_app_dependencies $pkg_dependencies
+
+# Install Docker and compose
+curl -sSL https://get.docker.com | sh
+systemctl enable docker --quiet
+curl -L https://github.com/docker/compose/releases/download/${version}/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+
+
+#=================================================
+# SPECIFIC UPGRADE
+#=================================================
+
+
+#=================================================
+# MODIFY A CONFIG FILE
+#=================================================
+
+
+ynh_replace_string --match_string="match_string" --replace_string="replace_string" --target_file="$final_path/CONFIG_FILE"
+
+
+ynh_replace_string --match_string="__ADMIN__" --replace_string="$admin" --target_file="$final_path/lemmy.hjson"
+ynh_replace_string --match_string="__ADMIN_PASS__" --replace_string="$password" --target_file="$final_path/lemmy.hjson"
+ynh_replace_string --match_string="__NAME__" --replace_string="$sitename" --target_file="$final_path/lemmy.hjson"
+ynh_replace_string --match_string="__DOMAIN__" --replace_string="$domain" --target_file="$final_path/lemmy.hjson"
+ynh_replace_string --match_string="__RANDOM__" --replace_string="$random" --target_file="$final_path/lemmy.hjson"
+ynh_replace_string --match_string="__PORT__LEMMY__" --replace_string="$port_lemmy" --target_file="$final_path/docker-compose.yml"
+ynh_replace_string --match_string="__PORT_UI__" --replace_string="$port_ui" --target_file="$final_path/docker-compose.yml"
+ynh_replace_string --match_string="__PORT_PICTRS__" --replace_string="replace_string" --target_file="$final_path/docker-compose.yml"
+ynh_replace_string --match_string="__PORT_IFRAMELY__" --replace_string="$port_pictrs" --target_file="$final_path/docker-compose.yml"
+ynh_replace_string --match_string="__DOMAIN__" --replace_string="$domain" --target_file="$final_path/iframely.config.local.js"
+
+#=================================================
+# RELOAD NGINX
+#=================================================
+ynh_script_progression --message="Reloading NGINX web server..."  --weight=1
+
+ynh_systemd_action --service_name=nginx --action=reload
+
+#=================================================
+# Run Lemmy through Docker
+#=================================================
+cd "$final_path" && docker-compose up -d
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression --message="Upgrade of $app completed"  --last
