@@ -107,8 +107,8 @@ ynh_replace_string --match_string="__DOMAIN__" --replace_string="$domain" --targ
 ynh_replace_string --match_string="__RANDOM__" --replace_string="$random" --target_file="$final_path/lemmy.hjson"
 ynh_replace_string --match_string="__PORT__LEMMY__" --replace_string="$port_lemmy" --target_file="$final_path/docker-compose.yml"
 ynh_replace_string --match_string="__PORT_UI__" --replace_string="$port_ui" --target_file="$final_path/docker-compose.yml"
-ynh_replace_string --match_string="__PORT_PICTRS__" --replace_string="replace_string" --target_file="$final_path/docker-compose.yml"
-ynh_replace_string --match_string="__PORT_IFRAMELY__" --replace_string="$port_pictrs" --target_file="$final_path/docker-compose.yml"
+ynh_replace_string --match_string="__PORT_PICTRS__" --replace_string="$port_pictrs" --target_file="$final_path/docker-compose.yml"
+ynh_replace_string --match_string="__PORT_IFRAMELY__" --replace_string="$port_iframely" --target_file="$final_path/docker-compose.yml"
 ynh_replace_string --match_string="__DOMAIN__" --replace_string="$domain" --target_file="$final_path/iframely.config.local.js"
 
 #=================================================
