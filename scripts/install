@@ -148,7 +148,9 @@ ynh_systemd_action --service_name=nginx --action=reload
 #=================================================
 # Run Lemmy through Docker
 #=================================================
-chown -R $(whoami) /usr/local/bin
+# chown -R $(whoami) /usr/local/bin
+
+chmod +x /usr/local/bin/docker-compose
 cd "$final_path" && docker-compose up -d
 
 
