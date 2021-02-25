@@ -76,6 +76,9 @@ curl -L https://github.com/docker/compose/releases/download/${version}/docker-co
 #=================================================
 # Run Lemmy through Docker
 #=================================================
+# chown -R $(whoami) /usr/local/bin
+
+chmod +x /usr/local/bin/docker-compose
 cd "$final_path" && docker-compose up -d
 
 #=================================================
