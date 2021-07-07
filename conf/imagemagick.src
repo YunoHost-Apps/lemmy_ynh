@@ -1,0 +1,7 @@
+SOURCE_URL=https://github.com/ImageMagick/ImageMagick/archive/refs/tags/7.0.11-14.tar.gz
+SOURCE_SUM=dfa5aa3f7f289f12c2f9ee6c7c19b02ae857b4eec02f40298f60f5c11048a016
+SOURCE_SUM_PRG=sha256sum
+SOURCE_FORMAT=tar.gz
+SOURCE_IN_SUBDIR=true
+SOURCE_FILENAME=
+SOURCE_EXTRACT=true

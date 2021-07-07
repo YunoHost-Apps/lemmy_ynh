@@ -1,10 +1,6 @@
 
 
 # Lemmy app for YunoHost
-**Warning:** This app uses Docker. YunoHost do not encourages to use black box container technologies like Docker and Ansible.
-
-Then why this package uses Docker?
-It's because the developers of the core app do not support simple installation. And packaging without documentaion is time consuming.
 
 [![Integration level](https://dash.yunohost.org/integration/lemmy.svg)](https://dash.yunohost.org/appci/app/lemmy) ![](https://ci-apps.yunohost.org/ci/badges/lemmy.status.svg) ![](https://ci-apps.yunohost.org/ci/badges/lemmy.maintain.svg)
 

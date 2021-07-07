@@ -1,0 +1,7 @@
+SOURCE_URL=https://github.com/LemmyNet/lemmy/archive/refs/tags/0.11.0.tar.gz
+SOURCE_SUM=8c93268d5cb7b30c9c25e2fdeef83153d95b7b79ad0b0a6f354d89e72a0ec641
+SOURCE_SUM_PRG=sha256sum
+SOURCE_FORMAT=tar.gz
+SOURCE_IN_SUBDIR=true
+SOURCE_FILENAME=
+SOURCE_EXTRACT=true

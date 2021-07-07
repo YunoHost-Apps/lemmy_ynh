@@ -5,7 +5,9 @@
 #=================================================
 
 # dependencies used by the app
-pkg_dependencies="deb1 deb2 php$YNH_DEFAULT_PHP_VERSION-deb1 php$YNH_DEFAULT_PHP_VERSION-deb2"
+pkg_dependencies="postgresql postgresql-contrib espeak bash-completion ffmpeg clang pkg-config libgexiv2-dev libgexiv2-2 libssl-dev libc6-dev libpq-dev libavutil-dev libavformat-dev libavfilter-dev libavdevice-dev libavresample-dev libjpeg-turbo-progs libpng-dev"
+
+NODEJS_VERSION=12
 
 #=================================================
 # PERSONAL HELPERS
