@@ -87,13 +87,6 @@ curl -sSL https://get.docker.com | sh
 systemctl enable docker --quiet
 curl -L https://github.com/docker/compose/releases/download/${version}/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
 
-#=================================================
-# CREATE DEDICATED USER
-#=================================================
-ynh_script_progression --message="Configuring system user..." --weight=2
-
-# Create a system user
-ynh_system_user_create --username=$app
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -110,6 +103,11 @@ pushd "$final_path"
 	mkdir -p volumes/pictrs
 	chown -R 991:991 volumes/pictrs
 popd
+
+chmod 750 "$final_path"
+chmod -R o-rwx "$final_path"
+chown -R $app:www-data "$final_path"
+
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
@@ -135,12 +133,6 @@ ynh_replace_string --match_string="__PORT_PICTRS__" --replace_string="$port_pict
 ynh_replace_string --match_string="__PORT_IFRAMELY__" --replace_string="$port_iframely" --target_file="$final_path/docker-compose.yml"
 ynh_replace_string --match_string="__DOMAIN__" --replace_string="$domain" --target_file="$final_path/iframely.config.local.js"
 
-#=================================================
-# SECURE FILES AND DIRECTORIES
-#=================================================
-
-# Set permissions to app files
-chown -R $app: $final_path
 
 #=================================================
 # SETUP SSOWAT
