@@ -87,6 +87,7 @@ curl -sSL https://get.docker.com | sh
 systemctl enable docker --quiet
 curl -L https://github.com/docker/compose/releases/download/${version}/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
 
+
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
@@ -102,6 +103,10 @@ pushd "$final_path"
 	mkdir -p volumes/pictrs
 	chown -R 991:991 volumes/pictrs
 popd
+
+chmod 750 "$final_path"
+chmod -R o-rwx "$final_path"
+
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
@@ -148,7 +153,7 @@ ynh_systemd_action --service_name=nginx --action=reload
 #=================================================
 # Run Lemmy through Docker
 #=================================================
-# chown -R $(whoami) /usr/local/bin
+chown -R $(whoami) /usr/local/bin
 
 chmod +x /usr/local/bin/docker-compose
 cd "$final_path" && docker-compose up -d
