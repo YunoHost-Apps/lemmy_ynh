@@ -159,10 +159,10 @@ then
 		sudo -u "$app" RUSTUP_HOME="$final_path"/.rustup CARGO_HOME="$final_path"/.cargo bash -c 'curl -sSf -L https://static.rust-lang.org/rustup.sh | sh -s -- -y --default-toolchain nightly'
 	popd
 
-	export PATH="$PATH:$final_path/.cargo/bin:$final_path/.local/bin:/usr/local/sbin" 
+	export PATH="$PATH:$final_path/.cargo/bin:$final_path/.local/bin:/usr/local/sbin"
 
 	# Compile lemmy
-	pushd "$final_path"/build
+	pushd $final_path/build-lemmy
 		ynh_exec_warn_less sudo -u "$app" env PATH="$PATH" cargo build --release
 	popd
 
