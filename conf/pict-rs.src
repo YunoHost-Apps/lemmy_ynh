@@ -1,0 +1,7 @@
+SOURCE_URL=https://git.asonix.dog/asonix/pict-rs/archive/v0.2.6-r2.tar.gz
+SOURCE_SUM=c8542ff79fc2f0699b33994d6718a9f8f4bfc94e6c7c7e1e5dc13911afd40d10
+SOURCE_SUM_PRG=sha256sum
+SOURCE_FORMAT=tar.gz
+SOURCE_IN_SUBDIR=true
+SOURCE_FILENAME=
+SOURCE_EXTRACT=true
