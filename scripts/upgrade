@@ -106,12 +106,11 @@ then
 	ynh_script_progression --message="Upgrading source files..."
 
 	# Download, check integrity, uncompress the source of lemmy from app.src to his build directory
-	ynh_setup_source --dest_dir="$final_path/build-lemmy/" --source_id="lemmy"
-	ynh_setup_source --dest_dir="$final_path/lemmy-ui/" --source_id="lemmy-ui"
-	ynh_setup_source --dest_dir="$final_path/lemmy-ui/lemmy-translations/" --source_id="lemmy-translations"
-
-	ynh_setup_source --dest_dir="$final_path/iframely/" --source_id="iframely"
+	ynh_setup_source --dest_dir="$final_path/build-lemmy/" --source_id="docker-image-extract"
 	ynh_setup_source --dest_dir="$final_path/build-pict-rs/" --source_id="pict-rs"
+	ynh_setup_source --dest_dir="$final_path/build-lemmy-ui/" --source_id="docker-image-extract"
+	ynh_setup_source --dest_dir="$final_path/lemmy-ui/lemmy-translations/" --source_id="lemmy-translations"
+	ynh_setup_source --dest_dir="$final_path/build-iframely/" --source_id="docker-image-extract"
 	ynh_setup_source --dest_dir="$final_path/build-imagemagick/" --source_id="imagemagick"
 fi
 
@@ -135,7 +134,6 @@ ynh_script_progression --message="Upgrading dependencies..."
 ynh_install_app_dependencies $pkg_dependencies
 ynh_install_nodejs --nodejs_version=$NODEJS_VERSION
 ynh_use_nodejs
-ynh_install_extra_app_dependencies --repo="deb https://dl.yarnpkg.com/debian/ stable main" --package="yarn" --key="https://dl.yarnpkg.com/debian/pubkey.gpg"
 
 #=================================================
 # SPECIFIC UPGRADE
@@ -146,65 +144,55 @@ ynh_script_progression --message="Making upgrade..."
 
 if [ "$upgrade_type" == "UPGRADE_APP" ]
 then
-	# Install ImageMagick
-	pushd "$final_path/build-imagemagick/"
-		./configure
-		make
-		make install
-		ldconfig /usr/local/lib
+	# Install lemmy
+	pushd $final_path/build-lemmy
+		./docker-image-extract dessalines/lemmy:$LEMMY_VERSION
 	popd
+	mkdir -p "$final_path/lemmy/"
+	mv -f "$final_path/build-lemmy/output/app/lemmy" "$final_path/lemmy/lemmy"
+	ynh_secure_remove --file="$final_path/build-lemmy"
 
-	# Install rustup with the toolchain needed by lemmy
+	# Install rustup with the toolchain needed by pict-rs
 	pushd "$final_path"
 		sudo -u "$app" RUSTUP_HOME="$final_path"/.rustup CARGO_HOME="$final_path"/.cargo bash -c 'curl -sSf -L https://static.rust-lang.org/rustup.sh | sh -s -- -y --default-toolchain nightly'
 	popd
 
 	export PATH="$PATH:$final_path/.cargo/bin:$final_path/.local/bin:/usr/local/sbin"
 
-	# Compile lemmy
-	pushd $final_path/build-lemmy
-		ynh_exec_warn_less sudo -u "$app" env PATH="$PATH" cargo build --release
-	popd
-
-	# Compile pict-rs
+	# Install pict-rs
 	pushd $final_path/build-pict-rs
 		ynh_exec_warn_less sudo -u "$app" env PATH="$PATH" cargo build --release
 	popd
-
-	# Remove old generated files before copying the new ones
-	ynh_secure_remove --file="$final_path/lemmy/.fingerprint"
-	ynh_secure_remove --file="$final_path/lemmy/build"
-	ynh_secure_remove --file="$final_path/lemmy/deps"
-	ynh_secure_remove --file="$final_path/lemmy/examples"
-	ynh_secure_remove --file="$final_path/lemmy/incremental"
-	ynh_secure_remove --file="$final_path/lemmy/.cargo-lock"
-	ynh_secure_remove --file="$final_path/lemmy/lemmy.d"
-
-	# Install lemmy
-	mkdir -p "$final_path/lemmy_server/"
-	cp -af "$final_path/build-lemmy/target/release/lemmy_server" "$final_path/lemmy_server/lemmy_server"
-
-	# Install pict-rs
 	mkdir -p "$final_path/pict-rs/"
-	cp -af "$final_path/build-pict-rs/target/release/pict-rs" "$final_path/pict-rs/pict-rs"
-
-	# Remove build files and rustup
-	ynh_secure_remove --file="$final_path/build-lemmy"
+	mv -f "$final_path/build-pict-rs/target/release/pict-rs" "$final_path/pict-rs/pict-rs"
 	ynh_secure_remove --file="$final_path/build-pict-rs"
-	ynh_secure_remove --file="$final_path/build-imagemagick"
 	ynh_secure_remove --file="$final_path/.cargo"
 	ynh_secure_remove --file="$final_path/.rustup"
 
-	# Compile lemmy-ui
-	pushd $final_path/lemmy-ui
-		ynh_exec_warn_less sudo -u "$app" env PATH="$PATH" yarn install --pure-lockfile
-		ynh_exec_warn_less sudo -u "$app" env PATH="$PATH" yarn build:prod
+	# Install lemmy-ui
+	pushd $final_path/build-lemmy-ui
+		./docker-image-extract dessalines/lemmy-ui:$LEMMYUI_VERSION
 	popd
+	mkdir -p "$final_path/lemmy-ui/"
+	rsync -a "$final_path/build-lemmy-ui/output/app/" "$final_path/lemmy-ui/"
+	ynh_secure_remove --file="$final_path/build-lemmy-ui"
 
-	# Compile iframely
-	pushd $final_path/iframely
-		ynh_exec_warn_less sudo -u "$app" env PATH="$PATH" $ynh_npm install
+	# Install iframely
+	pushd $final_path/build-iframely
+		./docker-image-extract dogbin/iframely:latest
 	popd
+	mkdir -p "$final_path/iframely/"
+	rsync -a "$final_path/build-iframely/output/iframely/" "$final_path/iframely/"
+	ynh_secure_remove --file="$final_path/build-iframely"
+
+	# Install ImageMagick
+	pushd "$final_path/build-imagemagick/"
+		./configure --with-modules
+		make
+		make install
+		ldconfig /usr/local/lib
+	popd
+	ynh_secure_remove --file="$final_path/build-imagemagick"
 fi
 
 chmod 750 "$final_path"
@@ -221,7 +209,7 @@ chown -R $app:$app "/var/log/$app"
 #=================================================
 ynh_script_progression --message="Updating a configuration file..."
 
-mkdir -p "$final_path/lemmy_server/"
+mkdir -p "$final_path/lemmy/"
 ynh_add_config --template="../conf/lemmy.hjson" --destination="$final_path/config/config.hjson"
 
 chmod 400 "$final_path/config/config.hjson"

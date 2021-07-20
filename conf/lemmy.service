@@ -7,8 +7,8 @@ Type=simple
 User=__APP__
 Group=__APP__
 Environment="LEMMY_CONFIG_LOCATION=__FINALPATH__/config/config.hjson"
-WorkingDirectory=__FINALPATH__/lemmy_server/
-ExecStart=__FINALPATH__/lemmy_server/lemmy_server
+WorkingDirectory=__FINALPATH__/lemmy/
+ExecStart=__FINALPATH__/lemmy/lemmy
 StandardOutput=append:/var/log/__APP__/__APP__.log
 StandardError=inherit
 

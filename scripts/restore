@@ -97,7 +97,6 @@ ynh_script_progression --message="Reinstalling dependencies..."
 ynh_install_app_dependencies $pkg_dependencies
 ynh_install_nodejs --nodejs_version=$NODEJS_VERSION
 ynh_use_nodejs
-ynh_install_extra_app_dependencies --repo="deb https://dl.yarnpkg.com/debian/ stable main" --package="yarn" --key="https://dl.yarnpkg.com/debian/pubkey.gpg"
 
 #=================================================
 # BUILDING IMAGEMAGICK
@@ -108,12 +107,11 @@ ynh_setup_source --dest_dir="$final_path/build-imagemagick/" --source_id="imagem
 
 # Install ImageMagick
 pushd "$final_path/build-imagemagick/"
-	./configure
+	./configure --with-modules
 	make
 	make install
 	ldconfig /usr/local/lib
 popd
-
 ynh_secure_remove --file="$final_path/build-imagemagick"
 
 #=================================================

@@ -5,9 +5,22 @@
 #=================================================
 
 # dependencies used by the app
-pkg_dependencies="postgresql postgresql-contrib espeak bash-completion ffmpeg clang pkg-config libgexiv2-dev libgexiv2-2 libssl-dev libc6-dev libpq-dev libavutil-dev libavformat-dev libavfilter-dev libavdevice-dev libavresample-dev libjpeg-turbo-progs libpng-dev"
+lemmy_dependencies="postgresql postgresql-contrib"
+lemmyui_dependencies="espeak"
+iframely_dependencies="musl-dev"
+pictrs_dependencies="bash-completion ffmpeg clang pkg-config libgexiv2-dev libgexiv2-2"
+imagemagick_dependencies=""
+
+pkg_dependencies="$lemmy_dependencies $lemmyui_dependencies $iframely_dependencies $pictrs_dependencies $imagemagick_dependencies"
+#  libssl-dev libc6-dev libpq-dev libavutil-dev libavformat-dev libavfilter-dev libavdevice-dev libavresample-dev libjpeg-turbo-progs libpng-dev
 
 NODEJS_VERSION=12
+
+LEMMY_VERSION=0.11.0
+
+LEMMYUI_VERSION=0.11.0
+
+PICTRS_VERSION=v0.2.6-r1
 
 #=================================================
 # PERSONAL HELPERS
