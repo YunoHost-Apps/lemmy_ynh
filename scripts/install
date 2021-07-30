@@ -78,10 +78,10 @@ ynh_app_setting_set --app=$app --key=port_iframely --value=$port_iframely
 #=================================================
 ynh_script_progression --message="Installing dependencies..."
 
-ynh_install_app_dependencies $pkg_dependencies $pkg_build_dependencies
+ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies $pkg_build_dependencies
 ynh_install_nodejs --nodejs_version=$NODEJS_VERSION
 ynh_use_nodejs
-ln -s /usr/lib/x86_64-linux-musl/libc.so /lib/libc.musl-x86_64.so.1
+ln -fs /usr/lib/x86_64-linux-musl/libc.so /lib/libc.musl-x86_64.so.1
 
 #=================================================
 # CREATE DEDICATED USER
@@ -169,10 +169,10 @@ ynh_secure_remove --file="$final_path/build-lemmy-ui"
 
 # Install ImageMagick
 pushd "$final_path/build-imagemagick/"
-	./configure --with-modules
-	make
-	make install
-	ldconfig /usr/local/lib
+	ynh_exec_warn_less ./configure --with-modules
+	ynh_exec_warn_less make
+	ynh_exec_warn_less make install
+	ynh_exec_warn_less ldconfig /usr/local/lib
 popd
 ynh_secure_remove --file="$final_path/build-imagemagick"
 
@@ -201,7 +201,7 @@ mkdir -p "$final_path/iframely/"
 rsync -a "$final_path/build-iframely/output/iframely/" "$final_path/iframely/"
 ynh_secure_remove --file="$final_path/build-iframely"
 
-ynh_install_app_dependencies $pkg_dependencies
+ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
 chmod 750 "$final_path"
 chmod -R o-rwx "$final_path"
 chown -R $app:$app "$final_path"

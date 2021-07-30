@@ -94,9 +94,10 @@ chown -R $app:$app "$datadir"
 ynh_script_progression --message="Reinstalling dependencies..."
 
 # Define and install dependencies
-ynh_install_app_dependencies $pkg_dependencies
+ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
 ynh_install_nodejs --nodejs_version=$NODEJS_VERSION
 ynh_use_nodejs
+ln -fs /usr/lib/x86_64-linux-musl/libc.so /lib/libc.musl-x86_64.so.1
 
 #=================================================
 # BUILDING IMAGEMAGICK
@@ -104,6 +105,8 @@ ynh_use_nodejs
 ynh_script_progression --message="Building ImageMagick..."
 
 ynh_setup_source --dest_dir="$final_path/build-imagemagick/" --source_id="imagemagick"
+
+ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies $imagemagick_build_dependencies
 
 # Install ImageMagick
 pushd "$final_path/build-imagemagick/"
@@ -113,6 +116,8 @@ pushd "$final_path/build-imagemagick/"
 	ldconfig /usr/local/lib
 popd
 ynh_secure_remove --file="$final_path/build-imagemagick"
+
+ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
 
 #=================================================
 # RESTORE THE POSTGRESQL DATABASE

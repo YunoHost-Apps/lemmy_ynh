@@ -131,9 +131,10 @@ ynh_add_nginx_config
 #=================================================
 ynh_script_progression --message="Upgrading dependencies..."
 
-ynh_install_app_dependencies $pkg_dependencies
+ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
 ynh_install_nodejs --nodejs_version=$NODEJS_VERSION
 ynh_use_nodejs
+ln -fs /usr/lib/x86_64-linux-musl/libc.so /lib/libc.musl-x86_64.so.1
 
 #=================================================
 # SPECIFIC UPGRADE
@@ -144,6 +145,8 @@ ynh_script_progression --message="Making upgrade..."
 
 if [ "$upgrade_type" == "UPGRADE_APP" ]
 then
+	ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies $pkg_build_dependencies
+
 	# Install lemmy
 	pushd $final_path/build-lemmy
 		./docker-image-extract dessalines/lemmy:$LEMMY_VERSION
@@ -162,10 +165,10 @@ then
 
 	# Install ImageMagick
 	pushd "$final_path/build-imagemagick/"
-		./configure --with-modules
-		make
-		make install
-		ldconfig /usr/local/lib
+		ynh_exec_warn_less ./configure --with-modules
+		ynh_exec_warn_less make
+		ynh_exec_warn_less make install
+		ynh_exec_warn_less ldconfig /usr/local/lib
 	popd
 	ynh_secure_remove --file="$final_path/build-imagemagick"
 
@@ -193,6 +196,8 @@ then
 	mkdir -p "$final_path/iframely/"
 	rsync -a "$final_path/build-iframely/output/iframely/" "$final_path/iframely/"
 	ynh_secure_remove --file="$final_path/build-iframely"
+
+	ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
 fi
 
 chmod 750 "$final_path"
