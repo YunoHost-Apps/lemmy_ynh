@@ -58,7 +58,7 @@
         - memcached - https://github.com/3rd-Eden/node-memcached
         */
         CACHE_ENGINE: 'node-cache',
-        CACHE_TTL: 0, // In seconds. 
+        CACHE_TTL: 0, // In seconds.
         // 0 = 'never expire' for memcached & node-cache to let cache engine decide itself when to evict the record
         // 0 = 'no cache' for redis. Use high enough (e.g. 365*24*60*60*1000) ttl for similar 'never expire' approach instead
 
@@ -104,31 +104,16 @@
         // DISABLE_HTTP2: true,
 
         // Customize API calls to oembed endpoints.
-        // Must have: please add your `access_token` for Facebook and Instagram API calls
         ADD_OEMBED_PARAMS: [{
-            
-            re: [ // Endpoint's URL regexp array.
-                /^https:\/\/graph\.facebook\.com\/v\d+\.\d+\/instagram_oembed/i
-            ],
-            params: { // Custom query-string params object.
-
-                // TODO: get your access Insagtam token as described 
-                // on https://developers.facebook.com/docs/instagram/oembed/                
-                access_token: '',   // The simplest way is 
-                                    // to use `{app-id}|{app secret}` as access token
-
-                // Add any other optional params
+            // Endpoint url regexp array.
+            re: [/^http:\/\/api\.instagram\.com\/oembed/],
+            // Custom get params object.
+            params: {
                 hidecaption: true
             }
         }, {
-            re: [/^https:\/\/graph\.facebook\.com\/v\d+\.\d+\/oembed_page/i],
+            re: [/^https:\/\/www\.facebook\.com\/plugins\/page\/oembed\.json/i],
             params: {
-                // TODO: get your access token as described 
-                // on https://developers.facebook.com/docs/plugins/oembed                
-                access_token: '',   // The simplest way is 
-                                    // to use `{app-id}|{app secret}` as access token
-
-                // Add any other optional params
                 show_posts: 0,
                 show_facepile: 0,
                 maxwidth: 600
@@ -141,24 +126,20 @@
                 limit: 1,
                 maxwidth: 600
             }
+        /*
         }, {
-            // Facebook https://developers.facebook.com/docs/plugins/oembed/
-            re: [/^https:\/\/graph\.facebook\.com\/v\d+\.\d+\/oembed_/i],
+            // Facebook https://developers.facebook.com/docs/plugins/oembed-endpoints
+            re: [/^https:\/\/www\.facebook\.com\/plugins\/\w+\/oembed\.json/i],
             params: {
-                // TODO: get your access token as described 
-                // on https://developers.facebook.com/docs/plugins/oembed                
-                access_token: '',   // The simplest way is 
-                                    // to use `{app-id}|{app secret}` as access token
-
-                // Add any other optional params, like skip script tag and fb-root div
-                // omitscript: true
+                // Skip script tag and fb-root div.
+                omitscript: true
             }
+        */
          }],
 
-        /* Configure use of HTTP proxies as needed. 
-           You don't have to specify all options per regex - just what you need to override
-        */
         /*
+        // Configure use of HTTP proxies as needed.
+        // You don't have to specify all options per regex - just what you need to override
         PROXY: [{
             re: [/^https?:\/\/www\.domain\.com/],
             proxy_server: 'http://1.2.3.4:8080',
@@ -171,16 +152,14 @@
                 // Refer to: https://github.com/request/request
                 // Overrides previous params if overlapped.
             },
-            cache_ttl: 3600, // in seconds, cache response for 1 hour.
             disable_http2: true
         }],
         */
 
         // Customize API calls to 3rd parties. At the very least - configure required keys.
-        // For available provider options - please see the code of its domain plugin.
         providerOptions: {
-            locale: "en_US",    // ISO 639-1 two-letter language code, e.g. en_CA or fr_CH. 
-                                // Will be added as highest priotity in accept-language header with each request. 
+            locale: "en_US",    // ISO 639-1 two-letter language code, e.g. en_CA or fr_CH.
+                                // Will be added as highest priotity in accept-language header with each request.
                                 // Plus is used in FB, YouTube and perhaps other plugins
             "twitter": {
                 "max-width": 550,
@@ -224,18 +203,21 @@
             // It is probably the same API key you use for Google Maps.
             youtube: {
                 // api_key: "INSERT YOUR VALUE",
-                // parts: [ "snippet", "player" ], // list of fields you want to use in the request, in most cases you only need those two
                 get_params: "?rel=0&showinfo=1"     // https://developers.google.com/youtube/player_parameters
             },
             vimeo: {
                 get_params: "?byline=0&badge=0"     // https://developer.vimeo.com/player/embedding
             },
+
+            /*
             soundcloud: {
                 old_player: true // enables classic player
             },
             giphy: {
                 media_only: true // disables branded player for gifs and returns just the image
-            },
+            }
+            */
+            /*
             bandcamp: {
                 get_params: '/size=large/bgcol=333333/linkcol=ffffff/artwork=small/transparent=true/',
                 media: {
@@ -248,11 +230,7 @@
                         'max-width': 700
                     }
                 }
-            },
-            // Docs: https://dev.twitch.tv/docs/embed/video-and-clips
-            twitch: {
-                parent: 'jsbin.com, null.jsbin.com, localhost'
-            },
+            }
             */
         },
 
@@ -298,11 +276,7 @@
             // And this is AWS metadata service
             // https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html
             /^https?:\/\/169\.254\.169\.254/
-        ],
-
-        // Endpoint for prerender service, if you need it. Used to parse React apps. Very slow.
-        // Tested with https://github.com/prerender/prerender
-        // PRERENDER_URL: "https://domain/render?url="
+        ]
     };
 
     module.exports = config;

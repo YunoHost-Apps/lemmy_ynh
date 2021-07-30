@@ -7,20 +7,24 @@
 # dependencies used by the app
 lemmy_dependencies="postgresql postgresql-contrib"
 lemmyui_dependencies="espeak"
-iframely_dependencies="musl-dev"
-pictrs_dependencies="bash-completion ffmpeg clang pkg-config libgexiv2-dev libgexiv2-2"
+imagemagick_build_dependencies="libltdl-dev libjpeg-dev libpng-dev libwebp-dev liblzma-dev libxml2-dev"
 imagemagick_dependencies=""
+pictrs_build_dependencies="pkg-config build-essential libgexiv2-dev libxml2 libltdl7 libavcodec-dev libavfilter-dev libavdevice-dev libavformat-dev libavresample-dev libavutil-dev libswscale-dev libswresample-dev llvm-dev libclang-dev clang"
+pictrs_dependencies="libgexiv2-2 libpng16-16 libjpeg62-turbo libwebp6 libwebpdemux2 libwebpmux3 libltdl7 libgomp1 libxml2 libavcodec58 libavfilter7 libavdevice58 libavformat58 libavresample4 libavutil56 libswscale5 libswresample3 tini"
+iframely_dependencies="musl-dev"
 
-pkg_dependencies="$lemmy_dependencies $lemmyui_dependencies $iframely_dependencies $pictrs_dependencies $imagemagick_dependencies"
-#  libssl-dev libc6-dev libpq-dev libavutil-dev libavformat-dev libavfilter-dev libavdevice-dev libavresample-dev libjpeg-turbo-progs libpng-dev
+pkg_dependencies="$lemmy_dependencies $lemmyui_dependencies $imagemagick_dependencies $pictrs_dependencies $iframely_dependencies"
+pkg_build_dependencies="$imagemagick_build_dependencies $pictrs_build_dependencies"
 
 NODEJS_VERSION=12
 
-LEMMY_VERSION=0.11.0
+LEMMY_VERSION=0.11.2
 
-LEMMYUI_VERSION=0.11.0
+LEMMYUI_VERSION=0.11.2
 
-PICTRS_VERSION=v0.2.6-r1
+PICTRS_VERSION=v0.2.6-r2
+
+IFRAMELY_VERSION=latest
 
 #=================================================
 # PERSONAL HELPERS
