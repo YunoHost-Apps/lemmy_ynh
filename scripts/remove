@@ -77,9 +77,8 @@ ynh_setup_source --dest_dir="$final_path/build-imagemagick/" --source_id="imagem
 
 # Install ImageMagick
 pushd "$final_path/build-imagemagick/"
-	./configure
-	make uninstall
-	ldconfig /usr/local/lib
+	ynh_exec_warn_less ./configure
+	ynh_exec_warn_less make uninstall
 popd
 
 ynh_secure_remove --file="$final_path/build-imagemagick"
