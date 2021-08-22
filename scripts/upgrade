@@ -196,11 +196,6 @@ chmod 750 "$final_path"
 chmod -R o-rwx "$final_path"
 chown -R $app:$app "$final_path"
 
-mkdir -p "/var/log/$app"
-chmod 750 "/var/log/$app"
-chmod -R o-rwx "/var/log/$app"
-chown -R $app:$app "/var/log/$app"
-
 #=================================================
 # UPDATE A CONFIG FILE
 #=================================================
