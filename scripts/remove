@@ -61,6 +61,14 @@ ynh_remove_systemd_config --service=$app-iframely
 ynh_remove_systemd_config --service=$app-pict-rs
 
 #=================================================
+# REMOVE LOGROTATE CONFIGURATION
+#=================================================
+ynh_script_progression --message="Removing logrotate configuration..."
+
+# Remove the app-specific logrotate config
+ynh_remove_logrotate
+
+#=================================================
 # REMOVE THE POSTGRESQL DATABASE
 #=================================================
 ynh_script_progression --message="Removing the PostgreSQL database..."
@@ -108,14 +116,6 @@ ynh_script_progression --message="Removing NGINX web server configuration..."
 
 # Remove the dedicated NGINX config
 ynh_remove_nginx_config
-
-#=================================================
-# REMOVE LOGROTATE CONFIGURATION
-#=================================================
-ynh_script_progression --message="Removing logrotate configuration..."
-
-# Remove the app-specific logrotate config
-ynh_remove_logrotate
 
 #=================================================
 # SPECIFIC REMOVE
