@@ -110,10 +110,10 @@ ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies $imagemagick_b
 
 # Install ImageMagick
 pushd "$final_path/build-imagemagick/"
-	./configure --with-modules
-	make
-	make install
-	ldconfig /usr/local/lib
+	ynh_exec_warn_less ./configure --with-modules
+	ynh_exec_warn_less make
+	ynh_exec_warn_less make install
+	ynh_exec_warn_less ldconfig /usr/local/lib
 popd
 ynh_secure_remove --file="$final_path/build-imagemagick"
 

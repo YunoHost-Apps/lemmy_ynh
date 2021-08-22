@@ -178,7 +178,7 @@ ynh_secure_remove --file="$final_path/build-imagemagick"
 
 # Install rustup with the toolchain needed by pict-rs
 pushd "$final_path"
-	sudo -u "$app" RUSTUP_HOME="$final_path"/.rustup CARGO_HOME="$final_path"/.cargo bash -c 'curl -sSf -L https://static.rust-lang.org/rustup.sh | sh -s -- -y --default-toolchain nightly'
+	ynh_exec_warn_less sudo -u "$app" RUSTUP_HOME="$final_path/.rustup" CARGO_HOME="$final_path/.cargo" bash -c 'curl -sSf -L https://static.rust-lang.org/rustup.sh | sh -s -- -y --default-toolchain nightly'
 popd
 
 export PATH="$PATH:$final_path/.cargo/bin:$final_path/.local/bin:/usr/local/sbin"
@@ -190,6 +190,8 @@ popd
 mkdir -p "$final_path/pict-rs/"
 mv -f "$final_path/build-pict-rs/target/release/pict-rs" "$final_path/pict-rs/pict-rs"
 ynh_secure_remove --file="$final_path/build-pict-rs"
+
+# Remove rustup
 ynh_secure_remove --file="$final_path/.cargo"
 ynh_secure_remove --file="$final_path/.rustup"
 

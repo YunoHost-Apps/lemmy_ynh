@@ -79,16 +79,6 @@ if ynh_legacy_permissions_exists; then
 	ynh_app_setting_delete --app=$app --key=is_public
 fi
 
-if ! ynh_permission_exists --permission="admin"; then
-	# Create the required permissions
-	ynh_permission_create --permission="admin" --url="/admin" --allowed=$admin
-fi
-
-# Create a permission if needed
-if ! ynh_permission_exists --permission="api"; then
-	ynh_permission_create --permission="api" --url="/api" --allowed="visitors" --show_tile="false" --protected="true"
-fi
-
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
@@ -174,7 +164,7 @@ then
 
 	# Install rustup with the toolchain needed by pict-rs
 	pushd "$final_path"
-		sudo -u "$app" RUSTUP_HOME="$final_path"/.rustup CARGO_HOME="$final_path"/.cargo bash -c 'curl -sSf -L https://static.rust-lang.org/rustup.sh | sh -s -- -y --default-toolchain nightly'
+		ynh_exec_warn_less sudo -u "$app" RUSTUP_HOME="$final_path/.rustup" CARGO_HOME="$final_path/.cargo" bash -c 'curl -sSf -L https://static.rust-lang.org/rustup.sh | sh -s -- -y --default-toolchain nightly'
 	popd
 
 	export PATH="$PATH:$final_path/.cargo/bin:$final_path/.local/bin:/usr/local/sbin"
@@ -186,6 +176,8 @@ then
 	mkdir -p "$final_path/pict-rs/"
 	mv -f "$final_path/build-pict-rs/target/release/pict-rs" "$final_path/pict-rs/pict-rs"
 	ynh_secure_remove --file="$final_path/build-pict-rs"
+
+	# Remove rustup
 	ynh_secure_remove --file="$final_path/.cargo"
 	ynh_secure_remove --file="$final_path/.rustup"
 
