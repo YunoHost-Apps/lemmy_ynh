@@ -5,8 +5,15 @@
     "description": {
         "en": "A link aggregator / Reddit clone for the fediverse."
     },
-    "version": "0.9.9~ynh1",
+    "version": "0.11.3~ynh1",
     "url": "https://join.lemmy.ml/",
+    "upstream": {
+        "license": "GPL-3.0",
+        "website": "https://join-lemmy.org/",
+        "demo": "https://join.lemmy.ml/join/",
+        "admindoc": "https://join-lemmy.org/docs/en/",
+        "code": "https://github.com/LemmyNet/lemmy"
+    },
     "license": "GPL-3.0",
     "maintainer": {
         "name": "Anmol Sharma",
@@ -25,19 +32,11 @@
             {
                 "name": "domain",
                 "type": "domain",
-                "ask": {
-                    "en": "Choose a domain name for Lemmy",
-                    "fr": "Choisissez un nom de domaine pour Lemmy"
-                },
                 "example": "example.com"
             },
             {
                 "name": "admin",
-                "type": "string",
-                "ask": {
-                    "en": "Choose an admin username",
-                    "fr": "Choisissez l'administrateur"
-                },
+                "type": "user",
                 "example": "johndoe"
             },
             {
@@ -48,7 +47,6 @@
                 },
                 "example": "lemmy website"
             }
-
         ]
     }
 }
