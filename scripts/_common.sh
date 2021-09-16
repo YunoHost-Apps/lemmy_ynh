@@ -5,7 +5,26 @@
 #=================================================
 
 # dependencies used by the app
-pkg_dependencies="deb1 deb2 php$YNH_DEFAULT_PHP_VERSION-deb1 php$YNH_DEFAULT_PHP_VERSION-deb2"
+lemmy_dependencies="postgresql postgresql-contrib"
+lemmyui_dependencies="espeak"
+imagemagick_build_dependencies="libltdl-dev libjpeg-dev libpng-dev libwebp-dev liblzma-dev libxml2-dev"
+imagemagick_dependencies=""
+pictrs_build_dependencies="pkg-config build-essential libgexiv2-dev libxml2 libltdl7 libavcodec-dev libavfilter-dev libavdevice-dev libavformat-dev libavresample-dev libavutil-dev libswscale-dev libswresample-dev llvm-dev libclang-dev clang"
+pictrs_dependencies="libgexiv2-2 libpng16-16 libjpeg62-turbo libwebp6 libwebpdemux2 libwebpmux3 libltdl7 libgomp1 libxml2 libavcodec58 libavfilter7 libavdevice58 libavformat58 libavresample4 libavutil56 libswscale5 libswresample3 tini"
+iframely_dependencies="musl-dev"
+
+pkg_dependencies="$lemmy_dependencies $lemmyui_dependencies $imagemagick_dependencies $pictrs_dependencies $iframely_dependencies"
+pkg_build_dependencies="$imagemagick_build_dependencies $pictrs_build_dependencies"
+
+NODEJS_VERSION=12
+
+LEMMY_VERSION=0.11.3
+
+LEMMYUI_VERSION=0.11.3
+
+PICTRS_VERSION=v0.2.6-r2
+
+IFRAMELY_VERSION=latest
 
 #=================================================
 # PERSONAL HELPERS

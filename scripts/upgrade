@@ -12,7 +12,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 # LOAD SETTINGS
 #=================================================
-ynh_script_progression --message="Loading installation settings..."  --weight=1
+ynh_script_progression --message="Loading installation settings..."
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -20,6 +20,10 @@ domain=$(ynh_app_setting_get --app=$app --key=domain)
 path_url=$(ynh_app_setting_get --app=$app --key=path)
 admin=$(ynh_app_setting_get --app=$app --key=admin)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
+db_name=$(ynh_app_setting_get --app=$app --key=db_name)
+db_user=$db_name
+db_pwd=$(ynh_app_setting_get --app=$app --key=db_pwd)
+datadir=$(ynh_app_setting_get --app=$app --key=datadir)
 password=$(ynh_app_setting_get --app=$app --key=password)
 sitename=$(ynh_app_setting_get --app=$app --key=sitename)
 random=$(ynh_app_setting_get --app=$app --key=random)
@@ -27,17 +31,24 @@ port_lemmy=$(ynh_app_setting_get --app=$app --key=port_lemmy)
 port_ui=$(ynh_app_setting_get --app=$app --key=port_ui)
 port_pictrs=$(ynh_app_setting_get --app=$app --key=port_pictrs)
 port_iframely=$(ynh_app_setting_get --app=$app --key=port_iframely)
-version=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep 'tag_name' | cut -d\" -f4)
+admin_email=$(ynh_user_get_info --username=$admin --key="mail")
 
+#=================================================
+# CHECK VERSION
+#=================================================
+ynh_script_progression --message="Checking version..."
+
+upgrade_type=$(ynh_check_app_version_changed)
 
 #=================================================
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
 #=================================================
-ynh_script_progression --message="Backing up the app before upgrading (may take a while)..."  --weight=1
+ynh_script_progression --message="Backing up the app before upgrading (may take a while)..."
 
 # Backup the current version of the app
 ynh_backup_before_upgrade
 ynh_clean_setup () {
+	ynh_clean_check_starting
 	# Restore it if the upgrade fails
 	ynh_restore_upgradebackup
 }
@@ -47,7 +58,34 @@ ynh_abort_if_errors
 #=================================================
 # STANDARD UPGRADE STEPS
 #=================================================
+# STOP SYSTEMD SERVICE
+#=================================================
+ynh_script_progression --message="Stopping a systemd service..."
 
+ynh_systemd_action --service_name=$app --action="stop" --line_match="Stopped" --log_path=systemd
+ynh_systemd_action --service_name=$app-ui --action="stop" --line_match="Stopped" --log_path=systemd
+ynh_systemd_action --service_name=$app-pict-rs --action="stop" --line_match="Stopped" --log_path=systemd
+ynh_systemd_action --service_name=$app-iframely --action="stop" --line_match="Stopped" --log_path=systemd
+
+#=================================================
+# ENSURE DOWNWARD COMPATIBILITY
+#=================================================
+ynh_script_progression --message="Ensuring downward compatibility..."
+
+# Cleaning legacy permissions
+if ynh_legacy_permissions_exists; then
+	ynh_legacy_permissions_delete_all
+
+	ynh_app_setting_delete --app=$app --key=is_public
+fi
+
+#=================================================
+# CREATE DEDICATED USER
+#=================================================
+ynh_script_progression --message="Making sure dedicated system user exists..."
+
+# Create a dedicated user (if not existing)
+ynh_system_user_create --username=$app --home_dir=$final_path
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -55,78 +93,180 @@ ynh_abort_if_errors
 
 if [ "$upgrade_type" == "UPGRADE_APP" ]
 then
-	ynh_script_progression --message="Upgrading source files..."  --weight=1
+	ynh_script_progression --message="Upgrading source files..."
 
-	# Download, check integrity, uncompress and patch the source from app.src
-	cp -f ../conf/docker-compose.yml       "$final_path/docker-compose.yml"
-	cp -f ../conf/lemmy.hjson              "$final_path/lemmy.hjson"
-	cp -f ../conf/iframely.config.local.js "$final_path/iframely.config.local.js"
-	pushd "$final_path"
-		chown -R 991:991 volumes/pictrs
-	popd
+	# Download, check integrity, uncompress the source of lemmy from app.src to his build directory
+	ynh_setup_source --dest_dir="$final_path/build-lemmy/" --source_id="docker-image-extract"
+	ynh_setup_source --dest_dir="$final_path/build-lemmy-ui/" --source_id="docker-image-extract"
+	ynh_setup_source --dest_dir="$final_path/lemmy-ui/lemmy-translations/" --source_id="lemmy-translations"
+	ynh_setup_source --dest_dir="$final_path/build-imagemagick/" --source_id="imagemagick"
+	ynh_setup_source --dest_dir="$final_path/build-pict-rs/" --source_id="pict-rs"
+	ynh_setup_source --dest_dir="$final_path/build-iframely/" --source_id="docker-image-extract"
 fi
+
+chmod 750 "$final_path"
+chmod -R o-rwx "$final_path"
+chown -R $app:$app "$final_path"
 
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
-ynh_script_progression --message="Upgrading NGINX web server configuration..." --weight=1
+ynh_script_progression --message="Upgrading NGINX web server configuration..."
 
 # Create a dedicated NGINX config
-ynh_add_nginx_config 'port_lemmy port_ui port_pictrs port_iframely'
+ynh_add_nginx_config
 
 #=================================================
 # UPGRADE DEPENDENCIES
 #=================================================
-ynh_script_progression --message="Upgrading dependencies..." --weight=1
+ynh_script_progression --message="Upgrading dependencies..."
 
-#ynh_install_app_dependencies $pkg_dependencies
-
-# Install Docker and compose
-curl -sSL https://get.docker.com | sh
-systemctl enable docker --quiet
-curl -L https://github.com/docker/compose/releases/download/${version}/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
-
+ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
+ynh_install_nodejs --nodejs_version=$NODEJS_VERSION
+ynh_use_nodejs
+ln -fs /usr/lib/x86_64-linux-musl/libc.so /lib/libc.musl-x86_64.so.1
 
 #=================================================
 # SPECIFIC UPGRADE
 #=================================================
+# MAKE UPGRADE
+#=================================================
+ynh_script_progression --message="Making upgrade..."
 
+if [ "$upgrade_type" == "UPGRADE_APP" ]
+then
+	ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies $pkg_build_dependencies
+
+	# Install lemmy
+	pushd $final_path/build-lemmy
+		./docker-image-extract dessalines/lemmy:$LEMMY_VERSION
+	popd
+	mkdir -p "$final_path/lemmy/"
+	mv -f "$final_path/build-lemmy/output/app/lemmy" "$final_path/lemmy/lemmy"
+	ynh_secure_remove --file="$final_path/build-lemmy"
+
+	# Install lemmy-ui
+	pushd $final_path/build-lemmy-ui
+		./docker-image-extract dessalines/lemmy-ui:$LEMMYUI_VERSION
+	popd
+	mkdir -p "$final_path/lemmy-ui/"
+	rsync -a "$final_path/build-lemmy-ui/output/app/" "$final_path/lemmy-ui/"
+	ynh_secure_remove --file="$final_path/build-lemmy-ui"
+
+	# Install ImageMagick
+	pushd "$final_path/build-imagemagick/"
+		ynh_exec_warn_less ./configure --with-modules
+		ynh_exec_warn_less make
+		ynh_exec_warn_less make install
+		ynh_exec_warn_less ldconfig /usr/local/lib
+	popd
+	ynh_secure_remove --file="$final_path/build-imagemagick"
+
+	# Install rustup with the toolchain needed by pict-rs
+	pushd "$final_path"
+		sudo -u "$app" RUSTUP_HOME="$final_path/.rustup" CARGO_HOME="$final_path/.cargo" bash -c 'curl -sSf -L https://static.rust-lang.org/rustup.sh | sh -s -- -y --default-toolchain nightly'
+	popd
+
+	export PATH="$PATH:$final_path/.cargo/bin:$final_path/.local/bin:/usr/local/sbin"
+
+	# Install pict-rs
+	pushd $final_path/build-pict-rs
+		ynh_exec_warn_less sudo -u "$app" env PATH="$PATH" cargo build --release
+	popd
+	mkdir -p "$final_path/pict-rs/"
+	mv -f "$final_path/build-pict-rs/target/release/pict-rs" "$final_path/pict-rs/pict-rs"
+	ynh_secure_remove --file="$final_path/build-pict-rs"
+
+	# Remove rustup
+	ynh_secure_remove --file="$final_path/.cargo"
+	ynh_secure_remove --file="$final_path/.rustup"
+
+	# Install iframely
+	pushd $final_path/build-iframely
+		./docker-image-extract dogbin/iframely:latest
+	popd
+	mkdir -p "$final_path/iframely/"
+	rsync -a "$final_path/build-iframely/output/iframely/" "$final_path/iframely/"
+	ynh_secure_remove --file="$final_path/build-iframely"
+
+	ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
+fi
+
+chmod 750 "$final_path"
+chmod -R o-rwx "$final_path"
+chown -R $app:$app "$final_path"
 
 #=================================================
-# MODIFY A CONFIG FILE
+# UPDATE A CONFIG FILE
 #=================================================
+ynh_script_progression --message="Updating a configuration file..."
 
+mkdir -p "$final_path/lemmy/"
+ynh_add_config --template="../conf/lemmy.hjson" --destination="$final_path/config/config.hjson"
 
-ynh_replace_string --match_string="match_string" --replace_string="replace_string" --target_file="$final_path/CONFIG_FILE"
+chmod 400 "$final_path/config/config.hjson"
+chown $app:$app "$final_path/config/config.hjson"
 
+ynh_add_config --template="../conf/iframely.config.local.js" --destination="$final_path/iframely/iframely.config.local.js"
 
-ynh_replace_string --match_string="__ADMIN__" --replace_string="$admin" --target_file="$final_path/lemmy.hjson"
-ynh_replace_string --match_string="__ADMIN_PASS__" --replace_string="$password" --target_file="$final_path/lemmy.hjson"
-ynh_replace_string --match_string="__NAME__" --replace_string="$sitename" --target_file="$final_path/lemmy.hjson"
-ynh_replace_string --match_string="__DOMAIN__" --replace_string="$domain" --target_file="$final_path/lemmy.hjson"
-ynh_replace_string --match_string="__RANDOM__" --replace_string="$random" --target_file="$final_path/lemmy.hjson"
-ynh_replace_string --match_string="__PORT__LEMMY__" --replace_string="$port_lemmy" --target_file="$final_path/docker-compose.yml"
-ynh_replace_string --match_string="__PORT_UI__" --replace_string="$port_ui" --target_file="$final_path/docker-compose.yml"
-ynh_replace_string --match_string="__PORT_PICTRS__" --replace_string="$port_pictrs" --target_file="$final_path/docker-compose.yml"
-ynh_replace_string --match_string="__PORT_IFRAMELY__" --replace_string="$port_iframely" --target_file="$final_path/docker-compose.yml"
-ynh_replace_string --match_string="__DOMAIN__" --replace_string="$domain" --target_file="$final_path/iframely.config.local.js"
+chmod 400 "$final_path/iframely/iframely.config.local.js"
+chown $app:$app "$final_path/iframely/iframely.config.local.js"
+
+#=================================================
+# SETUP SYSTEMD
+#=================================================
+ynh_script_progression --message="Upgrading systemd configuration..."
+
+# Create a dedicated systemd config
+ynh_add_systemd_config --service="$app" --template="lemmy.service"
+ynh_add_systemd_config --service="$app-ui" --template="lemmy-ui.service"
+ynh_add_systemd_config --service="$app-iframely" --template="iframely.service"
+ynh_add_systemd_config --service="$app-pict-rs" --template="pict-rs.service"
+
+#=================================================
+# GENERIC FINALIZATION
+#=================================================
+# SETUP LOGROTATE
+#=================================================
+ynh_script_progression --message="Upgrading logrotate configuration..."
+
+mkdir -p "/var/log/$app"
+chmod 750 "/var/log/$app"
+chmod -R o-rwx "/var/log/$app"
+chown -R $app:$app "/var/log/$app"
+
+# Use logrotate to manage app-specific logfile(s)
+ynh_use_logrotate --non-append
+
+#=================================================
+# INTEGRATE SERVICE IN YUNOHOST
+#=================================================
+ynh_script_progression --message="Integrating service in YunoHost..."
+
+yunohost service add $app --description="A short description of the app" --log="/var/log/$app/$app.log"
+yunohost service add $app-ui --description="A short description of the app" --log="/var/log/$app/$app-ui.log"
+yunohost service add $app-pict-rs --description="A short description of the app" --log="/var/log/$app/$app-pict-rs.log"
+yunohost service add $app-iframely --description="A short description of the app" --log="/var/log/$app/$app-iframely.log"
+
+#=================================================
+# START SYSTEMD SERVICE
+#=================================================
+ynh_script_progression --message="Starting a systemd service..."
+
+ynh_systemd_action --service_name=$app --action="start" --line_match="Started" --log_path=systemd
+ynh_systemd_action --service_name=$app-ui --action="start" --line_match="Started" --log_path=systemd
+ynh_systemd_action --service_name=$app-pict-rs --action="start" --line_match="Started" --log_path=systemd
+ynh_systemd_action --service_name=$app-iframely --action="start" --line_match="Started" --log_path=systemd
 
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_script_progression --message="Reloading NGINX web server..."  --weight=1
+ynh_script_progression --message="Reloading NGINX web server..."
 
 ynh_systemd_action --service_name=nginx --action=reload
-
-#=================================================
-# Run Lemmy through Docker
-#=================================================
-#chown -R $(whoami) /usr/local/bin
-chmod +x /usr/local/bin/docker-compose
-cd "$final_path" && docker-compose up -d
 
 #=================================================
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Upgrade of $app completed"  --last
+ynh_script_progression --message="Upgrade of $app completed"

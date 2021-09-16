@@ -37,7 +37,7 @@
         },
         */
 
-        port: 80, //can be overridden by PORT env var
+        port: __PORT_IFRAMELY__, //can be overridden by PORT env var
         host: '0.0.0.0',    // Dockers beware. See https://github.com/itteco/iframely/issues/132#issuecomment-242991246
                             //can be overridden by HOST env var
 
