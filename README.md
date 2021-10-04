@@ -19,7 +19,7 @@ A link aggregator / Reddit clone for the fediverse.
 
 **Shipped version:** 0.11.3~ynh1
 
-**Demo:** https://join.lemmy.ml/join/
+**Demo:** https://join.lemmy.ml
 
 ## Screenshots
 
