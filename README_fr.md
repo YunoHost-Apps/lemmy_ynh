@@ -13,7 +13,7 @@ Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour
 
 
 
-**Version incluse :** 0.11.3~ynh1
+**Version incluse :** 0.13.0~ynh1
 
 **Démo :** https://lemmy.ml/
 
