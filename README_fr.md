@@ -15,7 +15,7 @@ Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour
 
 **Version incluse :** 0.11.3~ynh1
 
-**Démo :** https://join.lemmy.ml/join/
+**Démo :** https://lemmy.ml/
 
 ## Captures d'écran
 
