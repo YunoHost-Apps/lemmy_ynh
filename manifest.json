@@ -10,7 +10,7 @@
     "upstream": {
         "license": "GPL-3.0",
         "website": "https://join-lemmy.org/",
-        "demo": "https://join.lemmy.ml/join/",
+        "demo": "https://lemmy.ml/",
         "admindoc": "https://join-lemmy.org/docs/en/",
         "code": "https://github.com/LemmyNet/lemmy"
     },
