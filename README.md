@@ -17,7 +17,7 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 
 A link aggregator / Reddit clone for the fediverse.
 
-**Shipped version:** 0.11.3~ynh1
+**Shipped version:** 0.13.0~ynh1
 
 **Demo:** https://lemmy.ml/
 
