@@ -11,9 +11,10 @@ Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour
 
 ## Vue d'ensemble
 
+[Lemmy](https://github.com/LemmyNet/lemmy) is similar to sites like [Reddit](https://reddit.com), [Lobste.rs](https://lobste.rs), or [Hacker News](https://news.ycombinator.com/): you subscribe to forums you're interested in, post links and discussions, then vote, and comment on them. Behind the scenes, it is very different; anyone can easily run a server, and all these servers are federated (think email), and connected to the same universe, called the [Fediverse](https://en.wikipedia.org/wiki/Fediverse).
 
 
-**Version incluse :** 0.11.3~ynh1
+**Version incluse :** 0.15.2~ynh1
 
 **Démo :** https://join.lemmy.ml/join/
 
@@ -23,9 +24,8 @@ Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour
 
 ## Avertissements / informations importantes
 
-* Any known limitations, constrains or stuff not working, such as (but not limited to):
-    * Lemmy require full domain path to be installed. Eg. lemmy.domain.tld
-    * The admin username and password will be sent to the admin of the YunoHost through mail.
+* Lemmy require full domain path to be installed. Eg. lemmy.domain.tld
+* The admin username and password will be sent to the admin of the YunoHost through mail.
 ## Documentations et ressources
 
 * Site officiel de l'app : https://join-lemmy.org/
