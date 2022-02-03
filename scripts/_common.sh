@@ -18,11 +18,11 @@ pkg_build_dependencies="$imagemagick_build_dependencies $pictrs_build_dependenci
 
 NODEJS_VERSION=12
 
-LEMMY_VERSION=0.11.3
+LEMMY_VERSION=0.15.2
 
-LEMMYUI_VERSION=0.11.3
+LEMMYUI_VERSION=0.15.2
 
-PICTRS_VERSION=v0.2.6-r2
+PICTRS_VERSION=0.3.0-beta.12-r1
 
 IFRAMELY_VERSION=latest
 

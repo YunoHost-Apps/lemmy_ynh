@@ -92,16 +92,6 @@ popd
 ynh_secure_remove --file="$final_path/build-imagemagick"
 
 #=================================================
-# REMOVE DEPENDENCIES
-#=================================================
-ynh_script_progression --message="Removing dependencies..."
-
-# Remove metapackage and its dependencies
-ynh_remove_nodejs
-ynh_remove_app_dependencies
-ynh_secure_remove --file="/lib/libc.musl-x86_64.so.1"
-
-#=================================================
 # REMOVE APP MAIN DIR
 #=================================================
 ynh_script_progression --message="Removing app main directory..."
@@ -116,6 +106,16 @@ ynh_script_progression --message="Removing NGINX web server configuration..."
 
 # Remove the dedicated NGINX config
 ynh_remove_nginx_config
+
+#=================================================
+# REMOVE DEPENDENCIES
+#=================================================
+ynh_script_progression --message="Removing dependencies..."
+
+# Remove metapackage and its dependencies
+ynh_remove_nodejs
+ynh_remove_app_dependencies
+ynh_secure_remove --file="/lib/libc.musl-x86_64.so.1"
 
 #=================================================
 # SPECIFIC REMOVE
