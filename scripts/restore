@@ -116,6 +116,7 @@ popd
 ynh_secure_remove --file="$final_path/build-imagemagick"
 
 ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
+ynh_package_autoremove
 
 #=================================================
 # RESTORE THE POSTGRESQL DATABASE
