@@ -28,7 +28,6 @@ path_url="/"
 admin=$YNH_APP_ARG_ADMIN
 password=$(ynh_string_random --length=12)
 sitename=$YNH_APP_ARG_SITENAME
-random=$(ynh_string_random --length=10)
 admin_email=$(ynh_user_get_info --username=$admin --key="mail")
 
 app=$YNH_APP_INSTANCE_NAME
@@ -54,7 +53,6 @@ ynh_app_setting_set --app=$app --key=path --value=$path_url
 ynh_app_setting_set --app=$app --key=admin --value=$admin
 ynh_app_setting_set --app=$app --key=password --value=$password
 ynh_app_setting_set --app=$app --key=sitename --value=$sitename
-ynh_app_setting_set --app=$app --key=random --value=$random
 
 #=================================================
 # STANDARD MODIFICATIONS
@@ -70,8 +68,6 @@ port_ui=$(ynh_find_port --port=1235)
 ynh_app_setting_set --app=$app --key=port_ui --value=$port_ui
 port_pictrs=$(ynh_find_port --port=8537)
 ynh_app_setting_set --app=$app --key=port_pictrs --value=$port_pictrs
-port_iframely=$(ynh_find_port --port=8061)
-ynh_app_setting_set --app=$app --key=port_iframely --value=$port_iframely
 
 #=================================================
 # INSTALL DEPENDENCIES
@@ -103,6 +99,7 @@ db_pwd=$(ynh_string_random --length=30)
 ynh_app_setting_set --app=$app --key=db_name --value=$db_name
 ynh_app_setting_set --app=$app --key=db_pwd --value=$db_pwd
 ynh_psql_setup_db --db_user=$db_user --db_name=$db_name --db_pwd=$db_pwd
+ynh_psql_execute_as_root --sql="CREATE EXTENSION IF NOT EXISTS pgcrypto;" --database="$db_name"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -116,7 +113,6 @@ ynh_setup_source --dest_dir="$final_path/build-lemmy-ui/" --source_id="docker-im
 ynh_setup_source --dest_dir="$final_path/lemmy-ui/lemmy-translations/" --source_id="lemmy-translations"
 ynh_setup_source --dest_dir="$final_path/build-imagemagick/" --source_id="imagemagick"
 ynh_setup_source --dest_dir="$final_path/build-pict-rs/" --source_id="pict-rs"
-ynh_setup_source --dest_dir="$final_path/build-iframely/" --source_id="docker-image-extract"
 
 chmod 750 "$final_path"
 chmod -R o-rwx "$final_path"
@@ -195,14 +191,6 @@ ynh_secure_remove --file="$final_path/build-pict-rs"
 ynh_secure_remove --file="$final_path/.cargo"
 ynh_secure_remove --file="$final_path/.rustup"
 
-# Install iframely
-pushd $final_path/build-iframely
-	./docker-image-extract dogbin/iframely:$IFRAMELY_VERSION
-popd
-mkdir -p "$final_path/iframely/"
-rsync -a "$final_path/build-iframely/output/iframely/" "$final_path/iframely/"
-ynh_secure_remove --file="$final_path/build-iframely"
-
 ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
 ynh_package_autoremove
 
@@ -221,11 +209,6 @@ ynh_add_config --template="../conf/lemmy.hjson" --destination="$final_path/confi
 chmod 400 "$final_path/config/config.hjson"
 chown $app:$app "$final_path/config/config.hjson"
 
-ynh_add_config --template="../conf/iframely.config.local.js" --destination="$final_path/iframely/iframely.config.local.js"
-
-chmod 400 "$final_path/iframely/iframely.config.local.js"
-chown $app:$app "$final_path/iframely/iframely.config.local.js"
-
 #=================================================
 # SETUP SYSTEMD
 #=================================================
@@ -234,7 +217,6 @@ ynh_script_progression --message="Configuring a systemd service..."
 # Create a dedicated systemd config
 ynh_add_systemd_config --service="$app" --template="lemmy.service"
 ynh_add_systemd_config --service="$app-ui" --template="lemmy-ui.service"
-ynh_add_systemd_config --service="$app-iframely" --template="iframely.service"
 ynh_add_systemd_config --service="$app-pict-rs" --template="pict-rs.service"
 
 #=================================================
@@ -260,7 +242,6 @@ ynh_script_progression --message="Integrating service in YunoHost..."
 yunohost service add $app --description="A short description of the app" --log="/var/log/$app/$app.log"
 yunohost service add $app-ui --description="A short description of the app" --log="/var/log/$app/$app-ui.log"
 yunohost service add $app-pict-rs --description="A short description of the app" --log="/var/log/$app/$app-pict-rs.log"
-yunohost service add $app-iframely --description="A short description of the app" --log="/var/log/$app/$app-iframely.log"
 
 #=================================================
 # START SYSTEMD SERVICE
@@ -271,7 +252,6 @@ ynh_script_progression --message="Starting a systemd service..."
 ynh_systemd_action --service_name=$app --action="start" --line_match="Started" --log_path=systemd
 ynh_systemd_action --service_name=$app-ui --action="start" --line_match="Started" --log_path=systemd
 ynh_systemd_action --service_name=$app-pict-rs --action="start" --line_match="Started" --log_path=systemd
-ynh_systemd_action --service_name=$app-iframely --action="start" --line_match="Started" --log_path=systemd
 
 #=================================================
 # SETUP SSOWAT

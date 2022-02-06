@@ -1,72 +1,49 @@
 {
-  # for more info about the config, check out the documentation
-  # https://join.lemmy.ml/docs/en/administration/configuration.html
-
-  setup: {
-    # username for the admin user
-    admin_username: "__ADMIN__"
-    # password for the admin user
-    admin_password: "__PASSWORD__"
-    # optional: email for the admin user (can be omitted and set later through the website)
-    admin_email: "__ADMIN_EMAIL__"
-    # name of the site (can be changed later)
-    site_name: "__SITENAME__"
-  }
   # settings related to the postgresql database
   database: {
-    # username to connect to postgres
+    # Username to connect to postgres
     user: "__DB_USER__"
-    # password to connect to postgres
+    # Password to connect to postgres
     password: "__DB_PWD__"
-    # host where postgres is running
+    # Host where postgres is running
     host: "localhost"
-    # port where postgres can be accessed
+    # Port where postgres can be accessed
     port: 5432
-    # name of the postgres database for lemmy
+    # Name of the postgres database for lemmy
     database: "__DB_NAME__"
-    # maximum number of active sql connections
+    # Maximum number of active sql connections
     pool_size: 5
   }
-  # the domain name of your instance (eg "lemmy.ml")
-  hostname: "__DOMAIN__"
-  # address where lemmy should listen for incoming requests
-  bind: "0.0.0.0"
-  # port where lemmy should listen for incoming requests
-  port: __PORT_LEMMY__
-  # whether tls is required for activitypub. only disable this for debugging, never for producion.
-  tls_enabled: true
-  # json web token for authorization between server and client
-  jwt_secret: "__RANDOM__"
-  # address where pictrs is available
-  pictrs_url: "http://127.0.0.1:__PORT_PICTRS__"
-  # address where iframely is available
-  iframely_url: "http://127.0.0.1:__PORT_IFRAMELY__"
   # rate limits for various user actions, by user ip
   rate_limit: {
-    # maximum number of messages created in interval
+    # Maximum number of messages created in interval
     message: 180
-    # interval length for message limit
+    # Interval length for message limit, in seconds
     message_per_second: 60
-    # maximum number of posts created in interval
+    # Maximum number of posts created in interval
     post: 6
-    # interval length for post limit
+    # Interval length for post limit, in seconds
     post_per_second: 600
-    # maximum number of registrations in interval
+    # Maximum number of registrations in interval
     register: 3
-    # interval length for registration limit
+    # Interval length for registration limit, in seconds
     register_per_second: 3600
-    # maximum number of image uploads in interval
+    # Maximum number of image uploads in interval
     image: 6
-    # interval length for image uploads
+    # Interval length for image uploads, in seconds
     image_per_second: 3600
+    # Maximum number of comments created in interval
+    comment: 6
+    # Interval length for comment limit, in seconds
+    comment_per_second: 600
   }
-  # settings related to activitypub federation
+  # Settings related to activitypub federation
   federation: {
-    # whether to enable activitypub federation.
+    # Whether to enable activitypub federation.
     enabled: true
     # Allows and blocks are described here:
-    # https://join-lemmy.org/docs/en/federation/administration.html#instance-allowlist-and-blocklist
-    #
+    # https://join-lemmy.org/docs/en/federation/administration.html///instance-allowlist-and-blocklist
+    # 
     # list of instances with which federation is allowed
     # allowed_instances: ["instance1.tld","instance2.tld"]
     # instances which we never federate anything with (but previously federated objects are unaffected)
@@ -76,20 +53,60 @@
     # strict_allowlist: true
   }
   captcha: {
-    enabled: true
-    difficulty: medium # Can be easy, medium, or hard
+    # Whether captcha is required for signup
+    enabled: false
+    # Can be easy, medium, or hard
+    difficulty: "medium"
   }
-  # email sending configuration
+  # Email sending configuration. All options except login/password are mandatory
   email: {
-    # hostname and port of the smtp server
+    # Hostname and port of the smtp server
     smtp_server: "127.0.0.1:25"
-    # login name for smtp server
+    # Login name for smtp server
     smtp_login: ""
-    # password to login to the smtp server
+    # Password to login to the smtp server
     smtp_password: ""
-    # address to send emails from, eg "noreply@your-instance.com"
+    # Address to send emails from, eg noreply@your-instance.com
     smtp_from_address: "lemmy@__DOMAIN__"
-    # whether or not smtp connections should use tls
+    # Whether or not smtp connections should use tls
     use_tls: true
   }
+  # Parameters for automatic configuration of new instance (only used at first start)
+  setup: {
+    # Username for the admin user
+    admin_username: "__ADMIN__"
+    # Password for the admin user. It must be at least 10 characters.
+    admin_password: "__PASSWORD__"
+    # Name of the site (can be changed later)
+    site_name: "__SITENAME__"
+    # Email for the admin user (optional, can be omitted and set later through the website)
+    admin_email: "__ADMIN_EMAIL__"
+    sidebar: "string"
+    description: "string"
+    icon: "string"
+    banner: "string"
+    enable_downvotes: true
+    open_registration: true
+    enable_nsfw: true
+    community_creation_admin_only: true
+    require_email_verification: true
+    require_application: true
+    application_question: "string"
+    private_instance: false
+  }
+  # the domain name of your instance (mandatory)
+  hostname: "__DOMAIN__"
+  # Address where lemmy should listen for incoming requests
+  bind: "0.0.0.0"
+  # Port where lemmy should listen for incoming requests
+  port: __PORT_LEMMY__
+  # Whether the site is available over TLS. Needs to be true for federation to work.
+  tls_enabled: true
+  # Address where pictrs is available (for image hosting)
+  pictrs_url: "http://127.0.0.1:__PORT_PICTRS__"
+  slur_filter: "(\bThis\b)|(\bis\b)|(\bsample\b)"
+  # Maximum length of local community and user names
+  actor_name_max_length: 20
+  # Maximum number of HTTP requests allowed to handle a single incoming activity (or a single object fetch through the search).
+  http_fetch_retry_limit: 25
 }

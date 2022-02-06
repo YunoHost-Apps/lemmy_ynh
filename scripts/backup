@@ -69,7 +69,6 @@ ynh_backup --src_path="/etc/logrotate.d/$app"
 
 ynh_backup --src_path="/etc/systemd/system/$app.service"
 ynh_backup --src_path="/etc/systemd/system/$app-ui.service"
-ynh_backup --src_path="/etc/systemd/system/$app-iframely.service"
 ynh_backup --src_path="/etc/systemd/system/$app-pict-rs.service"
 
 #=================================================

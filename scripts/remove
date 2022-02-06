@@ -40,11 +40,6 @@ then
 fi
 if ynh_exec_warn_less yunohost service status $app >/dev/null
 then
-	ynh_script_progression --message="Removing $app-iframely service integration..."
-	yunohost service remove $app-iframely
-fi
-if ynh_exec_warn_less yunohost service status $app >/dev/null
-then
 	ynh_script_progression --message="Removing $app-pict-rs service integration..."
 	yunohost service remove $app-pict-rs
 fi
@@ -57,7 +52,6 @@ ynh_script_progression --message="Stopping and removing the systemd service..."
 # Remove the dedicated systemd config
 ynh_remove_systemd_config
 ynh_remove_systemd_config --service=$app-ui
-ynh_remove_systemd_config --service=$app-iframely
 ynh_remove_systemd_config --service=$app-pict-rs
 
 #=================================================
