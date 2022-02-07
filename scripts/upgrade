@@ -76,14 +76,16 @@ if ynh_legacy_permissions_exists; then
 	ynh_app_setting_delete --app=$app --key=is_public
 fi
 
-ynh_app_setting_delete --app=$app  --key=random
-ynh_app_setting_delete --app=$app  --key=port_iframely
+
+# Removing previously installed iframely
 if ynh_exec_warn_less yunohost service status $app >/dev/null
 then
 	ynh_script_progression --message="Removing $app-iframely service integration..."
 	yunohost service remove $app-iframely
+	ynh_app_setting_delete --app=$app  --key=random
+	ynh_app_setting_delete --app=$app  --key=port_iframely
+	ynh_remove_systemd_config --service=$app-iframely
 fi
-ynh_remove_systemd_config --service=$app-iframely
 
 #=================================================
 # CREATE DEDICATED USER
