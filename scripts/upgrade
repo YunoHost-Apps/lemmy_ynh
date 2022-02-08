@@ -78,7 +78,7 @@ fi
 
 
 # Removing previously installed iframely
-if ynh_exec_warn_less yunohost service status $app >/dev/null
+if ynh_exec_warn_less yunohost service status $app-iframely >/dev/null
 then
 	ynh_script_progression --message="Removing $app-iframely service integration..."
 	yunohost service remove $app-iframely
