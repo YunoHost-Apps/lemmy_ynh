@@ -144,31 +144,6 @@ if [ "$upgrade_type" == "UPGRADE_APP" ]
 then
 	ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies $pkg_build_dependencies
 
-	# Install lemmy
-	pushd $final_path/build-lemmy
-		./docker-image-extract dessalines/lemmy:$LEMMY_VERSION
-	popd
-	mkdir -p "$final_path/lemmy/"
-	mv -f "$final_path/build-lemmy/output/app/lemmy" "$final_path/lemmy/lemmy"
-	ynh_secure_remove --file="$final_path/build-lemmy"
-
-	# Install lemmy-ui
-	pushd $final_path/build-lemmy-ui
-		./docker-image-extract dessalines/lemmy-ui:$LEMMYUI_VERSION
-	popd
-	mkdir -p "$final_path/lemmy-ui/"
-	rsync -a "$final_path/build-lemmy-ui/output/app/" "$final_path/lemmy-ui/"
-	ynh_secure_remove --file="$final_path/build-lemmy-ui"
-
-	# Install ImageMagick
-	pushd "$final_path/build-imagemagick/"
-		ynh_exec_warn_less ./configure --with-modules
-		ynh_exec_warn_less make
-		ynh_exec_warn_less make install
-		ynh_exec_warn_less ldconfig /usr/local/lib
-	popd
-	ynh_secure_remove --file="$final_path/build-imagemagick"
-
 	# Install rustup with the toolchain needed by pict-rs
 	pushd "$final_path"
 		sudo -u "$app" RUSTUP_HOME="$final_path/.rustup" CARGO_HOME="$final_path/.cargo" bash -c 'curl -sSf -L https://static.rust-lang.org/rustup.sh | sh -s -- -y --default-toolchain nightly'
@@ -188,6 +163,32 @@ then
 	ynh_secure_remove --file="$final_path/.cargo"
 	ynh_secure_remove --file="$final_path/.rustup"
 
+	# Install lemmy-ui
+	pushd $final_path/build-lemmy-ui
+		./docker-image-extract dessalines/lemmy-ui:$LEMMYUI_VERSION
+	popd
+	mkdir -p "$final_path/lemmy-ui/"
+	rsync -a "$final_path/build-lemmy-ui/output/app/" "$final_path/lemmy-ui/"
+	ynh_secure_remove --file="$final_path/build-lemmy-ui"
+
+	# Install lemmy
+	pushd $final_path/build-lemmy
+		./docker-image-extract dessalines/lemmy:$LEMMY_VERSION
+	popd
+	mkdir -p "$final_path/lemmy/"
+	mv -f "$final_path/build-lemmy/output/app/lemmy" "$final_path/lemmy/lemmy"
+	ynh_secure_remove --file="$final_path/build-lemmy"
+
+	# Install ImageMagick
+	pushd "$final_path/build-imagemagick/"
+		ynh_exec_warn_less ./configure --with-modules
+		ynh_exec_warn_less make
+		ynh_exec_warn_less make install
+		ynh_exec_warn_less ldconfig /usr/local/lib
+	popd
+	ynh_secure_remove --file="$final_path/build-imagemagick"
+
+	# Remove build stuff
 	ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
 	ynh_package_autoremove
 fi
