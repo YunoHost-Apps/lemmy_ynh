@@ -15,11 +15,12 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 
 ## Overview
 
-A link aggregator / Reddit clone for the fediverse.
+[Lemmy](https://github.com/LemmyNet/lemmy) is similar to sites like [Reddit](https://reddit.com), [Lobste.rs](https://lobste.rs), or [Hacker News](https://news.ycombinator.com/): you subscribe to forums you're interested in, post links and discussions, then vote, and comment on them. Behind the scenes, it is very different; anyone can easily run a server, and all these servers are federated (think email), and connected to the same universe, called the [Fediverse](https://en.wikipedia.org/wiki/Fediverse).
 
-**Shipped version:** 0.11.3~ynh1
 
-**Demo:** https://join.lemmy.ml/join/
+**Shipped version:** 0.15.2~ynh1
+
+**Demo:** https://lemmy.ml/
 
 ## Screenshots
 
@@ -27,9 +28,8 @@ A link aggregator / Reddit clone for the fediverse.
 
 ## Disclaimers / important information
 
-* Any known limitations, constrains or stuff not working, such as (but not limited to):
-    * Lemmy require full domain path to be installed. Eg. lemmy.domain.tld
-    * The admin username and password will be sent to the admin of the YunoHost through mail.
+* Lemmy require full domain path to be installed. Eg. lemmy.domain.tld
+* The admin username and password will be sent to the admin of the YunoHost through mail.
 ## Documentation and resources
 
 * Official app website: https://join-lemmy.org/

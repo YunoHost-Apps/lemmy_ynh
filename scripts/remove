@@ -33,17 +33,12 @@ then
 	ynh_script_progression --message="Removing $app service integration..."
 	yunohost service remove $app
 fi
-if ynh_exec_warn_less yunohost service status $app >/dev/null
+if ynh_exec_warn_less yunohost service status $app-ui >/dev/null
 then
 	ynh_script_progression --message="Removing $app-ui service integration..."
 	yunohost service remove $app-ui
 fi
-if ynh_exec_warn_less yunohost service status $app >/dev/null
-then
-	ynh_script_progression --message="Removing $app-iframely service integration..."
-	yunohost service remove $app-iframely
-fi
-if ynh_exec_warn_less yunohost service status $app >/dev/null
+if ynh_exec_warn_less yunohost service status $app-pict-rs >/dev/null
 then
 	ynh_script_progression --message="Removing $app-pict-rs service integration..."
 	yunohost service remove $app-pict-rs
@@ -57,7 +52,6 @@ ynh_script_progression --message="Stopping and removing the systemd service..."
 # Remove the dedicated systemd config
 ynh_remove_systemd_config
 ynh_remove_systemd_config --service=$app-ui
-ynh_remove_systemd_config --service=$app-iframely
 ynh_remove_systemd_config --service=$app-pict-rs
 
 #=================================================
@@ -92,16 +86,6 @@ popd
 ynh_secure_remove --file="$final_path/build-imagemagick"
 
 #=================================================
-# REMOVE DEPENDENCIES
-#=================================================
-ynh_script_progression --message="Removing dependencies..."
-
-# Remove metapackage and its dependencies
-ynh_remove_nodejs
-ynh_remove_app_dependencies
-ynh_secure_remove --file="/lib/libc.musl-x86_64.so.1"
-
-#=================================================
 # REMOVE APP MAIN DIR
 #=================================================
 ynh_script_progression --message="Removing app main directory..."
@@ -116,6 +100,16 @@ ynh_script_progression --message="Removing NGINX web server configuration..."
 
 # Remove the dedicated NGINX config
 ynh_remove_nginx_config
+
+#=================================================
+# REMOVE DEPENDENCIES
+#=================================================
+ynh_script_progression --message="Removing dependencies..."
+
+# Remove metapackage and its dependencies
+ynh_remove_nodejs
+ynh_remove_app_dependencies
+ynh_secure_remove --file="/lib/libc.musl-x86_64.so.1"
 
 #=================================================
 # SPECIFIC REMOVE

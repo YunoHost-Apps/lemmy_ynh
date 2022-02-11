@@ -5,12 +5,12 @@
     "description": {
         "en": "A link aggregator / Reddit clone for the fediverse."
     },
-    "version": "0.11.3~ynh1",
+    "version": "0.15.2~ynh1",
     "url": "https://join.lemmy.ml/",
     "upstream": {
         "license": "GPL-3.0",
         "website": "https://join-lemmy.org/",
-        "demo": "https://join.lemmy.ml/join/",
+        "demo": "https://lemmy.ml/",
         "admindoc": "https://join-lemmy.org/docs/en/",
         "code": "https://github.com/LemmyNet/lemmy"
     },
