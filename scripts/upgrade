@@ -209,6 +209,13 @@ chmod 400 "$final_path/config/config.hjson"
 chown $app:$app "$final_path/config/config.hjson"
 
 #=================================================
+# CREATE EXTENSION IF NOT EXISTS pgcrypto
+#=================================================
+ynh_script_progression --message="Creating pgcrypto extension if needed..."
+
+ynh_psql_execute_as_root --sql="CREATE EXTENSION IF NOT EXISTS pgcrypto;" --database="$db_name"
+
+#=================================================
 # SETUP SYSTEMD
 #=================================================
 ynh_script_progression --message="Upgrading systemd configuration..."
@@ -223,6 +230,7 @@ ynh_add_systemd_config --service="$app-pict-rs" --template="pict-rs.service"
 #=================================================
 # SETUP LOGROTATE
 #=================================================
+
 ynh_script_progression --message="Upgrading logrotate configuration..."
 
 mkdir -p "/var/log/$app"
