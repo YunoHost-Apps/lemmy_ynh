@@ -5,7 +5,7 @@
     "description": {
         "en": "A link aggregator / Reddit clone for the fediverse."
     },
-    "version": "0.15.2~ynh1",
+    "version": "0.15.2~ynh2",
     "url": "https://join.lemmy.ml/",
     "upstream": {
         "license": "GPL-3.0",
