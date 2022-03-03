@@ -1,5 +1,5 @@
-SOURCE_URL=https://git.asonix.dog/asonix/pict-rs/archive/v0.3.0-beta.19.tar.gz
-SOURCE_SUM=0c53ba162c999375e9688024ffc77b783a0cc07c4928d44d753b052c09995bba
+SOURCE_URL=https://git.asonix.dog/asonix/pict-rs/archive/v0.3.0-rc.2.tar.gz
+SOURCE_SUM=b2dadfbb42c57d4abb6129aa07af8f208557cc948c0915aa8fcd3292cc8999b6
 SOURCE_SUM_PRG=sha256sum
 SOURCE_FORMAT=tar.gz
 SOURCE_IN_SUBDIR=true
