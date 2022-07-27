@@ -112,7 +112,6 @@ ynh_setup_source --dest_dir="$final_path/build-lemmy/" --source_id="docker-image
 ynh_setup_source --dest_dir="$final_path/build-lemmy-ui/" --source_id="docker-image-extract"
 ynh_setup_source --dest_dir="$final_path/lemmy-ui/lemmy-translations/" --source_id="lemmy-translations"
 ynh_setup_source --dest_dir="$final_path/build-imagemagick/" --source_id="imagemagick"
-ynh_setup_source --dest_dir="$final_path/build-pict-rs/" --source_id="pict-rs"
 
 chmod 750 "$final_path"
 chmod -R o-rwx "$final_path"
@@ -147,28 +146,9 @@ chown -R $app:$app "$datadir"
 #=================================================
 ynh_script_progression --message="Making install..."
 
-# Install rustup with the toolchain needed by pict-rs
-pushd "$final_path"
-	sudo -u "$app" RUSTUP_HOME="$final_path/.rustup" CARGO_HOME="$final_path/.cargo" bash -c 'curl -sSf -L https://static.rust-lang.org/rustup.sh | sh -s -- -y --default-toolchain nightly'
-popd
-
-export PATH="$PATH:$final_path/.cargo/bin:$final_path/.local/bin:/usr/local/sbin"
-
-# Install pict-rs
-pushd $final_path/build-pict-rs
-	ynh_exec_warn_less sudo -u "$app" env PATH="$PATH" cargo build --release
-popd
-mkdir -p "$final_path/pict-rs/"
-mv -f "$final_path/build-pict-rs/target/release/pict-rs" "$final_path/pict-rs/pict-rs"
-ynh_secure_remove --file="$final_path/build-pict-rs"
-
-# Remove rustup
-ynh_secure_remove --file="$final_path/.cargo"
-ynh_secure_remove --file="$final_path/.rustup"
-
 # Install lemmy-ui
 pushd $final_path/build-lemmy-ui
-	./docker-image-extract dessalines/lemmy-ui:$LEMMYUI_VERSION
+	./docker-image-extract dessalines/lemmy-ui:$(ynh_app_upstream_version)
 popd
 mkdir -p "$final_path/lemmy-ui/"
 rsync -a "$final_path/build-lemmy-ui/output/app/" "$final_path/lemmy-ui/"
@@ -176,7 +156,7 @@ ynh_secure_remove --file="$final_path/build-lemmy-ui"
 
 # Install lemmy
 pushd $final_path/build-lemmy
-	./docker-image-extract dessalines/lemmy:$LEMMY_VERSION
+	./docker-image-extract dessalines/lemmy:$(ynh_app_upstream_version)
 popd
 mkdir -p "$final_path/lemmy/"
 mv -f "$final_path/build-lemmy/output/app/lemmy" "$final_path/lemmy/lemmy"
@@ -218,7 +198,6 @@ ynh_script_progression --message="Configuring a systemd service..."
 # Create a dedicated systemd config
 ynh_add_systemd_config --service="$app" --template="lemmy.service"
 ynh_add_systemd_config --service="$app-ui" --template="lemmy-ui.service"
-ynh_add_systemd_config --service="$app-pict-rs" --template="pict-rs.service"
 
 #=================================================
 # GENERIC FINALIZATION
@@ -240,9 +219,8 @@ ynh_use_logrotate
 #=================================================
 ynh_script_progression --message="Integrating service in YunoHost..."
 
-yunohost service add $app --description="A short description of the app" --log="/var/log/$app/$app.log"
-yunohost service add $app-ui --description="A short description of the app" --log="/var/log/$app/$app-ui.log"
-yunohost service add $app-pict-rs --description="A short description of the app" --log="/var/log/$app/$app-pict-rs.log"
+yunohost service add $app --log="/var/log/$app/$app.log"
+yunohost service add $app-ui --log="/var/log/$app/$app-ui.log"
 
 #=================================================
 # START SYSTEMD SERVICE
@@ -252,7 +230,6 @@ ynh_script_progression --message="Starting a systemd service..."
 # Start a systemd service
 ynh_systemd_action --service_name=$app --action="start" --line_match="Started" --log_path=systemd
 ynh_systemd_action --service_name=$app-ui --action="start" --line_match="Started" --log_path=systemd
-ynh_systemd_action --service_name=$app-pict-rs --action="start" --line_match="Started" --log_path=systemd
 
 #=================================================
 # SETUP SSOWAT
