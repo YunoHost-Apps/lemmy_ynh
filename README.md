@@ -20,6 +20,7 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 
 **Shipped version:** 0.15.2~ynh3
 
+
 **Demo:** https://lemmy.ml/
 
 ## Screenshots
