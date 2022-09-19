@@ -21,7 +21,6 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 **Shipped version:** 0.16.7~ynh1
 
 
-
 **Demo:** https://lemmy.ml/
 
 ## Screenshots
