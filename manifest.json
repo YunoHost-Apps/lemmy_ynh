@@ -3,7 +3,8 @@
     "id": "lemmy",
     "packaging_format": 1,
     "description": {
-        "en": "A link aggregator / Reddit clone for the fediverse."
+        "en": "Link aggregator/Reddit clone for the fediverse",
+        "fr": "Agrégateur de liens/clone Reddit pour le fedivers"
     },
     "version": "0.16.7~ynh1",
     "url": "https://join.lemmy.ml/",
@@ -40,7 +41,8 @@
                 "name": "sitename",
                 "type": "string",
                 "ask": {
-                    "en": "Enter site name"
+                    "en": "Enter site name",
+                    "fr": "Entrez le nom du site"
                 },
                 "example": "lemmy website"
             }
