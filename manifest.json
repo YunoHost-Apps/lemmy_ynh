@@ -1,5 +1,5 @@
 {
-    "name": "lemmy",
+    "name": "Lemmy",
     "id": "lemmy",
     "packaging_format": 1,
     "description": {
@@ -16,9 +16,8 @@
     },
     "license": "GPL-3.0",
     "maintainer": {
-        "name": "Anmol Sharma",
-        "email": "",
-        "url": ""
+        "name": "",
+        "email": ""
     },
     "requirements": {
         "yunohost": ">= 4.3.0"
@@ -31,13 +30,11 @@
         "install": [
             {
                 "name": "domain",
-                "type": "domain",
-                "example": "example.com"
+                "type": "domain"
             },
             {
                 "name": "admin",
-                "type": "user",
-                "example": "johndoe"
+                "type": "user"
             },
             {
                 "name": "sitename",
