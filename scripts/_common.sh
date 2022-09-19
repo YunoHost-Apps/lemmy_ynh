@@ -5,7 +5,7 @@
 #=================================================
 
 # dependencies used by the app
-lemmy_dependencies="postgresql postgresql-contrib libpq"
+lemmy_dependencies="postgresql postgresql-contrib"
 lemmyui_dependencies="espeak"
 imagemagick_build_dependencies="libltdl-dev libjpeg-dev libpng-dev libwebp-dev liblzma-dev libxml2-dev"
 imagemagick_dependencies=""
