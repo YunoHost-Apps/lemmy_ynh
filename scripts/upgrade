@@ -12,7 +12,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 # LOAD SETTINGS
 #=================================================
-ynh_script_progression --message="Loading installation settings..."
+ynh_script_progression --message="Loading installation settings..." --weight=1
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -34,19 +34,18 @@ admin_email=$(ynh_user_get_info --username=$admin --key="mail")
 #=================================================
 # CHECK VERSION
 #=================================================
-ynh_script_progression --message="Checking version..."
+ynh_script_progression --message="Checking version..." --weight=1
 
 upgrade_type=$(ynh_check_app_version_changed)
 
 #=================================================
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
 #=================================================
-ynh_script_progression --message="Backing up the app before upgrading (may take a while)..."
+ynh_script_progression --message="Backing up the app before upgrading (may take a while)..." --weight=1
 
 # Backup the current version of the app
 ynh_backup_before_upgrade
 ynh_clean_setup () {
-	ynh_clean_check_starting
 	# Restore it if the upgrade fails
 	ynh_restore_upgradebackup
 }
@@ -58,7 +57,7 @@ ynh_abort_if_errors
 #=================================================
 # STOP SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Stopping a systemd service..."
+ynh_script_progression --message="Stopping a systemd service..." --weight=1
 
 ynh_systemd_action --service_name=$app --action="stop" --line_match="Stopped" --log_path=systemd
 ynh_systemd_action --service_name=$app-ui --action="stop" --line_match="Stopped" --log_path=systemd
@@ -66,7 +65,7 @@ ynh_systemd_action --service_name=$app-ui --action="stop" --line_match="Stopped"
 #=================================================
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
-ynh_script_progression --message="Ensuring downward compatibility..."
+ynh_script_progression --message="Ensuring downward compatibility..." --weight=1
 
 # Cleaning legacy permissions
 if ynh_legacy_permissions_exists; then
@@ -97,10 +96,10 @@ ynh_secure_remove --file="$final_path/pict-rs"
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
-ynh_script_progression --message="Making sure dedicated system user exists..."
+ynh_script_progression --message="Making sure dedicated system user exists..." --weight=1
 
 # Create a dedicated user (if not existing)
-ynh_system_user_create --username=$app --home_dir=$final_path
+ynh_system_user_create --username=$app --home_dir="$final_path"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -108,7 +107,7 @@ ynh_system_user_create --username=$app --home_dir=$final_path
 
 if [ "$upgrade_type" == "UPGRADE_APP" ]
 then
-	ynh_script_progression --message="Upgrading source files..."
+	ynh_script_progression --message="Upgrading source files..." --weight=1
 
 	# Download, check integrity, uncompress the source of lemmy from app.src to his build directory
 	ynh_setup_source --dest_dir="$final_path/build-lemmy/" --source_id="docker-image-extract"
@@ -122,17 +121,9 @@ chmod -R o-rwx "$final_path"
 chown -R $app:$app "$final_path"
 
 #=================================================
-# NGINX CONFIGURATION
-#=================================================
-ynh_script_progression --message="Upgrading NGINX web server configuration..."
-
-# Create a dedicated NGINX config
-ynh_add_nginx_config
-
-#=================================================
 # UPGRADE DEPENDENCIES
 #=================================================
-ynh_script_progression --message="Upgrading dependencies..."
+ynh_script_progression --message="Upgrading dependencies..." --weight=1
 
 ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
 ynh_install_nodejs --nodejs_version=$NODEJS_VERSION
@@ -140,11 +131,19 @@ ynh_use_nodejs
 ln -fs /usr/lib/x86_64-linux-musl/libc.so /lib/libc.musl-x86_64.so.1
 
 #=================================================
+# NGINX CONFIGURATION
+#=================================================
+ynh_script_progression --message="Upgrading NGINX web server configuration..." --weight=1
+
+# Create a dedicated NGINX config
+ynh_add_nginx_config
+
+#=================================================
 # SPECIFIC UPGRADE
 #=================================================
 # MAKE UPGRADE
 #=================================================
-ynh_script_progression --message="Making upgrade..."
+ynh_script_progression --message="Making upgrade..." --weight=1
 
 if [ "$upgrade_type" == "UPGRADE_APP" ]
 then
@@ -187,7 +186,7 @@ chown -R $app:$app "$final_path"
 #=================================================
 # UPDATE A CONFIG FILE
 #=================================================
-ynh_script_progression --message="Updating a configuration file..."
+ynh_script_progression --message="Updating a configuration file..." --weight=1
 
 mkdir -p "$final_path/lemmy/"
 ynh_add_config --template="../conf/lemmy.hjson" --destination="$final_path/config/config.hjson"
@@ -198,14 +197,14 @@ chown $app:$app "$final_path/config/config.hjson"
 #=================================================
 # CREATE EXTENSION IF NOT EXISTS pgcrypto
 #=================================================
-ynh_script_progression --message="Creating pgcrypto extension if needed..."
+ynh_script_progression --message="Creating pgcrypto extension if needed..." --weight=1
 
 ynh_psql_execute_as_root --sql="CREATE EXTENSION IF NOT EXISTS pgcrypto;" --database="$db_name"
 
 #=================================================
 # SETUP SYSTEMD
 #=================================================
-ynh_script_progression --message="Upgrading systemd configuration..."
+ynh_script_progression --message="Upgrading systemd configuration..." --weight=1
 
 # Create a dedicated systemd config
 ynh_add_systemd_config --service="$app" --template="lemmy.service"
@@ -216,8 +215,7 @@ ynh_add_systemd_config --service="$app-ui" --template="lemmy-ui.service"
 #=================================================
 # SETUP LOGROTATE
 #=================================================
-
-ynh_script_progression --message="Upgrading logrotate configuration..."
+ynh_script_progression --message="Upgrading logrotate configuration..." --weight=1
 
 mkdir -p "/var/log/$app"
 chmod 750 "/var/log/$app"
@@ -230,7 +228,7 @@ ynh_use_logrotate --non-append
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST
 #=================================================
-ynh_script_progression --message="Integrating service in YunoHost..."
+ynh_script_progression --message="Integrating service in YunoHost..." --weight=1
 
 yunohost service add $app --log="/var/log/$app/$app.log"
 yunohost service add $app-ui --log="/var/log/$app/$app-ui.log"
@@ -238,7 +236,7 @@ yunohost service add $app-ui --log="/var/log/$app/$app-ui.log"
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Starting a systemd service..."
+ynh_script_progression --message="Starting a systemd service..." --weight=1
 
 ynh_systemd_action --service_name=$app --action="start" --line_match="Started" --log_path=systemd
 ynh_systemd_action --service_name=$app-ui --action="start" --line_match="Started" --log_path=systemd
@@ -246,7 +244,7 @@ ynh_systemd_action --service_name=$app-ui --action="start" --line_match="Started
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_script_progression --message="Reloading NGINX web server..."
+ynh_script_progression --message="Reloading NGINX web server..." --weight=1
 
 ynh_systemd_action --service_name=nginx --action=reload
 
@@ -254,4 +252,4 @@ ynh_systemd_action --service_name=nginx --action=reload
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Upgrade of $app completed"
+ynh_script_progression --message="Upgrade of $app completed" --last

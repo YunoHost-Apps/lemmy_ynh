@@ -1,11 +1,12 @@
 {
-    "name": "lemmy",
+    "name": "Lemmy",
     "id": "lemmy",
     "packaging_format": 1,
     "description": {
-        "en": "A link aggregator / Reddit clone for the fediverse."
+        "en": "Link aggregator/Reddit clone for the fediverse",
+        "fr": "Agrégateur de liens/clone Reddit pour le fedivers"
     },
-    "version": "0.15.2~ynh3",
+    "version": "0.16.7~ynh1",
     "url": "https://join.lemmy.ml/",
     "upstream": {
         "license": "GPL-3.0",
@@ -16,9 +17,8 @@
     },
     "license": "GPL-3.0",
     "maintainer": {
-        "name": "Anmol Sharma",
-        "email": "",
-        "url": ""
+        "name": "",
+        "email": ""
     },
     "requirements": {
         "yunohost": ">= 4.3.0"
@@ -28,22 +28,21 @@
         "nginx"
     ],
     "arguments": {
-        "install" : [
+        "install": [
             {
                 "name": "domain",
-                "type": "domain",
-                "example": "example.com"
+                "type": "domain"
             },
             {
                 "name": "admin",
-                "type": "user",
-                "example": "johndoe"
+                "type": "user"
             },
             {
                 "name": "sitename",
                 "type": "string",
                 "ask": {
-                    "en": "Enter site name"
+                    "en": "Enter site name",
+                    "fr": "Entrez le nom du site"
                 },
                 "example": "lemmy website"
             }

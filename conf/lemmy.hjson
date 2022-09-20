@@ -36,6 +36,9 @@
     comment: 6
     # Interval length for comment limit, in seconds
     comment_per_second: 600
+    search: 60
+    # Interval length for search limit, in seconds
+    search_per_second: 600
   }
   # Settings related to activitypub federation
   federation: {
@@ -45,12 +48,17 @@
     # https://join-lemmy.org/docs/en/federation/administration.html///instance-allowlist-and-blocklist
     # 
     # list of instances with which federation is allowed
-    # allowed_instances: ["instance1.tld","instance2.tld"]
-    # instances which we never federate anything with (but previously federated objects are unaffected)
-    # blocked_instances: []
-    # If true, only federate with instances on the allowlist and block everything else. If false,
-    # use allowlist only for remote communities, and posts/comments in local communities.
-    # strict_allowlist: true
+    #allowed_instances: ["instance1.tld","instance2.tld"]
+    # Instances which we never federate anything with (but previously federated objects are unaffected)
+    #blocked_instances: []
+    # If true, only federate with instances on the allowlist and block everything else. If false
+    # use allowlist only for remote communities, and posts/comments in local communities
+    # (meaning remote communities will show content from arbitrary instances).
+    #strict_allowlist: true
+    # Number of workers for sending outgoing activities. Search logs for Activity queue stats to
+    # see information. If running number is consistently close to the worker_count, you should
+    # increase it.
+    worker_count: 64
   }
   captcha: {
     # Whether captcha is required for signup
@@ -68,8 +76,8 @@
     smtp_password: ""
     # Address to send emails from, eg noreply@your-instance.com
     smtp_from_address: "lemmy@__DOMAIN__"
-    # Whether or not smtp connections should use tls
-    use_tls: true
+    # Whether or not smtp connections should use tls. Can be none, tls, or starttls
+    tls_type: "none"
   }
   # Parameters for automatic configuration of new instance (only used at first start)
   setup: {
