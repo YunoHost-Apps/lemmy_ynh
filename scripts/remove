@@ -66,21 +66,6 @@ ynh_script_progression --message="Removing the PostgreSQL database..." --weight=
 ynh_psql_remove_db --db_user=$db_user --db_name=$db_name
 
 #=================================================
-# REMOVE IMAGEMAGICK
-#=================================================
-ynh_script_progression --message="Removing ImageMagick..." --weight=1
-
-ynh_setup_source --dest_dir="$final_path/build-imagemagick/" --source_id="imagemagick"
-
-# Install ImageMagick
-pushd "$final_path/build-imagemagick/"
-	ynh_exec_warn_less ./configure
-	ynh_exec_warn_less make uninstall
-popd
-
-ynh_secure_remove --file="$final_path/build-imagemagick"
-
-#=================================================
 # REMOVE APP MAIN DIR
 #=================================================
 ynh_script_progression --message="Removing app main directory..." --weight=1

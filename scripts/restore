@@ -108,27 +108,6 @@ ynh_psql_execute_file_as_root --file="./db.sql" --database="$db_name"
 ynh_psql_execute_as_root --sql="CREATE EXTENSION IF NOT EXISTS pgcrypto;" --database="$db_name"
 
 #=================================================
-# BUILDING IMAGEMAGICK
-#=================================================
-ynh_script_progression --message="Building ImageMagick..." --weight=1
-
-ynh_setup_source --dest_dir="$final_path/build-imagemagick/" --source_id="imagemagick"
-
-ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies $imagemagick_build_dependencies
-
-# Install ImageMagick
-pushd "$final_path/build-imagemagick/"
-	ynh_exec_warn_less ./configure --with-modules
-	ynh_exec_warn_less make
-	ynh_exec_warn_less make install
-	ynh_exec_warn_less ldconfig /usr/local/lib
-popd
-ynh_secure_remove --file="$final_path/build-imagemagick"
-
-ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
-ynh_package_autoremove
-
-#=================================================
 # RESTORE SYSTEMD
 #=================================================
 ynh_script_progression --message="Restoring the systemd configuration..." --weight=1
@@ -163,8 +142,8 @@ yunohost service add $app-ui --log="/var/log/$app/$app-ui.log"
 #=================================================
 ynh_script_progression --message="Starting a systemd service..." --weight=1
 
-ynh_systemd_action --service_name=$app --action="start" --line_match="Started" --log_path=systemd
-ynh_systemd_action --service_name=$app-ui --action="start" --line_match="Started" --log_path=systemd
+ynh_systemd_action --service_name=$app --action="start" --line_match="Starting http server at" --log_path="/var/log/$app/$app.log"
+ynh_systemd_action --service_name=$app-ui --action="start" --line_match="http://0.0.0.0" --log_path="/var/log/$app/$app-ui.log"
 
 #=================================================
 # GENERIC FINALIZATION
