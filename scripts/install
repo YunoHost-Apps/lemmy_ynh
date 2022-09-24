@@ -59,8 +59,6 @@ port_lemmy=$(ynh_find_port --port=8536)
 ynh_app_setting_set --app=$app --key=port_lemmy --value=$port_lemmy
 port_ui=$(ynh_find_port --port=1235)
 ynh_app_setting_set --app=$app --key=port_ui --value=$port_ui
-port_pictrs=$(ynh_find_port --port=8537)
-ynh_app_setting_set --app=$app --key=port_pictrs --value=$port_pictrs
 
 #=================================================
 # INSTALL DEPENDENCIES

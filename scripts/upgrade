@@ -88,6 +88,7 @@ then
 fi
 ynh_remove_systemd_config --service=$app-pict-rs
 ynh_secure_remove --file="$final_path/pict-rs"
+ynh_app_setting_delete --app=$app --key=port_pictrs
 
 #=================================================
 # CREATE DEDICATED USER
