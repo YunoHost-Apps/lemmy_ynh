@@ -30,7 +30,6 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 ## Disclaimers / important information
 
 * Lemmy require full domain path to be installed. Eg. lemmy.domain.tld
-* The admin username and password will be sent to the admin of the YunoHost through mail.
 * pict-rs image hosting service has been removed, it caused too much issue during compilation
 
 ## Documentation and resources
