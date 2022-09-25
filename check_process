@@ -21,3 +21,7 @@
 ;;; Options
 Email=
 Notification=none
+;;; Upgrade options
+	; commit=206df4db0b99c52f07ea1a2d5daf799d4b8357fd
+		name=0.15.2~ynh3
+		manifest_arg=domain=DOMAIN&admin=USER&sitename=lemmy_website&

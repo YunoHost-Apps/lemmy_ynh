@@ -25,13 +25,8 @@ ynh_abort_if_errors
 
 domain=$YNH_APP_ARG_DOMAIN
 path_url="/"
-admin=$YNH_APP_ARG_ADMIN
-sitename=$YNH_APP_ARG_SITENAME
 
 app=$YNH_APP_INSTANCE_NAME
-
-password=$(ynh_string_random --length=12)
-admin_email=$(ynh_user_get_info --username=$admin --key="mail")
 
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
@@ -51,9 +46,6 @@ ynh_script_progression --message="Storing installation settings..." --weight=1
 
 ynh_app_setting_set --app=$app --key=domain --value=$domain
 ynh_app_setting_set --app=$app --key=path --value=$path_url
-ynh_app_setting_set --app=$app --key=admin --value=$admin
-ynh_app_setting_set --app=$app --key=password --value=$password
-ynh_app_setting_set --app=$app --key=sitename --value=$sitename
 
 #=================================================
 # STANDARD MODIFICATIONS
@@ -67,15 +59,13 @@ port_lemmy=$(ynh_find_port --port=8536)
 ynh_app_setting_set --app=$app --key=port_lemmy --value=$port_lemmy
 port_ui=$(ynh_find_port --port=1235)
 ynh_app_setting_set --app=$app --key=port_ui --value=$port_ui
-port_pictrs=$(ynh_find_port --port=8537)
-ynh_app_setting_set --app=$app --key=port_pictrs --value=$port_pictrs
 
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
 ynh_script_progression --message="Installing dependencies..." --weight=1
 
-ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies $pkg_build_dependencies
+ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
 ynh_install_nodejs --nodejs_version=$NODEJS_VERSION
 ynh_use_nodejs
 ln -fs /usr/lib/x86_64-linux-musl/libc.so /lib/libc.musl-x86_64.so.1
@@ -112,7 +102,6 @@ ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 ynh_setup_source --dest_dir="$final_path/build-lemmy/" --source_id="docker-image-extract"
 ynh_setup_source --dest_dir="$final_path/build-lemmy-ui/" --source_id="docker-image-extract"
 ynh_setup_source --dest_dir="$final_path/lemmy-ui/lemmy-translations/" --source_id="lemmy-translations"
-ynh_setup_source --dest_dir="$final_path/build-imagemagick/" --source_id="imagemagick"
 
 chmod 750 "$final_path"
 chmod -R o-rwx "$final_path"
@@ -162,19 +151,6 @@ popd
 mkdir -p "$final_path/lemmy/"
 mv -f "$final_path/build-lemmy/output/app/lemmy" "$final_path/lemmy/lemmy"
 ynh_secure_remove --file="$final_path/build-lemmy"
-
-# Install ImageMagick
-pushd "$final_path/build-imagemagick/"
-	ynh_exec_warn_less ./configure --with-modules
-	ynh_exec_warn_less make
-	ynh_exec_warn_less make install
-	ynh_exec_warn_less ldconfig /usr/local/lib
-popd
-ynh_secure_remove --file="$final_path/build-imagemagick"
-
-# Remove build stuff
-ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
-ynh_package_autoremove
 
 chmod 750 "$final_path"
 chmod -R o-rwx "$final_path"
@@ -229,8 +205,8 @@ yunohost service add $app-ui --log="/var/log/$app/$app-ui.log"
 ynh_script_progression --message="Starting a systemd service..." --weight=1
 
 # Start a systemd service
-ynh_systemd_action --service_name=$app --action="start" --line_match="Started" --log_path=systemd
-ynh_systemd_action --service_name=$app-ui --action="start" --line_match="Started" --log_path=systemd
+ynh_systemd_action --service_name=$app --action="start" --line_match="Starting http server at" --log_path="/var/log/$app/$app.log"
+ynh_systemd_action --service_name=$app-ui --action="start" --line_match="http://0.0.0.0" --log_path="/var/log/$app/$app-ui.log"
 
 #=================================================
 # SETUP SSOWAT
@@ -246,23 +222,6 @@ ynh_permission_update --permission="main" --add="visitors"
 ynh_script_progression --message="Reloading NGINX web server..." --weight=1
 
 ynh_systemd_action --service_name=nginx --action=reload
-
-#=================================================
-# SEND A README FOR THE ADMIN
-#=================================================
-
-message="Lemmy was successfully installed :)
-
-Please open https://$domain$path_url
-
-Your credentials for the admin panel are:
-- admin username: $admin
-- admin password: $password
-
-If you facing an issue or want to improve Lemmy, please open a new issue in this project: https://github.com/YunoHost-Apps/lemmy_ynh/issues"
-
-ynh_send_readme_to_admin "$message"
-
 
 #=================================================
 # END OF SCRIPT

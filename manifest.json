@@ -32,19 +32,6 @@
             {
                 "name": "domain",
                 "type": "domain"
-            },
-            {
-                "name": "admin",
-                "type": "user"
-            },
-            {
-                "name": "sitename",
-                "type": "string",
-                "ask": {
-                    "en": "Enter site name",
-                    "fr": "Entrez le nom du site"
-                },
-                "example": "lemmy website"
             }
         ]
     }

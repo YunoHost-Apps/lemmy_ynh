@@ -24,12 +24,8 @@ db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 db_user=$db_name
 db_pwd=$(ynh_app_setting_get --app=$app --key=db_pwd)
 datadir=$(ynh_app_setting_get --app=$app --key=datadir)
-password=$(ynh_app_setting_get --app=$app --key=password)
-sitename=$(ynh_app_setting_get --app=$app --key=sitename)
 port_lemmy=$(ynh_app_setting_get --app=$app --key=port_lemmy)
 port_ui=$(ynh_app_setting_get --app=$app --key=port_ui)
-port_pictrs=$(ynh_app_setting_get --app=$app --key=port_pictrs)
-admin_email=$(ynh_user_get_info --username=$admin --key="mail")
 
 #=================================================
 # CHECK VERSION
@@ -92,6 +88,7 @@ then
 fi
 ynh_remove_systemd_config --service=$app-pict-rs
 ynh_secure_remove --file="$final_path/pict-rs"
+ynh_app_setting_delete --app=$app --key=port_pictrs
 
 #=================================================
 # CREATE DEDICATED USER
@@ -113,7 +110,6 @@ then
 	ynh_setup_source --dest_dir="$final_path/build-lemmy/" --source_id="docker-image-extract"
 	ynh_setup_source --dest_dir="$final_path/build-lemmy-ui/" --source_id="docker-image-extract"
 	ynh_setup_source --dest_dir="$final_path/lemmy-ui/lemmy-translations/" --source_id="lemmy-translations"
-	ynh_setup_source --dest_dir="$final_path/build-imagemagick/" --source_id="imagemagick"
 fi
 
 chmod 750 "$final_path"
@@ -147,8 +143,6 @@ ynh_script_progression --message="Making upgrade..." --weight=1
 
 if [ "$upgrade_type" == "UPGRADE_APP" ]
 then
-	ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies $pkg_build_dependencies
-
 	# Install lemmy-ui
 	pushd $final_path/build-lemmy-ui
 		./docker-image-extract dessalines/lemmy-ui:$(ynh_app_upstream_version)
@@ -164,19 +158,6 @@ then
 	mkdir -p "$final_path/lemmy/"
 	mv -f "$final_path/build-lemmy/output/app/lemmy" "$final_path/lemmy/lemmy"
 	ynh_secure_remove --file="$final_path/build-lemmy"
-
-	# Install ImageMagick
-	pushd "$final_path/build-imagemagick/"
-		ynh_exec_warn_less ./configure --with-modules
-		ynh_exec_warn_less make
-		ynh_exec_warn_less make install
-		ynh_exec_warn_less ldconfig /usr/local/lib
-	popd
-	ynh_secure_remove --file="$final_path/build-imagemagick"
-
-	# Remove build stuff
-	ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
-	ynh_package_autoremove
 fi
 
 chmod 750 "$final_path"
@@ -238,8 +219,8 @@ yunohost service add $app-ui --log="/var/log/$app/$app-ui.log"
 #=================================================
 ynh_script_progression --message="Starting a systemd service..." --weight=1
 
-ynh_systemd_action --service_name=$app --action="start" --line_match="Started" --log_path=systemd
-ynh_systemd_action --service_name=$app-ui --action="start" --line_match="Started" --log_path=systemd
+ynh_systemd_action --service_name=$app --action="start" --line_match="Starting http server at" --log_path="/var/log/$app/$app.log"
+ynh_systemd_action --service_name=$app-ui --action="start" --line_match="http://0.0.0.0" --log_path="/var/log/$app/$app-ui.log"
 
 #=================================================
 # RELOAD NGINX
