@@ -6,7 +6,7 @@
         "en": "Link aggregator/Reddit clone for the fediverse",
         "fr": "Agrégateur de liens/clone Reddit pour le fedivers"
     },
-    "version": "0.16.7~ynh1",
+    "version": "0.17.2~ynh1",
     "url": "https://join.lemmy.ml/",
     "upstream": {
         "license": "GPL-3.0",
