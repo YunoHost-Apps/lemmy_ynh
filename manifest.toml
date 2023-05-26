@@ -40,10 +40,9 @@ ram.runtime = "50M"
         url = "https://codeload.github.com/LemmyNet/lemmy-translations/tar.gz/00e4efbef6c3ac34cd2f5f444a95eddce9ec12d7"
         sha256 = "0587c1867c785e6d229d1519a37fc9a280e78f356d919f868f21a896abddff71"
 
-#REMOVEME? port_lemmy=$(ynh_find_port --port=8536)
-#REMOVEME? ynh_app_setting_set --app=$app --key=port_lemmy --value=$port_lemmy
-#REMOVEME? port_ui=$(ynh_find_port --port=1235)
-#REMOVEME? ynh_app_setting_set --app=$app --key=port_ui --value=$port_ui
+    [resources.ports]
+    main.default = 8536
+    ui.default = 8537
 
     [resources.system_user]
 
