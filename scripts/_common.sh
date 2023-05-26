@@ -5,10 +5,10 @@
 #=================================================
 
 # dependencies used by the app
-lemmy_dependencies="postgresql postgresql-contrib"
-lemmyui_dependencies="espeak"
+#REMOVEME? lemmy_dependencies="postgresql postgresql-contrib"
+#REMOVEME? lemmyui_dependencies="espeak"
 
-pkg_dependencies="$lemmy_dependencies $lemmyui_dependencies"
+#REMOVEME? pkg_dependencies="$lemmy_dependencies $lemmyui_dependencies"
 
 NODEJS_VERSION=12
 

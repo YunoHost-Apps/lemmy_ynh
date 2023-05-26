@@ -13,59 +13,59 @@ source /usr/share/yunohost/helpers
 # MANAGE SCRIPT FAILURE
 #=================================================
 
-ynh_clean_setup () {
+#REMOVEME? ynh_clean_setup () {
 	true
 }
 # Exit if an error occurs during the execution of the script
-ynh_abort_if_errors
+#REMOVEME? ynh_abort_if_errors
 
 #=================================================
 # RETRIEVE ARGUMENTS FROM THE MANIFEST
 #=================================================
 
-domain=$YNH_APP_ARG_DOMAIN
-path_url="/"
+#REMOVEME? domain=$YNH_APP_ARG_DOMAIN
+path="/"
 
-app=$YNH_APP_INSTANCE_NAME
+#REMOVEME? app=$YNH_APP_INSTANCE_NAME
 
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
-ynh_script_progression --message="Validating installation parameters..." --weight=1
+#REMOVEME? ynh_script_progression --message="Validating installation parameters..." --weight=1
 
-final_path=/var/www/$app
-test ! -e "$final_path" || ynh_die --message="This path already contains a folder"
+#REMOVEME? install_dir=/var/www/$app
+#REMOVEME? test ! -e "$install_dir" || ynh_die --message="This path already contains a folder"
 
 # Register (book) web path
-ynh_webpath_register --app=$app --domain=$domain --path_url=$path_url
+#REMOVEME? ynh_webpath_register --app=$app --domain=$domain --path=$path
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST
 #=================================================
-ynh_script_progression --message="Storing installation settings..." --weight=1
+#REMOVEME? ynh_script_progression --message="Storing installation settings..." --weight=1
 
-ynh_app_setting_set --app=$app --key=domain --value=$domain
-ynh_app_setting_set --app=$app --key=path --value=$path_url
+#REMOVEME? ynh_app_setting_set --app=$app --key=domain --value=$domain
+#REMOVEME? ynh_app_setting_set --app=$app --key=path --value=$path
 
 #=================================================
 # STANDARD MODIFICATIONS
 #=================================================
 # FIND AND OPEN A PORT
 #=================================================
-ynh_script_progression --message="Finding an available port..." --weight=1
+#REMOVEME? ynh_script_progression --message="Finding an available port..." --weight=1
 
 # Find an available port
-port_lemmy=$(ynh_find_port --port=8536)
-ynh_app_setting_set --app=$app --key=port_lemmy --value=$port_lemmy
-port_ui=$(ynh_find_port --port=1235)
-ynh_app_setting_set --app=$app --key=port_ui --value=$port_ui
+#REMOVEME? port_lemmy=$(ynh_find_port --port=8536)
+#REMOVEME? ynh_app_setting_set --app=$app --key=port_lemmy --value=$port_lemmy
+#REMOVEME? port_ui=$(ynh_find_port --port=1235)
+#REMOVEME? ynh_app_setting_set --app=$app --key=port_ui --value=$port_ui
 
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
-ynh_script_progression --message="Installing dependencies..." --weight=1
+#REMOVEME? ynh_script_progression --message="Installing dependencies..." --weight=1
 
-ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
+#REMOVEME? ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
 ynh_install_nodejs --nodejs_version=$NODEJS_VERSION
 ynh_use_nodejs
 ln -fs /usr/lib/x86_64-linux-musl/libc.so /lib/libc.musl-x86_64.so.1
@@ -73,23 +73,23 @@ ln -fs /usr/lib/x86_64-linux-musl/libc.so /lib/libc.musl-x86_64.so.1
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
-ynh_script_progression --message="Configuring system user..." --weight=1
+#REMOVEME? ynh_script_progression --message="Configuring system user..." --weight=1
 
 # Create a system user
-ynh_system_user_create --username=$app --home_dir="$final_path"
+#REMOVEME? ynh_system_user_create --username=$app --home_dir="$install_dir"
 
 #=================================================
 # CREATE A POSTGRESQL DATABASE
 #=================================================
-ynh_script_progression --message="Creating a PostgreSQL database..." --weight=1
+#REMOVEME? ynh_script_progression --message="Creating a PostgreSQL database..." --weight=1
 
-ynh_psql_test_if_first_run
-db_name=$(ynh_sanitize_dbid --db_name=$app)
-db_user=$db_name
-db_pwd=$(ynh_string_random --length=30)
-ynh_app_setting_set --app=$app --key=db_name --value=$db_name
-ynh_app_setting_set --app=$app --key=db_pwd --value=$db_pwd
-ynh_psql_setup_db --db_user=$db_user --db_name=$db_name --db_pwd=$db_pwd
+#REMOVEME? ynh_psql_test_if_first_run
+#REMOVEME? db_name=$(ynh_sanitize_dbid --db_name=$app)
+#REMOVEME? db_user=$db_name
+#REMOVEME? db_pwd=$(ynh_string_random --length=30)
+#REMOVEME? ynh_app_setting_set --app=$app --key=db_name --value=$db_name
+#REMOVEME? ynh_app_setting_set --app=$app --key=db_pwd --value=$db_pwd
+#REMOVEME? ynh_psql_setup_db --db_user=$db_user --db_name=$db_name --db_pwd=$db_pwd
 ynh_psql_execute_as_root --sql="CREATE EXTENSION IF NOT EXISTS pgcrypto;" --database="$db_name"
 
 #=================================================
@@ -97,15 +97,15 @@ ynh_psql_execute_as_root --sql="CREATE EXTENSION IF NOT EXISTS pgcrypto;" --data
 #=================================================
 ynh_script_progression --message="Setting up source files..." --weight=1
 
-ynh_app_setting_set --app=$app --key=final_path --value=$final_path
+#REMOVEME? ynh_app_setting_set --app=$app --key=install_dir --value=$install_dir
 # Download, check integrity, uncompress and patch the source from app.src
-ynh_setup_source --dest_dir="$final_path/build-lemmy/" --source_id="docker-image-extract"
-ynh_setup_source --dest_dir="$final_path/build-lemmy-ui/" --source_id="docker-image-extract"
-ynh_setup_source --dest_dir="$final_path/lemmy-ui/lemmy-translations/" --source_id="lemmy-translations"
+ynh_setup_source --dest_dir="$install_dir/build-lemmy/" --source_id="docker-image-extract"
+ynh_setup_source --dest_dir="$install_dir/build-lemmy-ui/" --source_id="docker-image-extract"
+ynh_setup_source --dest_dir="$install_dir/lemmy-ui/lemmy-translations/" --source_id="lemmy-translations"
 
-chmod 750 "$final_path"
-chmod -R o-rwx "$final_path"
-chown -R $app:$app "$final_path"
+chmod 750 "$install_dir"
+chmod -R o-rwx "$install_dir"
+chown -R $app:$app "$install_dir"
 
 #=================================================
 # NGINX CONFIGURATION
@@ -122,14 +122,14 @@ ynh_add_nginx_config
 #=================================================
 ynh_script_progression --message="Creating a data directory..." --weight=1
 
-datadir=/home/yunohost.app/$app
-ynh_app_setting_set --app=$app --key=datadir --value=$datadir
+#REMOVEME? data_dir=/home/yunohost.app/$app
+#REMOVEME? ynh_app_setting_set --app=$app --key=data_dir --value=$data_dir
 
-mkdir -p $datadir/pictrs-data
+mkdir -p $data_dir/pictrs-data
 
-chmod 750 "$datadir"
-chmod -R o-rwx "$datadir"
-chown -R $app:$app "$datadir"
+chmod 750 "$data_dir"
+chmod -R o-rwx "$data_dir"
+chown -R $app:$app "$data_dir"
 
 #=================================================
 # MAKE INSTALL
@@ -137,35 +137,35 @@ chown -R $app:$app "$datadir"
 ynh_script_progression --message="Making install..." --weight=1
 
 # Install lemmy-ui
-pushd $final_path/build-lemmy-ui
+pushd $install_dir/build-lemmy-ui
 	./docker-image-extract dessalines/lemmy-ui:$(ynh_app_upstream_version)
 popd
-mkdir -p "$final_path/lemmy-ui/"
-rsync -a "$final_path/build-lemmy-ui/output/app/" "$final_path/lemmy-ui/"
-ynh_secure_remove --file="$final_path/build-lemmy-ui"
+mkdir -p "$install_dir/lemmy-ui/"
+rsync -a "$install_dir/build-lemmy-ui/output/app/" "$install_dir/lemmy-ui/"
+#REMOVEME? ynh_secure_remove --file="$install_dir/build-lemmy-ui"
 
 # Install lemmy
-pushd $final_path/build-lemmy
+pushd $install_dir/build-lemmy
 	./docker-image-extract dessalines/lemmy:$(ynh_app_upstream_version)
 popd
-mkdir -p "$final_path/lemmy/"
-mv -f "$final_path/build-lemmy/output/app/lemmy" "$final_path/lemmy/lemmy"
-ynh_secure_remove --file="$final_path/build-lemmy"
+mkdir -p "$install_dir/lemmy/"
+mv -f "$install_dir/build-lemmy/output/app/lemmy" "$install_dir/lemmy/lemmy"
+#REMOVEME? ynh_secure_remove --file="$install_dir/build-lemmy"
 
-chmod 750 "$final_path"
-chmod -R o-rwx "$final_path"
-chown -R $app:$app "$final_path"
+chmod 750 "$install_dir"
+chmod -R o-rwx "$install_dir"
+chown -R $app:$app "$install_dir"
 
 #=================================================
 # ADD A CONFIGURATION
 #=================================================
 ynh_script_progression --message="Adding a configuration file..." --weight=1
 
-mkdir -p "$final_path/config/"
-ynh_add_config --template="../conf/lemmy.hjson" --destination="$final_path/config/config.hjson"
+mkdir -p "$install_dir/config/"
+ynh_add_config --template="../conf/lemmy.hjson" --destination="$install_dir/config/config.hjson"
 
-chmod 400 "$final_path/config/config.hjson"
-chown $app:$app "$final_path/config/config.hjson"
+chmod 400 "$install_dir/config/config.hjson"
+chown $app:$app "$install_dir/config/config.hjson"
 
 #=================================================
 # SETUP SYSTEMD
@@ -211,17 +211,17 @@ ynh_systemd_action --service_name=$app-ui --action="start" --line_match="http://
 #=================================================
 # SETUP SSOWAT
 #=================================================
-ynh_script_progression --message="Configuring permissions..." --weight=1
+#REMOVEME? ynh_script_progression --message="Configuring permissions..." --weight=1
 
 # Make app public
-ynh_permission_update --permission="main" --add="visitors"
+#REMOVEME? ynh_permission_update --permission="main" --add="visitors"
 
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_script_progression --message="Reloading NGINX web server..." --weight=1
+#REMOVEME? ynh_script_progression --message="Reloading NGINX web server..." --weight=1
 
-ynh_systemd_action --service_name=nginx --action=reload
+#REMOVEME? ynh_systemd_action --service_name=nginx --action=reload
 
 #=================================================
 # END OF SCRIPT
