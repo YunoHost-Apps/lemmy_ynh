@@ -10,43 +10,10 @@ source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# LOAD SETTINGS
-#=================================================
-#REMOVEME? ynh_script_progression --message="Loading installation settings..." --weight=1
-
-#REMOVEME? app=$YNH_APP_INSTANCE_NAME
-
-#REMOVEME? domain=$(ynh_app_setting_get --app=$app --key=domain)
-#REMOVEME? path=$(ynh_app_setting_get --app=$app --key=path)
-#REMOVEME? admin=$(ynh_app_setting_get --app=$app --key=admin)
-#REMOVEME? #REMOVEME? install_dir=$(ynh_app_setting_get --app=$app --key=install_dir)
-#REMOVEME? db_name=$(ynh_app_setting_get --app=$app --key=db_name)
-#REMOVEME? db_user=$db_name
-#REMOVEME? db_pwd=$(ynh_app_setting_get --app=$app --key=db_pwd)
-#REMOVEME? data_dir=$(ynh_app_setting_get --app=$app --key=data_dir)
-#REMOVEME? port_lemmy=$(ynh_app_setting_get --app=$app --key=port_lemmy)
-#REMOVEME? port_ui=$(ynh_app_setting_get --app=$app --key=port_ui)
-
-#=================================================
 # CHECK VERSION
 #=================================================
-ynh_script_progression --message="Checking version..." --weight=1
 
 upgrade_type=$(ynh_check_app_version_changed)
-
-#=================================================
-# BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
-#=================================================
-#REMOVEME? ynh_script_progression --message="Backing up the app before upgrading (may take a while)..." --weight=1
-
-# Backup the current version of the app
-#REMOVEME? ynh_backup_before_upgrade
-#REMOVEME? ynh_clean_setup () {
-	# Restore it if the upgrade fails
-#REMOVEME? 	ynh_restore_upgradebackup
-}
-# Exit if an error occurs during the execution of the script
-#REMOVEME? ynh_abort_if_errors
 
 #=================================================
 # STANDARD UPGRADE STEPS
@@ -62,13 +29,6 @@ ynh_systemd_action --service_name=$app-ui --action="stop" --line_match="Stopped"
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
 ynh_script_progression --message="Ensuring downward compatibility..." --weight=1
-
-# Cleaning legacy permissions
-#REMOVEME? if ynh_legacy_permissions_exists; then
-#REMOVEME? 	ynh_legacy_permissions_delete_all
-
-	ynh_app_setting_delete --app=$app --key=is_public
-fi
 
 # Removing previously installed iframely
 if ynh_exec_warn_less yunohost service status $app-iframely >/dev/null
@@ -87,16 +47,8 @@ then
 	yunohost service remove $app-pict-rs
 fi
 ynh_remove_systemd_config --service=$app-pict-rs
-#REMOVEME? ynh_secure_remove --file="$install_dir/pict-rs"
+ynh_secure_remove --file="$install_dir/pict-rs"
 ynh_app_setting_delete --app=$app --key=port_pictrs
-
-#=================================================
-# CREATE DEDICATED USER
-#=================================================
-#REMOVEME? ynh_script_progression --message="Making sure dedicated system user exists..." --weight=1
-
-# Create a dedicated user (if not existing)
-#REMOVEME? ynh_system_user_create --username=$app --home_dir="$install_dir"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -119,9 +71,8 @@ chown -R $app:$app "$install_dir"
 #=================================================
 # UPGRADE DEPENDENCIES
 #=================================================
-#REMOVEME? ynh_script_progression --message="Upgrading dependencies..." --weight=1
+ynh_script_progression --message="Upgrading dependencies..." --weight=1
 
-#REMOVEME? ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
 ynh_install_nodejs --nodejs_version=$NODEJS_VERSION
 ynh_use_nodejs
 ln -fs /usr/lib/x86_64-linux-musl/libc.so /lib/libc.musl-x86_64.so.1
@@ -149,7 +100,7 @@ then
 	popd
 	mkdir -p "$install_dir/lemmy-ui/"
 	rsync -a "$install_dir/build-lemmy-ui/output/app/" "$install_dir/lemmy-ui/"
-#REMOVEME? 	ynh_secure_remove --file="$install_dir/build-lemmy-ui"
+	ynh_secure_remove --file="$install_dir/build-lemmy-ui"
 
 	# Install lemmy
 	pushd $install_dir/build-lemmy
@@ -157,7 +108,7 @@ then
 	popd
 	mkdir -p "$install_dir/lemmy/"
 	mv -f "$install_dir/build-lemmy/output/app/lemmy" "$install_dir/lemmy/lemmy"
-#REMOVEME? 	ynh_secure_remove --file="$install_dir/build-lemmy"
+	ynh_secure_remove --file="$install_dir/build-lemmy"
 fi
 
 chmod 750 "$install_dir"
@@ -221,13 +172,6 @@ ynh_script_progression --message="Starting a systemd service..." --weight=1
 
 ynh_systemd_action --service_name=$app --action="start" --line_match="Starting http server at" --log_path="/var/log/$app/$app.log"
 ynh_systemd_action --service_name=$app-ui --action="start" --line_match="http://0.0.0.0" --log_path="/var/log/$app/$app-ui.log"
-
-#=================================================
-# RELOAD NGINX
-#=================================================
-#REMOVEME? ynh_script_progression --message="Reloading NGINX web server..." --weight=1
-
-#REMOVEME? ynh_systemd_action --service_name=nginx --action=reload
 
 #=================================================
 # END OF SCRIPT
