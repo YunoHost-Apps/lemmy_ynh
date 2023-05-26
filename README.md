@@ -5,7 +5,8 @@ It shall NOT be edited by hand.
 
 # Lemmy for YunoHost
 
-[![Integration level](https://dash.yunohost.org/integration/lemmy.svg)](https://dash.yunohost.org/appci/app/lemmy) ![Working status](https://ci-apps.yunohost.org/ci/badges/lemmy.status.svg) ![Maintenance status](https://ci-apps.yunohost.org/ci/badges/lemmy.maintain.svg)  
+[![Integration level](https://dash.yunohost.org/integration/lemmy.svg)](https://dash.yunohost.org/appci/app/lemmy) ![Working status](https://ci-apps.yunohost.org/ci/badges/lemmy.status.svg) ![Maintenance status](https://ci-apps.yunohost.org/ci/badges/lemmy.maintain.svg)
+
 [![Install Lemmy with YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=lemmy)
 
 *[Lire ce readme en français.](./README_fr.md)*
@@ -19,7 +20,6 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 
 
 **Shipped version:** 0.16.7~ynh1
-
 
 **Demo:** https://lemmy.ml/
 
