@@ -32,8 +32,8 @@ ynh_psql_execute_as_root --sql="CREATE EXTENSION IF NOT EXISTS pgcrypto;" --data
 ynh_script_progression --message="Setting up source files..." --weight=1
 
 # Download, check integrity, uncompress and patch the source from app.src
-ynh_setup_source --dest_dir="$install_dir/build-lemmy/" --source_id="docker-image-extract"
-ynh_setup_source --dest_dir="$install_dir/build-lemmy-ui/" --source_id="docker-image-extract"
+ynh_setup_source --dest_dir="$install_dir/build-lemmy/"
+ynh_setup_source --dest_dir="$install_dir/build-lemmy-ui/"
 ynh_setup_source --dest_dir="$install_dir/lemmy-ui/lemmy-translations/" --source_id="lemmy-translations"
 
 chmod -R o-rwx "$install_dir"

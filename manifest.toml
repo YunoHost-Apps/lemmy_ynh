@@ -32,7 +32,7 @@ ram.runtime = "50M"
 
 [resources]
     [resources.sources]
-        [resources.sources.docker-image-extract]
+        [resources.sources.main]
         url = "https://codeload.github.com/jjlin/docker-image-extract/tar.gz/a9e455e44bbbfba897bf3342d9661b182cee67a9"
         sha256 = "9eb0c734e83a3fd7102fc7209af4977024ec467fbc819782491af47295675f67"
 

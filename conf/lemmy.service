@@ -1,5 +1,5 @@
 [Unit]
-Description=__APP__ Daemon
+Description=Lemmy: Link aggregator
 After=network.target
 
 [Service]

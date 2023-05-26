@@ -1,5 +1,5 @@
 [Unit]
-Description=__APP__ UI Daemon
+Description=Lemmy: UI Daemon
 After=network.target
 
 [Service]
