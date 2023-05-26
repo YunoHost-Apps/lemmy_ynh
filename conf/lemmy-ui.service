@@ -1,16 +1,16 @@
 [Unit]
-Description=__APP__ UI Daemon
+Description=Lemmy: UI Daemon
 After=network.target
 
 [Service]
 Type=simple
 User=__APP__
 Group=__APP__
-Environment="LEMMY_INTERNAL_HOST=127.0.0.1:__PORT_LEMMY__"
+Environment="LEMMY_INTERNAL_HOST=127.0.0.1:__PORT__"
 Environment="LEMMY_EXTERNAL_HOST=__DOMAIN__"
 Environment="LEMMY_HTTPS=true"
 Environment="LEMMY_UI_HOST=0.0.0.0:__PORT_UI__"
-WorkingDirectory=__FINALPATH__/lemmy-ui/
+WorkingDirectory=__INSTALL_DIR__/lemmy-ui/
 ExecStart=__YNH_NODE__ dist/js/server.js
 StandardOutput=append:/var/log/__APP__/__APP__-ui.log
 StandardError=inherit

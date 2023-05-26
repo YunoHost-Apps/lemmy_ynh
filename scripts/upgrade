@@ -10,43 +10,10 @@ source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# LOAD SETTINGS
-#=================================================
-ynh_script_progression --message="Loading installation settings..." --weight=1
-
-app=$YNH_APP_INSTANCE_NAME
-
-domain=$(ynh_app_setting_get --app=$app --key=domain)
-path_url=$(ynh_app_setting_get --app=$app --key=path)
-admin=$(ynh_app_setting_get --app=$app --key=admin)
-final_path=$(ynh_app_setting_get --app=$app --key=final_path)
-db_name=$(ynh_app_setting_get --app=$app --key=db_name)
-db_user=$db_name
-db_pwd=$(ynh_app_setting_get --app=$app --key=db_pwd)
-datadir=$(ynh_app_setting_get --app=$app --key=datadir)
-port_lemmy=$(ynh_app_setting_get --app=$app --key=port_lemmy)
-port_ui=$(ynh_app_setting_get --app=$app --key=port_ui)
-
-#=================================================
 # CHECK VERSION
 #=================================================
-ynh_script_progression --message="Checking version..." --weight=1
 
 upgrade_type=$(ynh_check_app_version_changed)
-
-#=================================================
-# BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
-#=================================================
-ynh_script_progression --message="Backing up the app before upgrading (may take a while)..." --weight=1
-
-# Backup the current version of the app
-ynh_backup_before_upgrade
-ynh_clean_setup () {
-	# Restore it if the upgrade fails
-	ynh_restore_upgradebackup
-}
-# Exit if an error occurs during the execution of the script
-ynh_abort_if_errors
 
 #=================================================
 # STANDARD UPGRADE STEPS
@@ -62,13 +29,6 @@ ynh_systemd_action --service_name=$app-ui --action="stop" --line_match="Stopped"
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
 ynh_script_progression --message="Ensuring downward compatibility..." --weight=1
-
-# Cleaning legacy permissions
-if ynh_legacy_permissions_exists; then
-	ynh_legacy_permissions_delete_all
-
-	ynh_app_setting_delete --app=$app --key=is_public
-fi
 
 # Removing previously installed iframely
 if ynh_exec_warn_less yunohost service status $app-iframely >/dev/null
@@ -87,16 +47,8 @@ then
 	yunohost service remove $app-pict-rs
 fi
 ynh_remove_systemd_config --service=$app-pict-rs
-ynh_secure_remove --file="$final_path/pict-rs"
+ynh_secure_remove --file="$install_dir/pict-rs"
 ynh_app_setting_delete --app=$app --key=port_pictrs
-
-#=================================================
-# CREATE DEDICATED USER
-#=================================================
-ynh_script_progression --message="Making sure dedicated system user exists..." --weight=1
-
-# Create a dedicated user (if not existing)
-ynh_system_user_create --username=$app --home_dir="$final_path"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -107,21 +59,20 @@ then
 	ynh_script_progression --message="Upgrading source files..." --weight=1
 
 	# Download, check integrity, uncompress the source of lemmy from app.src to his build directory
-	ynh_setup_source --dest_dir="$final_path/build-lemmy/" --source_id="docker-image-extract"
-	ynh_setup_source --dest_dir="$final_path/build-lemmy-ui/" --source_id="docker-image-extract"
-	ynh_setup_source --dest_dir="$final_path/lemmy-ui/lemmy-translations/" --source_id="lemmy-translations"
+	ynh_setup_source --dest_dir="$install_dir/build-lemmy/"
+	ynh_setup_source --dest_dir="$install_dir/build-lemmy-ui/"
+	ynh_setup_source --dest_dir="$install_dir/lemmy-ui/lemmy-translations/" --source_id="lemmy-translations"
 fi
 
-chmod 750 "$final_path"
-chmod -R o-rwx "$final_path"
-chown -R $app:$app "$final_path"
+chmod 750 "$install_dir"
+chmod -R o-rwx "$install_dir"
+chown -R $app:$app "$install_dir"
 
 #=================================================
 # UPGRADE DEPENDENCIES
 #=================================================
 ynh_script_progression --message="Upgrading dependencies..." --weight=1
 
-ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
 ynh_install_nodejs --nodejs_version=$NODEJS_VERSION
 ynh_use_nodejs
 ln -fs /usr/lib/x86_64-linux-musl/libc.so /lib/libc.musl-x86_64.so.1
@@ -144,36 +95,36 @@ ynh_script_progression --message="Making upgrade..." --weight=1
 if [ "$upgrade_type" == "UPGRADE_APP" ]
 then
 	# Install lemmy-ui
-	pushd $final_path/build-lemmy-ui
+	pushd $install_dir/build-lemmy-ui
 		./docker-image-extract dessalines/lemmy-ui:$(ynh_app_upstream_version)
 	popd
-	mkdir -p "$final_path/lemmy-ui/"
-	rsync -a "$final_path/build-lemmy-ui/output/app/" "$final_path/lemmy-ui/"
-	ynh_secure_remove --file="$final_path/build-lemmy-ui"
+	mkdir -p "$install_dir/lemmy-ui/"
+	rsync -a "$install_dir/build-lemmy-ui/output/app/" "$install_dir/lemmy-ui/"
+	ynh_secure_remove --file="$install_dir/build-lemmy-ui"
 
 	# Install lemmy
-	pushd $final_path/build-lemmy
+	pushd $install_dir/build-lemmy
 		./docker-image-extract dessalines/lemmy:$(ynh_app_upstream_version)
 	popd
-	mkdir -p "$final_path/lemmy/"
-	mv -f "$final_path/build-lemmy/output/app/lemmy" "$final_path/lemmy/lemmy"
-	ynh_secure_remove --file="$final_path/build-lemmy"
+	mkdir -p "$install_dir/lemmy/"
+	mv -f "$install_dir/build-lemmy/output/app/lemmy" "$install_dir/lemmy/lemmy"
+	ynh_secure_remove --file="$install_dir/build-lemmy"
 fi
 
-chmod 750 "$final_path"
-chmod -R o-rwx "$final_path"
-chown -R $app:$app "$final_path"
+chmod 750 "$install_dir"
+chmod -R o-rwx "$install_dir"
+chown -R $app:$app "$install_dir"
 
 #=================================================
 # UPDATE A CONFIG FILE
 #=================================================
 ynh_script_progression --message="Updating a configuration file..." --weight=1
 
-mkdir -p "$final_path/lemmy/"
-ynh_add_config --template="../conf/lemmy.hjson" --destination="$final_path/config/config.hjson"
+mkdir -p "$install_dir/lemmy/"
+ynh_add_config --template="../conf/lemmy.hjson" --destination="$install_dir/config/config.hjson"
 
-chmod 400 "$final_path/config/config.hjson"
-chown $app:$app "$final_path/config/config.hjson"
+chmod 400 "$install_dir/config/config.hjson"
+chown $app:$app "$install_dir/config/config.hjson"
 
 #=================================================
 # CREATE EXTENSION IF NOT EXISTS pgcrypto
@@ -221,13 +172,6 @@ ynh_script_progression --message="Starting a systemd service..." --weight=1
 
 ynh_systemd_action --service_name=$app --action="start" --line_match="Starting http server at" --log_path="/var/log/$app/$app.log"
 ynh_systemd_action --service_name=$app-ui --action="start" --line_match="http://0.0.0.0" --log_path="/var/log/$app/$app-ui.log"
-
-#=================================================
-# RELOAD NGINX
-#=================================================
-ynh_script_progression --message="Reloading NGINX web server..." --weight=1
-
-ynh_systemd_action --service_name=nginx --action=reload
 
 #=================================================
 # END OF SCRIPT
