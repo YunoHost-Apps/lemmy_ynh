@@ -23,7 +23,7 @@ multi_instance = false
 ldap = false
 sso = false
 disk = "50M"
-ram.build = "50M"
+ram.build = "100M"
 ram.runtime = "50M"
 
     [install.domain]
@@ -33,12 +33,12 @@ ram.runtime = "50M"
 [resources]
     [resources.sources]
         [resources.sources.docker-image-extract]
-        url = "https://codeload.github.com/jjlin/docker-image-extract/tar.gz/a9e455e44bbbfba897bf3342d9661b182cee67a9"
-        sha256 = "9eb0c734e83a3fd7102fc7209af4977024ec467fbc819782491af47295675f67"
+        url = "https://codeload.github.com/jjlin/docker-image-extract/tar.gz/b664b29a1de37d25f732e885e1331a8e90f67dcd"
+        sha256 = "7b2c8baeec6e9a67c905d4d55e4dc0944815cf55bd6bf11fadbb6eb8990b4912"
 
         [resources.sources.lemmy-translations]
-        url = "https://codeload.github.com/LemmyNet/lemmy-translations/tar.gz/00e4efbef6c3ac34cd2f5f444a95eddce9ec12d7"
-        sha256 = "0587c1867c785e6d229d1519a37fc9a280e78f356d919f868f21a896abddff71"
+        url = "https://codeload.github.com/LemmyNet/lemmy-translations/tar.gz/ddf0d3a4dcfba5eddbcdb702db2470b52abb3815"
+        sha256 = "7df72cdba8a6c23c9dca528d3fd71dce13f5263b7a59c8512253364d94797757"
 
     [resources.ports]
     main.default = 8536
