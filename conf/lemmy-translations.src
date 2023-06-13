@@ -1,7 +1,0 @@
-SOURCE_URL=https://codeload.github.com/LemmyNet/lemmy-translations/tar.gz/00e4efbef6c3ac34cd2f5f444a95eddce9ec12d7
-SOURCE_SUM=0587c1867c785e6d229d1519a37fc9a280e78f356d919f868f21a896abddff71
-SOURCE_SUM_PRG=sha256sum
-SOURCE_FORMAT=tar.gz
-SOURCE_IN_SUBDIR=true
-SOURCE_FILENAME=
-SOURCE_EXTRACT=true

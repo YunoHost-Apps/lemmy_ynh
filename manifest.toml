@@ -1,0 +1,66 @@
+packaging_format = 2
+
+id = "lemmy"
+name = "Lemmy"
+description.en = "Link aggregator/Reddit clone for the fediverse"
+description.fr = "Agrégateur de liens/clone Reddit pour le fedivers"
+
+version = "0.16.7~ynh2"
+
+maintainers = []
+
+[upstream]
+license = "GPL-3.0"
+website = "https://join-lemmy.org/"
+demo = "https://lemmy.ml/"
+admindoc = "https://join-lemmy.org/docs/en/"
+code = "https://github.com/LemmyNet/lemmy"
+
+[integration]
+yunohost = ">= 11.1.20"
+architectures = "all"
+multi_instance = false
+ldap = false
+sso = false
+disk = "50M"
+ram.build = "100M"
+ram.runtime = "50M"
+
+    [install.domain]
+    type = "domain"
+    full_domain = true
+
+[resources]
+    [resources.sources]
+
+        [resources.sources.main]
+        url = "https://github.com/jjlin/docker-image-extract/archive/b664b29a1de37d25f732e885e1331a8e90f67dcd.tar.gz"
+        sha256 = "7b2c8baeec6e9a67c905d4d55e4dc0944815cf55bd6bf11fadbb6eb8990b4912"
+        autoupdate.upstream = "https://github.com/jjlin/docker-image-extract"
+        autoupdate.strategy = "latest_github_commit"
+
+        [resources.sources.lemmy-translations]
+        url = "https://github.com/LemmyNet/lemmy-translations/archive/f45ddff206adb52ab0ac7555bf14978edac5d2f2.tar.gz"
+        sha256 = "4d91ed10bceba5de04a870ac7086e1fab383634eefae8afeefa500c9fe2627db"
+        autoupdate.upstream = "https://github.com/LemmyNet/lemmy-translations/"
+        autoupdate.strategy = "latest_github_commit"
+
+    [resources.ports]
+    main.default = 8536
+    ui.default = 8537
+
+    [resources.system_user]
+
+    [resources.install_dir]
+
+    [resources.data_dir]
+    subdirs = ["pictrs-data"]
+
+    [resources.permissions]
+    main.url = "/"
+
+    [resources.apt]
+    packages = "postgresql espeak"
+
+    [resources.database]
+    type = "postgresql"

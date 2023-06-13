@@ -5,7 +5,8 @@ It shall NOT be edited by hand.
 
 # Lemmy for YunoHost
 
-[![Integration level](https://dash.yunohost.org/integration/lemmy.svg)](https://dash.yunohost.org/appci/app/lemmy) ![Working status](https://ci-apps.yunohost.org/ci/badges/lemmy.status.svg) ![Maintenance status](https://ci-apps.yunohost.org/ci/badges/lemmy.maintain.svg)  
+[![Integration level](https://dash.yunohost.org/integration/lemmy.svg)](https://dash.yunohost.org/appci/app/lemmy) ![Working status](https://ci-apps.yunohost.org/ci/badges/lemmy.status.svg) ![Maintenance status](https://ci-apps.yunohost.org/ci/badges/lemmy.maintain.svg)
+
 [![Install Lemmy with YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=lemmy)
 
 *[Lire ce readme en français.](./README_fr.md)*
@@ -15,22 +16,16 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 
 ## Overview
 
-[Lemmy](https://github.com/LemmyNet/lemmy) is similar to sites like [Reddit](https://reddit.com), [Lobste.rs](https://lobste.rs), or [Hacker News](https://news.ycombinator.com/): you subscribe to forums you're interested in, post links and discussions, then vote, and comment on them. Behind the scenes, it is very different; anyone can easily run a server, and all these servers are federated (think email), and connected to the same universe, called the [Fediverse](https://en.wikipedia.org/wiki/Fediverse).
+Lemmy is similar to sites like Reddit, Lobste.rs, or Hacker News: you subscribe to forums you're interested in, post links and discussions, then vote, and comment on them. Behind the scenes, it is very different; anyone can easily run a server, and all these servers are federated (think email), and connected to the same universe, called the Fediverse.
 
 
-**Shipped version:** 0.16.7~ynh1
-
+**Shipped version:** 0.16.7~ynh2
 
 **Demo:** https://lemmy.ml/
 
 ## Screenshots
 
 ![Screenshot of Lemmy](./doc/screenshots/screenshot1.webp)
-
-## Disclaimers / important information
-
-* Lemmy require full domain path to be installed. Eg. lemmy.domain.tld
-* pict-rs image hosting service has been removed, it caused too much issue during compilation
 
 ## Documentation and resources
 
