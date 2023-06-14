@@ -40,8 +40,8 @@ ram.runtime = "50M"
         autoupdate.strategy = "latest_github_commit"
 
         [resources.sources.lemmy-translations]
-        url = "https://github.com/LemmyNet/lemmy-translations/archive/f45ddff206adb52ab0ac7555bf14978edac5d2f2.tar.gz"
-        sha256 = "4d91ed10bceba5de04a870ac7086e1fab383634eefae8afeefa500c9fe2627db"
+        url = "https://github.com/LemmyNet/lemmy-translations/archive/2b5f0a7422e85410ca4d7e5a240866fc40c91bc8.tar.gz"
+        sha256 = "6fbd8e1b9f565ab72dee07f2f60d71c0552c38f3293d8ed7669945e0440f6d1b"
         autoupdate.upstream = "https://github.com/LemmyNet/lemmy-translations/"
         autoupdate.strategy = "latest_github_commit"
 
