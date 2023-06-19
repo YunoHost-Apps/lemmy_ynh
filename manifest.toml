@@ -48,6 +48,7 @@ ram.runtime = "50M"
     [resources.ports]
     main.default = 8536
     ui.default = 8537
+    pictrs.default = 8080
 
     [resources.system_user]
 
@@ -58,6 +59,10 @@ ram.runtime = "50M"
 
     [resources.permissions]
     main.url = "/"
+    pict-rs.url = "/pictrs"
+    pict-rs.allowed = "visitors"
+    pict-rs.show_tile = false
+    pict-rs.protected = true
 
     [resources.apt]
     packages = "postgresql espeak"

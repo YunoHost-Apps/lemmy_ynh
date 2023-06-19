@@ -88,7 +88,7 @@
   # Whether the site is available over TLS. Needs to be true for federation to work.
   tls_enabled: true
   # Address where pictrs is available (for image hosting)
-  ###pictrs_url: "http://127.0.0.1:"
+  pictrs_url: "http://127.0.0.1:__PORT_PICTRS__/"
   slur_filter: "(\bThis\b)|(\bis\b)|(\bsample\b)"
   # Maximum length of local community and user names
   actor_name_max_length: 20
