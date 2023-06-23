@@ -51,7 +51,7 @@ ram.runtime = "50M"
 
     [resources.ports]
     main.default = 8536
-    ui.default = 8537
+    ui.default = 1235
 
     [resources.system_user]
 
