@@ -30,6 +30,10 @@ ram.runtime = "50M"
     type = "domain"
     full_domain = true
 
+    [install.init_main_permission]
+    type = "group"
+    default = "visitors"
+
 [resources]
     [resources.sources]
 
