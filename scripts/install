@@ -60,6 +60,14 @@ mkdir -p "$install_dir/lemmy-ui/"
 rsync -a "$install_dir/build-lemmy-ui/output/app/" "$install_dir/lemmy-ui/"
 ynh_secure_remove --file="$install_dir/build-lemmy-ui"
 
+
+
+pushd $install_dir/lemmy-ui/
+	npm install --platform=linux --arch=x64 sharp
+popd
+
+
+
 # Install lemmy
 pushd $install_dir/build-lemmy
 	./docker-image-extract dessalines/lemmy:$(ynh_app_upstream_version)
