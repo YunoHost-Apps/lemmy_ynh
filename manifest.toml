@@ -18,7 +18,7 @@ code = "https://github.com/LemmyNet/lemmy"
 
 [integration]
 yunohost = ">= 11.1.21"
-architectures = "all"
+architectures = ["amd64"]
 multi_instance = false
 ldap = false
 sso = false
@@ -44,8 +44,8 @@ ram.runtime = "50M"
         autoupdate.strategy = "latest_github_commit"
 
         [resources.sources.lemmy-translations]
-        url = "https://github.com/LemmyNet/lemmy-translations/archive/a241fe1255a6363c7ae1ec5a09520c066745e6ce.tar.gz"
-        sha256 = "3e3ac4c547c1040a80833d526bc0bd4e6bbad252a168de3ed81ee9d36aee8e5e"
+        url = "https://github.com/LemmyNet/lemmy-translations/archive/5a9d44656e2658ab7cb2dbec3fd1bfaf57654533.tar.gz"
+        sha256 = "bb5178c6fd1d1423de525ca02805449b038747b17d9555141207f28d8600c511"
         autoupdate.upstream = "https://github.com/LemmyNet/lemmy-translations/"
         autoupdate.strategy = "latest_github_commit"
 
