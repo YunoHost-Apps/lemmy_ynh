@@ -62,11 +62,18 @@ ram.runtime = "50M"
 
     [resources.permissions]
     main.url = "/"
+    
     api.url = "/api"
     api.allowed = "visitors"
     api.auth_header = false
     api.show_tile = false
     api.protected = true
+
+    inbox.url = "/inbox"
+    inbox.allowed = "visitors"
+    inbox.auth_header = false
+    inbox.show_tile = false
+    inbox.protected = true
 
     [resources.apt]
     packages = "postgresql espeak"
