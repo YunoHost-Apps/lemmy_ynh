@@ -44,8 +44,8 @@ ram.runtime = "50M"
         autoupdate.strategy = "latest_github_commit"
 
         [resources.sources.lemmy-translations]
-        url = "https://github.com/LemmyNet/lemmy-translations/archive/f9ed0698944cb6d44dc733677a4634b7bc916536.tar.gz"
-        sha256 = "5adc6b03f1507a9fa040a20f67959cd32622182b1168c31851b529f11557ddd6"
+        url = "https://github.com/LemmyNet/lemmy-translations/archive/f1602a5993c426d56ebb7c98a8453fbfb482e9a7.tar.gz"
+        sha256 = "570d3f8c1ab13dbf72fd2f2f6d7a930a5fd7233259fbd0f1b156205524f0e4c3"
         autoupdate.upstream = "https://github.com/LemmyNet/lemmy-translations/"
         autoupdate.strategy = "latest_github_commit"
 
@@ -62,11 +62,18 @@ ram.runtime = "50M"
 
     [resources.permissions]
     main.url = "/"
+    
     api.url = "/api"
     api.allowed = "visitors"
     api.auth_header = false
     api.show_tile = false
     api.protected = true
+
+    inbox.url = "/inbox"
+    inbox.allowed = "visitors"
+    inbox.auth_header = false
+    inbox.show_tile = false
+    inbox.protected = true
 
     [resources.apt]
     packages = "postgresql espeak"
