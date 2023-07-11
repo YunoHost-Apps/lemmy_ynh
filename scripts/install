@@ -18,7 +18,6 @@ ynh_install_nodejs --nodejs_version=$NODEJS_VERSION
 ynh_use_nodejs
 ln -fs /usr/lib/x86_64-linux-musl/libc.so /lib/libc.musl-x86_64.so.1
 
-
 #=================================================
 # CREATE A POSTGRESQL DATABASE
 #=================================================
@@ -46,6 +45,15 @@ ynh_script_progression --message="Configuring NGINX web server..." --weight=1
 
 # Create a dedicated NGINX config
 ynh_add_nginx_config
+
+#=================================================
+# INSTALL THE SHARP
+#=================================================
+
+pushd $install_dir
+ 	ynh_use_nodejs
+	ynh_exec_warn_less sudo -u $app env $ynh_node_load_PATH yarn install --global sharp
+popd
 
 #=================================================
 # MAKE INSTALL

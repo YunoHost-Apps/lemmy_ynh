@@ -65,6 +65,9 @@ ram.runtime = "50M"
 
     [resources.apt]
     packages = "postgresql espeak"
+    extras.yarn.repo = "deb https://dl.yarnpkg.com/debian/ stable main"
+    extras.yarn.key = "https://dl.yarnpkg.com/debian/pubkey.gpg"
+    extras.yarn.packages = "yarn"
 
     [resources.database]
     type = "postgresql"
