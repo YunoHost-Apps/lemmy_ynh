@@ -52,7 +52,7 @@ ynh_add_nginx_config
 
 pushd $install_dir
  	ynh_use_nodejs
-	ynh_exec_warn_less sudo -u $app env $ynh_node_load_PATH yarn install --global sharp
+	ynh_exec_warn_less sudo -u $app env $ynh_node_load_PATH yarn global add sharp
 popd
 
 #=================================================
