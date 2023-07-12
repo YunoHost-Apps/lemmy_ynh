@@ -63,9 +63,9 @@ then
 	ynh_setup_source --dest_dir="$install_dir/build-lemmy/"
 	ynh_setup_source --dest_dir="$install_dir/build-lemmy-ui/"
 	ynh_setup_source --dest_dir="$install_dir/lemmy-ui/lemmy-translations/" --source_id="lemmy-translations"
+	ynh_setup_source --dest_dir="$install_dir/build-pict-rs/"
 fi
 
-chmod 750 "$install_dir"
 chmod -R o-rwx "$install_dir"
 chown -R $app:$app "$install_dir"
 
@@ -119,6 +119,15 @@ then
 	mkdir -p "$install_dir/lemmy/"
 	mv -f "$install_dir/build-lemmy/output/app/lemmy" "$install_dir/lemmy/lemmy"
 	ynh_secure_remove --file="$install_dir/build-lemmy"
+
+	# Install pict-rs
+	pushd $install_dir/build-pict-rs
+		./docker-image-extract asonix/pictrs:$PICTRS_VERSION
+	popd
+	mkdir -p "$install_dir/pict-rs/"
+	mv -f "$install_dir/build-pict-rs/output/usr/local/bin/pict-rs" "$install_dir/pict-rs/pict-rs"
+	ynh_secure_remove --file="$install_dir/build-pict-rs"
+
 fi
 
 chmod 750 "$install_dir"
@@ -151,6 +160,7 @@ ynh_script_progression --message="Upgrading systemd configuration..." --weight=1
 # Create a dedicated systemd config
 ynh_add_systemd_config --service="$app" --template="lemmy.service"
 ynh_add_systemd_config --service="$app-ui" --template="lemmy-ui.service"
+ynh_add_systemd_config --service="$app-pict-rs" --template="pict-rs.service"
 
 #=================================================
 # GENERIC FINALIZATION
