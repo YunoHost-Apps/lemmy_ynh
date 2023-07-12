@@ -182,10 +182,10 @@ ynh_use_logrotate --non-append
 #=================================================
 ynh_script_progression --message="Integrating service in YunoHost..." --weight=1
 
-yunohost service add $app --log="/var/log/$app/$app.log"
-yunohost service add $app-ui --log="/var/log/$app/$app-ui.log"
-yunohost service add $app-pict-rs --log="/var/log/$app/$app-pict-rs.log"
-`
+yunohost service add $app --description="Link aggregator/Reddit clone" --log="/var/log/$app/$app.log"
+yunohost service add $app-ui --description="Link aggregator/Reddit clone" --log="/var/log/$app/$app-ui.log"
+yunohost service add $app-pict-rs --description="Link aggregator/Reddit clone" --log="/var/log/$app/$app-pict-rs.log"
+
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
