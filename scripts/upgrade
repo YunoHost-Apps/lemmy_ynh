@@ -173,7 +173,8 @@ ynh_script_progression --message="Integrating service in YunoHost..." --weight=1
 
 yunohost service add $app --log="/var/log/$app/$app.log"
 yunohost service add $app-ui --log="/var/log/$app/$app-ui.log"
-
+yunohost service add $app-pict-rs --log="/var/log/$app/$app-pict-rs.log"
+`
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
@@ -181,6 +182,7 @@ ynh_script_progression --message="Starting a systemd service..." --weight=1
 
 ynh_systemd_action --service_name=$app --action="start" --line_match="Starting http server at" --log_path="/var/log/$app/$app.log"
 ynh_systemd_action --service_name=$app-ui --action="start" --line_match="http://0.0.0.0" --log_path="/var/log/$app/$app-ui.log"
+ynh_systemd_action --service_name=$app-pict-rs --action="start" --log_path="/var/log/$app/$app-pict-rs.log" #--line_match="http://0.0.0.0"
 
 #=================================================
 # END OF SCRIPT
