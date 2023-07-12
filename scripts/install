@@ -18,7 +18,6 @@ ynh_install_nodejs --nodejs_version=$NODEJS_VERSION
 ynh_use_nodejs
 ln -fs /usr/lib/x86_64-linux-musl/libc.so /lib/libc.musl-x86_64.so.1
 
-
 #=================================================
 # CREATE A POSTGRESQL DATABASE
 #=================================================
@@ -47,6 +46,15 @@ ynh_script_progression --message="Configuring NGINX web server..." --weight=1
 
 # Create a dedicated NGINX config
 ynh_add_nginx_config
+
+#=================================================
+# INSTALL SHARP
+#=================================================
+
+pushd $install_dir/lemmy-ui
+ 	ynh_use_nodejs
+	ynh_exec_warn_less sudo -u $app env $ynh_node_load_PATH yarn add sharp
+popd
 
 #=================================================
 # MAKE INSTALL
@@ -132,8 +140,8 @@ yunohost service add $app-pict-rs --log="/var/log/$app/$app-pict-rs.log"
 ynh_script_progression --message="Starting a systemd service..." --weight=1
 
 # Start a systemd service
-ynh_systemd_action --service_name=$app --action="start" --line_match="Starting http server at" --log_path="/var/log/$app/$app.log"
-ynh_systemd_action --service_name=$app-ui --action="start" --line_match="http://0.0.0.0" --log_path="/var/log/$app/$app-ui.log"
+ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$app/$app.log" --line_match="Starting http server at"
+ynh_systemd_action --service_name=$app-ui --action="start" --log_path="/var/log/$app/$app-ui.log" --line_match="http://0.0.0.0"
 
 #=================================================
 # END OF SCRIPT

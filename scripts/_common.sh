@@ -4,8 +4,9 @@
 # COMMON VARIABLES
 #=================================================
 
-NODEJS_VERSION=18
 PICTRS_VERSION=0.4.0-rc.3
+
+NODEJS_VERSION=20
 
 #=================================================
 # PERSONAL HELPERS

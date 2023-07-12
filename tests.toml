@@ -9,9 +9,9 @@ test_format = 1.0
     args.admin = "john"
     args.sitename = "lemmy website"
 
-    
     # -------------------------------
     # Commits to test upgrade from
     # -------------------------------
 
-    test_upgrade_from.206df4db0b99c52f07ea1a2d5daf799d4b8357fd.name = "Upgrade from 0.15.2~ynh3"
+    #test_upgrade_from.206df4db0b99c52f07ea1a2d5daf799d4b8357fd.name = "Upgrade from 0.15.2~ynh3"
+    test_upgrade_from.383e145946458933a81010282b77dd986978ad6c.name = "Upgrade from 0.16.7~ynh4"

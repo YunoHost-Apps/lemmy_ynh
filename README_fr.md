@@ -16,10 +16,9 @@ Si vous n’avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) po
 
 ## Vue d’ensemble
 
-Lemmy is similar to sites like Reddit, Lobste.rs, or Hacker News: you subscribe to forums you're interested in, post links and discussions, then vote, and comment on them. Behind the scenes, it is very different; anyone can easily run a server, and all these servers are federated (think email), and connected to the same universe, called the Fediverse.
+Lemmy est similaire à des sites comme Reddit, Lobste.rs ou Hacker News : vous vous abonnez aux forums qui vous intéressent, publiez des liens et des discussions, puis votez et commentez-les. Dans les coulisses, c'est très différent ; n'importe qui peut facilement exécuter un serveur, et tous ces serveurs sont fédérés (pensez au courrier électronique) et connectés au même univers, appelé Fediverse.
 
-
-**Version incluse :** 0.16.7~ynh2
+**Version incluse :** 0.18.1~ynh1
 
 **Démo :** https://lemmy.ml/
 
