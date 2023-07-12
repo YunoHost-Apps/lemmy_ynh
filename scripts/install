@@ -47,7 +47,7 @@ ynh_script_progression --message="Configuring NGINX web server..." --weight=1
 ynh_add_nginx_config
 
 #=================================================
-# INSTALL THE SHARP
+# INSTALL SHARP
 #=================================================
 
 pushd $install_dir/lemmy-ui
