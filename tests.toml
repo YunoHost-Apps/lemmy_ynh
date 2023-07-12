@@ -9,7 +9,6 @@ test_format = 1.0
     args.admin = "john"
     args.sitename = "lemmy website"
 
-    
     # -------------------------------
     # Commits to test upgrade from
     # -------------------------------
