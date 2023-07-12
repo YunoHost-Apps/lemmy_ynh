@@ -86,6 +86,15 @@ ynh_script_progression --message="Upgrading NGINX web server configuration..." -
 ynh_add_nginx_config
 
 #=================================================
+# INSTALL SHARP
+#=================================================
+
+pushd $install_dir/lemmy-ui
+ 	ynh_use_nodejs
+	ynh_exec_warn_less sudo -u $app env $ynh_node_load_PATH yarn add sharp
+popd
+
+#=================================================
 # SPECIFIC UPGRADE
 #=================================================
 # MAKE UPGRADE
