@@ -59,7 +59,7 @@ ram.runtime = "50M"
     [resources.install_dir]
 
     [resources.data_dir]
-    subdirs = ["pictrs-data"]
+    subdirs = ["pictrs-data", "sled"]
 
     [resources.permissions]
     main.url = "/"
