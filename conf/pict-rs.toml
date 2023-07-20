@@ -15,7 +15,7 @@ worker_id = 'pict-rs-1'
 # default: empty
 #
 # Not specifying api_key disables internal endpoints
-api_key = 'API_KEY'
+api_key = ''
 
 ## Optional: How many files are allowed to be uploaded per request
 # default: 1
