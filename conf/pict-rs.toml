@@ -438,7 +438,7 @@ cache_capacity = 67108864
 #
 # Used in combination with the /internal/export endpoint to dump the current sled database into a
 # new file. This can be helpful for backing up a running pict-rs server.
-export_path = "/mnt/exports"
+export_path = "__DATA_DIR__/exports"
 
 
 ## Media storage configuration
