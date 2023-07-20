@@ -427,7 +427,7 @@ type = 'sled'
 
 ## Optional: path to sled repository
 # default: /mnt/sled-repo
-path = '/mnt/sled-repo'
+path = '__DATA_DIR__/sled'
 
 ## Optional: in-memory cache capacity for sled data (in bytes)
 # default: 67,108,864 (1024 * 1024 * 64, or 64MB)
@@ -474,15 +474,15 @@ bucket_name = 'pict-rs'
 # default: empty
 #
 # When using minio, this can be set to `minio`
-region = 'minio'
+region = ''
 
 ## Required: object storage access key
 # default: empty
-access_key = 'ACCESS_KEY'
+access_key = ''
 
 ## Required: object storage secret key
 # default: empty
-secret_key = 'SECRET_KEY'
+secret_key = ''
 
 ## Optional: object storage session token
 # default: empty
