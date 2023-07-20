@@ -486,7 +486,7 @@ secret_key = ''
 
 ## Optional: object storage session token
 # default: empty
-session_token = 'SESSION_TOKEN'
+session_token = ''
 
 ## Optional: set how long object storage signatures are valid for (in seconds)
 # default: 15
@@ -504,13 +504,13 @@ client_timeout = 30
 
 ## Filesystem media storage example
 # ## Media storage configuration
-# [store]
+[store]
 # ## Optional: type of media storage to use
 # # default: filesystem
 # #
 # # available options: filesystem, object_storage
-# type = 'filesystem'
+type = 'filesystem'
 #
 # ## Optional: path to uploaded media
 # # default: /mnt/files
-# path = '__DATA_DIR__'
+path = '__DATA_DIR__/pictrs-data'
