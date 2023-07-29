@@ -59,7 +59,7 @@ targets = 'warn,tracing_actix_web=info,actix_server=info,actix_web=info'
 
 
 ## Console configuration
-[tracing.console]
+#[tracing.console]
 ## Optional: console address
 # default: empty
 #
@@ -87,18 +87,18 @@ targets = 'warn,tracing_actix_web=info,actix_server=info,actix_web=info'
 # ```
 # $ tokio-console http://localhost:6669
 # ```
-address = '0.0.0.0:6669'
+#address = '0.0.0.0:6669'
 
 ## Optional: console buffer capacity
 # default: 102400
 #
 # This is the number of _events_ to buffer, not the number of bytes. In reality, the amount of
 # RAM used will be significatnly larger (in bytes) than the buffer capacity (in events)
-buffer_capacity = 102400
+#buffer_capacity = 102400
 
 
 ## OpenTelemetry configuration
-[tracing.opentelemetry]
+#[tracing.opentelemetry]
 ## Optional: url for exporting otlp traces
 # default: empty
 #
@@ -106,24 +106,24 @@ buffer_capacity = 102400
 # When set, pict-rs will export OpenTelemetry traces to the provided URL. If the URL is
 # inaccessible, this can cause performance degredation in pict-rs, so it is best left unset unless
 # you have an OpenTelemetry collector
-url = 'http://localhost:4317/'
+#url = 'http://localhost:4317/'
 
 ## Optional: name to relate OpenTelemetry traces
 # default: pict-rs
-service_name = 'pict-rs'
+#service_name = 'pict-rs'
 
 ## Optional: trace level to export
 # default: info
 #
 # Follows the same format as RUST_LOG
-targets = 'info'
+#targets = 'info'
 
 
 ## Configuration for migrating from pict-rs 0.2
-[old_db]
+#[old_db]
 ## Optional: path to old pict-rs directory
 # default: /mnt
-path = '/mnt'
+#path = '/mnt'
 
 
 ## Media Processing Configuration
@@ -442,12 +442,12 @@ export_path = "__DATA_DIR__/exports"
 
 
 ## Media storage configuration
-[store]
+#[store]
 ## Optional: type of media storage to use
 # default: filesystem
 #
 # available options: filesystem, object_storage
-type = 'filesystem'
+#type = 'filesystem'
 
 ## Required: endpoint at which the object storage exists
 # default: empty
@@ -464,43 +464,43 @@ type = 'filesystem'
 # When false, objects will be fetched from http{s}://{bucket_name}.{endpoint}:{port}/{object}
 #
 # Set to true when using minio
-use_path_style = false
+#use_path_style = false
 
 ## Required: object storage bucket name
 # default: empty
-bucket_name = 'pict-rs'
+#bucket_name = 'pict-rs'
 
 ## Required: object storage region
 # default: empty
 #
 # When using minio, this can be set to `minio`
-region = ''
+#region = ''
 
 ## Required: object storage access key
 # default: empty
-access_key = ''
+#access_key = ''
 
 ## Required: object storage secret key
 # default: empty
-secret_key = ''
+#secret_key = ''
 
 ## Optional: object storage session token
 # default: empty
-session_token = ''
+#session_token = ''
 
 ## Optional: set how long object storage signatures are valid for (in seconds)
 # default: 15
 #
 # This can be useful if your object storage might take a while to process requests. It should not be
 # increased more than needed to prevent replay attacks.
-signature_expiration = 15
+#signature_expiration = 15
 
 ## Optional: set how long pict-rs will wait (in seconds) for a response from object storage
 # default: 30
 #
 # This value is the total wait time, and not additional wait time on top of the
 # signature_expiration.
-client_timeout = 30
+#client_timeout = 30
 
 ## Filesystem media storage example
 # ## Media storage configuration

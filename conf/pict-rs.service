@@ -7,7 +7,8 @@ Type=simple
 User=__APP__
 Group=__APP__
 WorkingDirectory=__INSTALL_DIR__/pict-rs/
-ExecStart=__INSTALL_DIR__/pict-rs/pict-rs run -a 127.0.0.1:__PORT_PICTRS__ filesystem -p __DATA_DIR__/pictrs-data sled -p __DATA_DIR__/sled
+Environment=PATH=__PICTRS_PATH__
+ExecStart=__INSTALL_DIR__/pict-rs/pict-rs -c __INSTALL_DIR__/pict-rs/pict-rs.toml run
 StandardOutput=append:/var/log/__APP__/__APP__-pict-rs.log
 StandardError=inherit
 

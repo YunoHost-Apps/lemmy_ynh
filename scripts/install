@@ -89,6 +89,12 @@ chmod 750 "$install_dir"
 chmod -R o-rwx "$install_dir"
 chown -R $app:$app "$install_dir"
 
+# (Dirty) Install ImageMagick
+# Requires libfuse2 apt dependency
+wget https://imagemagick.org/archive/binaries/magick -o "$install_dir/pict-rs/magick" -q
+chmod 750 "$install_dir/pict-rs/magick"
+chown $app:$app "$install_dir/pict-rs/magick"
+
 #=================================================
 # ADD A CONFIGURATION
 #=================================================
@@ -109,6 +115,9 @@ chown $app:$app "$install_dir/pict-rs/pict-rs.toml"
 # SETUP SYSTEMD
 #=================================================
 ynh_script_progression --message="Configuring a systemd service..." --weight=1
+
+# Prep local path for Pict-RS
+pictrs_path="$install_dir/pict-rs:$PATH"
 
 # Create a dedicated systemd config
 ynh_add_systemd_config --service="$app" --template="lemmy.service"

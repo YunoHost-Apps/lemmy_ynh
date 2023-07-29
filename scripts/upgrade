@@ -128,6 +128,12 @@ then
 	mv -f "$install_dir/build-pict-rs/output/usr/local/bin/pict-rs" "$install_dir/pict-rs/pict-rs"
 	ynh_secure_remove --file="$install_dir/build-pict-rs"
 
+	# (Dirty) Install ImageMagick
+	# Requires libfuse2 apt dependency
+	wget https://imagemagick.org/archive/binaries/magick -o "$install_dir/pict-rs/magick" -q
+	chmod 750 "$install_dir/pict-rs/magick"
+	chown $app:$app "$install_dir/pict-rs/magick"
+
 fi
 
 chmod 750 "$install_dir"
@@ -161,6 +167,9 @@ ynh_psql_execute_as_root --sql="CREATE EXTENSION IF NOT EXISTS pgcrypto;" --data
 # SETUP SYSTEMD
 #=================================================
 ynh_script_progression --message="Upgrading systemd configuration..." --weight=1
+
+# Prep local path for Pict-RS
+pictrs_path="$install_dir/pict-rs:$PATH"
 
 # Create a dedicated systemd config
 ynh_add_systemd_config --service="$app" --template="lemmy.service"
