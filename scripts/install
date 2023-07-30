@@ -100,16 +100,22 @@ chown $app:$app "$install_dir/pict-rs/magick"
 #=================================================
 ynh_script_progression --message="Adding a configuration file..." --weight=1
 
+# Lemmy configuration
 mkdir -p "$install_dir/config/"
 ynh_add_config --template="../conf/lemmy.hjson" --destination="$install_dir/config/config.hjson"
-
 chmod 400 "$install_dir/config/config.hjson"
 chown $app:$app "$install_dir/config/config.hjson"
 
+# Pict-RS configuration
 ynh_add_config --template="../conf/pict-rs.toml" --destination="$install_dir/pict-rs/pict-rs.toml"
-
 chmod 400 "$install_dir/pict-rs/pict-rs.toml"
 chown $app:$app "$install_dir/pict-rs/pict-rs.toml"
+
+# ImageMagick configuration
+mkdir -p "$install_dir/.config/ImageMagick"
+ynh_add_config --template="../conf/policy.xml" --destination="$install_dir/.config/ImageMagick/policy.xml"
+chmod 400 "$install_dir/.config/ImageMagick/policy.xml"
+chown -R $app:$app "$install_dir/.config"
 
 #=================================================
 # SETUP SYSTEMD

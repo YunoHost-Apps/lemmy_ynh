@@ -1,0 +1,26 @@
+<policymap>
+  <!-- temporary path must be a preexisting writable directory -->
+  <policy domain="resource" name="temporary-path" value="__DATA_DIR__/magick"/>
+  <policy domain="resource" name="memory" value="256MiB"/>
+  <policy domain="resource" name="list-length" value="32"/>
+  <policy domain="resource" name="width" value="8KP"/>
+  <policy domain="resource" name="height" value="8KP"/>
+  <policy domain="resource" name="map" value="512MiB"/>
+  <policy domain="resource" name="area" value="16KP"/>
+  <policy domain="resource" name="disk" value="1GiB"/>
+  <policy domain="resource" name="file" value="768"/>
+  <policy domain="resource" name="thread" value="2"/>
+  <policy domain="resource" name="time" value="120"/>
+  <policy domain="module" rights="none" pattern="URL" />
+  <policy domain="coder" rights="write" pattern="{MSVG,MVG,PS,PDF,RSVG,SVG,XPS}" />
+  <policy domain="filter" rights="none" pattern="*" />
+<!--Seems needed to send the pictures to Pict-RS server
+  <policy domain="path" rights="none" pattern="-"/>  <!-- don't read/write from/to stdin/stdout -->
+  <policy domain="path" rights="none" pattern="/etc/*"/>  <!-- don't read sensitive paths -->
+  <policy domain="path" rights="none" pattern="@*"/>  <!-- indirect reads not permitted -->
+  <policy domain="cache" name="memory-map" value="anonymous"/>
+  <policy domain="cache" name="synchronize" value="true"/>
+<!-- Only needed in case of distributed pixel cache
+  <policy domain="cache" name="shared-secret" value="__IMAGEMAGICK_CACHE_SECRET__" stealth="True"/> -->
+  <policy domain="system" name="shred" value="1"/>
+</policymap>
