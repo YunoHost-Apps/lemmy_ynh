@@ -90,7 +90,7 @@ chmod -R o-rwx "$install_dir"
 chown -R $app:$app "$install_dir"
 
 # (Dirty) Install ImageMagick
-# Requires libfuse2 apt dependency
+# Requires 'libfuse2' and 'libimage-exiftool-perl' apt dependencies
 wget https://imagemagick.org/archive/binaries/magick -o "$install_dir/pict-rs/magick" -q
 chmod 750 "$install_dir/pict-rs/magick"
 chown $app:$app "$install_dir/pict-rs/magick"
