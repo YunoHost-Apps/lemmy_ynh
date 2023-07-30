@@ -91,7 +91,8 @@ chown -R $app:$app "$install_dir"
 
 # (Dirty) Install ImageMagick
 # Requires 'libfuse2' and 'libimage-exiftool-perl' apt dependencies
-wget https://imagemagick.org/archive/binaries/magick -o "$install_dir/pict-rs/magick" -q
+wget -f https://imagemagick.org/archive/binaries/magick -O "$install_dir/pict-rs/magick" -q
+[ ! -f "$install_dir/pict-rs/magick" ] && ynh_print_err --message="ImageMagick could not be downloaded"
 chmod 750 "$install_dir/pict-rs/magick"
 chown $app:$app "$install_dir/pict-rs/magick"
 
