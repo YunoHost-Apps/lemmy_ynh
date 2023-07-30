@@ -59,7 +59,7 @@ ram.runtime = "50M"
     [resources.install_dir]
 
     [resources.data_dir]
-    subdirs = ["pictrs-data", "sled", "exports"]
+    subdirs = ["pictrs-data", "sled", "exports", "magick"]
 
     [resources.permissions]
     main.url = "/"
