@@ -21,6 +21,6 @@
   <policy domain="cache" name="memory-map" value="anonymous"/>
   <policy domain="cache" name="synchronize" value="true"/>
 <!-- Only needed in case of distributed pixel cache
-  <policy domain="cache" name="shared-secret" value="__IMAGEMAGICK_CACHE_SECRET__" stealth="True"/> -->
+  <policy domain="cache" name="shared-secret" value="IMAGEMAGICK_CACHE_SECRET" stealth="True"/> -->
   <policy domain="system" name="shred" value="1"/>
 </policymap>
