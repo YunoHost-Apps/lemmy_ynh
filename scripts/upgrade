@@ -41,16 +41,6 @@ then
 	ynh_remove_systemd_config --service=$app-iframely
 fi
 
-# Removing previously installed pict-rs
-if ynh_exec_warn_less yunohost service status $app-pict-rs >/dev/null
-then
-	ynh_script_progression --message="Removing $app-pict-rs service integration..."
-	yunohost service remove $app-pict-rs
-fi
-ynh_remove_systemd_config --service=$app-pict-rs
-ynh_secure_remove --file="$install_dir/pict-rs"
-ynh_app_setting_delete --app=$app --key=port_pictrs
-
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
