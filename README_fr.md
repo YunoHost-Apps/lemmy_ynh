@@ -18,7 +18,7 @@ Si vous n’avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) po
 
 Lemmy est similaire à des sites comme Reddit, Lobste.rs ou Hacker News : vous vous abonnez aux forums qui vous intéressent, publiez des liens et des discussions, puis votez et commentez-les. Dans les coulisses, c'est très différent ; n'importe qui peut facilement exécuter un serveur, et tous ces serveurs sont fédérés (pensez au courrier électronique) et connectés au même univers, appelé Fediverse.
 
-**Version incluse :** 0.18.3~ynh1
+**Version incluse :** 2023.08.09~ynh1
 
 **Démo :** https://lemmy.ml/
 
