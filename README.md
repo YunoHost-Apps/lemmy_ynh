@@ -19,7 +19,7 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 Lemmy is similar to sites like Reddit, Lobste.rs, or Hacker News: you subscribe to forums you're interested in, post links and discussions, then vote, and comment on them. Behind the scenes, it is very different; anyone can easily run a server, and all these servers are federated (think email), and connected to the same universe, called the Fediverse.
 
 
-**Shipped version:** 0.18.4~ynh1
+**Shipped version:** 0.18.5~ynh1
 
 **Demo:** https://lemmy.ml/
 
@@ -32,7 +32,6 @@ Lemmy is similar to sites like Reddit, Lobste.rs, or Hacker News: you subscribe 
 * Official app website: <https://join-lemmy.org/>
 * Official admin documentation: <https://join-lemmy.org/docs/en/>
 * Upstream app code repository: <https://github.com/LemmyNet/lemmy>
-* YunoHost documentation for this app: <https://yunohost.org/app_lemmy>
 * Report a bug: <https://github.com/YunoHost-Apps/lemmy_ynh/issues>
 
 ## Developer info
