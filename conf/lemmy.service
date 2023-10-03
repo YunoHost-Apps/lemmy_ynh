@@ -11,6 +11,8 @@ WorkingDirectory=__INSTALL_DIR__/lemmy/
 ExecStart=__INSTALL_DIR__/lemmy/lemmy
 StandardOutput=append:/var/log/__APP__/__APP__.log
 StandardError=inherit
+Restart=on-failure
+RestartSec=1s
 
 # Sandboxing options to harden security
 # Depending on specificities of your service/app, you may need to tweak these 
