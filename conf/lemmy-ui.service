@@ -14,8 +14,7 @@ WorkingDirectory=__INSTALL_DIR__/lemmy-ui/
 ExecStart=__YNH_NODE__ dist/js/server.js
 StandardOutput=append:/var/log/__APP__/__APP__-ui.log
 StandardError=inherit
-Restart=on-failure
-RestartSec=1s
+Restart=always
 
 # Sandboxing options to harden security
 # Depending on specificities of your service/app, you may need to tweak these 
