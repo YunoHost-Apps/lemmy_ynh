@@ -32,7 +32,7 @@ Lemmy is similar to sites like Reddit, Lobste.rs, or Hacker News: you subscribe 
 * Official app website: <https://join-lemmy.org/>
 * Official admin documentation: <https://join-lemmy.org/docs/en/>
 * Upstream app code repository: <https://github.com/LemmyNet/lemmy>
-* YunoHost documentation for this app: <https://yunohost.org/app_lemmy>
+* YunoHost Store: <https://apps.yunohost.org/app/lemmy>
 * Report a bug: <https://github.com/YunoHost-Apps/lemmy_ynh/issues>
 
 ## Developer info
