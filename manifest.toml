@@ -5,7 +5,7 @@ name = "Lemmy"
 description.en = "Link aggregator/Reddit clone for the fediverse"
 description.fr = "Agrégateur de liens/clone Reddit pour le fedivers"
 
-version = "0.18.5~ynh1"
+version = "2023.08.09~ynh1"
 
 maintainers = []
 
@@ -37,14 +37,14 @@ ram.runtime = "50M"
     [resources.sources]
 
         [resources.sources.main]
-        url = "https://github.com/jjlin/docker-image-extract/archive/b664b29a1de37d25f732e885e1331a8e90f67dcd.tar.gz"
-        sha256 = "7b2c8baeec6e9a67c905d4d55e4dc0944815cf55bd6bf11fadbb6eb8990b4912"
+        url = "https://github.com/jjlin/docker-image-extract/archive/4273b2796da5055e431b4db5efe29a71bba12b45.tar.gz"
+        sha256 = "8e582bb186bdb1053051ad6be8829ebb4af418cb4e43005efc9d7749e0269cba"
         autoupdate.upstream = "https://github.com/jjlin/docker-image-extract"
         autoupdate.strategy = "latest_github_commit"
 
         [resources.sources.lemmy-translations]
-        url = "https://github.com/LemmyNet/lemmy-translations/archive/f1602a5993c426d56ebb7c98a8453fbfb482e9a7.tar.gz"
-        sha256 = "570d3f8c1ab13dbf72fd2f2f6d7a930a5fd7233259fbd0f1b156205524f0e4c3"
+        url = "https://github.com/LemmyNet/lemmy-translations/archive/8bb90fa4a30e6dc2ba4449794e99d6b3325bebb5.tar.gz"
+        sha256 = "5ac1bed16753d578a931c3a1d71c2b116a22db27ffc9b7282b61b4ac4102760a"
         autoupdate.upstream = "https://github.com/LemmyNet/lemmy-translations/"
         autoupdate.strategy = "latest_github_commit"
 
