@@ -31,6 +31,7 @@ Lemmy est similaire à des sites comme Reddit, Lobste.rs ou Hacker News : vous v
 * Site officiel de l’app : <https://join-lemmy.org/>
 * Documentation officielle de l’admin : <https://join-lemmy.org/docs/en/>
 * Dépôt de code officiel de l’app : <https://github.com/LemmyNet/lemmy>
+* YunoHost Store: <https://apps.yunohost.org/app/lemmy>
 * Signaler un bug : <https://github.com/YunoHost-Apps/lemmy_ynh/issues>
 
 ## Informations pour les développeurs
