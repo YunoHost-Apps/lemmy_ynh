@@ -77,7 +77,7 @@
   # Email sending configuration. All options except login/password are mandatory
   email: {
     # Hostname and port of the smtp server
-    smtp_server: "127.0.0.1:25"
+    smtp_server: "__MAIN_DOMAIN__:587"
     # Login name for smtp server
     smtp_login: "__APP__"
     # Password to login to the smtp server
@@ -85,7 +85,7 @@
     # Address to send emails from, eg noreply@your-instance.com
     smtp_from_address: "__APP__@__DOMAIN__"
     # Whether or not smtp connections should use tls. Can be none, tls, or starttls
-    tls_type: "none"
+    tls_type: "starttls"
   }
   # the domain name of your instance (mandatory)
   hostname: "__DOMAIN__"
