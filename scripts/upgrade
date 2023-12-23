@@ -83,7 +83,6 @@ ynh_add_nginx_config
 pushd $install_dir/lemmy-ui
  	ynh_use_nodejs
 	ynh_exec_warn_less sudo -u $app env $ynh_node_load_PATH yarn add sharp
-	ynh_exec_warn_less sudo -u $app env $ynh_node_load_PATH npm rebuild sharp
 popd
 
 #=================================================
@@ -198,6 +197,13 @@ yunohost service add $app-pict-rs --description="Simple image hosting service fo
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
+
+# TMP rebuild sharp
+pushd $install_dir/lemmy-ui
+ 	ynh_use_nodejs
+	ynh_exec_warn_less sudo -u $app env $ynh_node_load_PATH npm rebuild sharp
+popd
+
 ynh_script_progression --message="Starting a systemd service..." --weight=1
 
 ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$app/$app.log" --line_match="Starting http server at"
