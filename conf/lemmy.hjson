@@ -79,11 +79,11 @@
     # Hostname and port of the smtp server
     smtp_server: "127.0.0.1:25"
     # Login name for smtp server
-    smtp_login: ""
+    smtp_login: "__APP__"
     # Password to login to the smtp server
-    smtp_password: ""
+    smtp_password: "__MAIL_PWD__"
     # Address to send emails from, eg noreply@your-instance.com
-    smtp_from_address: "lemmy@__DOMAIN__"
+    smtp_from_address: "__APP__@__DOMAIN__"
     # Whether or not smtp connections should use tls. Can be none, tls, or starttls
     tls_type: "none"
   }

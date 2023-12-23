@@ -54,6 +54,7 @@ ram.runtime = "50M"
     ui.default = 1235
 
     [resources.system_user]
+    allow_email = true
 
     [resources.install_dir]
 
