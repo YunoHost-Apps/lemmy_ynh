@@ -5,7 +5,7 @@ name = "Lemmy"
 description.en = "Link aggregator/Reddit clone for the fediverse"
 description.fr = "Agrégateur de liens/clone Reddit pour le fedivers"
 
-version = "0.18.2~ynh1"
+version = "0.18.2~ynh2"
 
 maintainers = []
 
@@ -17,18 +17,20 @@ admindoc = "https://join-lemmy.org/docs/en/"
 code = "https://github.com/LemmyNet/lemmy"
 
 [integration]
-yunohost = ">= 11.1.21"
+yunohost = ">= 11.2"
 architectures = ["amd64"]
 multi_instance = false
+
 ldap = false
+
 sso = false
+
 disk = "50M"
 ram.build = "500M"
 ram.runtime = "50M"
 
     [install.domain]
     type = "domain"
-    full_domain = true
 
     [install.init_main_permission]
     type = "group"
@@ -51,17 +53,24 @@ ram.runtime = "50M"
 
     [resources.ports]
     main.default = 8536
+    pictrs.default = 8080
     ui.default = 1235
 
     [resources.system_user]
+    allow_email = true
 
     [resources.install_dir]
 
     [resources.data_dir]
-    subdirs = ["pictrs-data"]
+    subdirs = ["pictrs-data", "sled", "exports", "magick"]
 
     [resources.permissions]
     main.url = "/"
+
+    pictrs.url = "/pictrs"
+    pictrs.allowed = "visitors"
+    pictrs.show_tile = false
+    pictrs.protected = true
     
     api.url = "/api"
     api.allowed = "visitors"
@@ -76,7 +85,7 @@ ram.runtime = "50M"
     inbox.protected = true
 
     [resources.apt]
-    packages = "postgresql espeak"
+    packages = "postgresql, espeak, rsync, libfuse2, libimage-exiftool-perl, ffmpeg"
     extras.yarn.repo = "deb https://dl.yarnpkg.com/debian/ stable main"
     extras.yarn.key = "https://dl.yarnpkg.com/debian/pubkey.gpg"
     extras.yarn.packages = "yarn"

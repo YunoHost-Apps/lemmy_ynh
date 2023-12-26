@@ -14,6 +14,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 # REMOVE SERVICE INTEGRATION IN YUNOHOST
 #=================================================
+ynh_script_progression --message="Removing system configurations related to $app..." --weight=10
 
 # Remove the service from the list of services known by YunoHost (added from `yunohost service add`)
 if ynh_exec_warn_less yunohost service status $app >/dev/null
@@ -23,50 +24,29 @@ then
 fi
 if ynh_exec_warn_less yunohost service status $app-ui >/dev/null
 then
-	ynh_script_progression --message="Removing $app-ui service integration..."
+	ynh_script_progression --message="Removing $app-ui service integration..." --weight=1
 	yunohost service remove $app-ui
 fi
-
-#=================================================
-# STOP AND REMOVE SERVICE
-#=================================================
-ynh_script_progression --message="Stopping and removing the systemd service..." --weight=1
+if ynh_exec_warn_less yunohost service status $app-pict-rs >/dev/null
+then
+	ynh_script_progression --message="Removing $app-pict-rs service integration..." --weight=1
+	yunohost service remove $app-pict-rs
+fi
 
 # Remove the dedicated systemd config
 ynh_remove_systemd_config
 ynh_remove_systemd_config --service=$app-ui
-
-#=================================================
-# REMOVE LOGROTATE CONFIGURATION
-#=================================================
-ynh_script_progression --message="Removing logrotate configuration..." --weight=1
+ynh_remove_systemd_config --service=$app-pict-rs
 
 # Remove the app-specific logrotate config
 ynh_remove_logrotate
 
-#=================================================
-# REMOVE NGINX CONFIGURATION
-#=================================================
-ynh_script_progression --message="Removing NGINX web server configuration..." --weight=1
-
 # Remove the dedicated NGINX config
 ynh_remove_nginx_config
 
-#=================================================
-# REMOVE DEPENDENCIES
-#=================================================
-ynh_script_progression --message="Removing dependencies..." --weight=1
-
 # Remove metapackage and its dependencies
 ynh_remove_nodejs
-ynh_secure_remove --file="/lib/libc.musl-x86_64.so.1"
-
-#=================================================
-# SPECIFIC REMOVE
-#=================================================
-# REMOVE VARIOUS FILES
-#=================================================
-ynh_script_progression --message="Removing various files..." --weight=1
+#ynh_secure_remove --file="/lib/libc.musl-x86_64.so.1"
 
 # Remove the log files
 ynh_secure_remove --file="/var/log/$app"

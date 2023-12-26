@@ -1,20 +1,16 @@
 [Unit]
-Description=Lemmy: UI Daemon
+Description=Pict-RS: A simple image hosting service for __APP__
 After=network.target
 
 [Service]
 Type=simple
 User=__APP__
 Group=__APP__
-Environment="LEMMY_INTERNAL_HOST=127.0.0.1:__PORT__"
-Environment="LEMMY_EXTERNAL_HOST=__DOMAIN__"
-Environment="LEMMY_HTTPS=true"
-Environment="LEMMY_UI_HOST=0.0.0.0:__PORT_UI__"
-WorkingDirectory=__INSTALL_DIR__/lemmy-ui/
-ExecStart=__YNH_NODE__ dist/js/server.js
-StandardOutput=append:/var/log/__APP__/__APP__-ui.log
+WorkingDirectory=__INSTALL_DIR__/pict-rs/
+Environment=PATH=__PICTRS_PATH__
+ExecStart=__INSTALL_DIR__/pict-rs/pict-rs -c __INSTALL_DIR__/pict-rs/pict-rs.toml run
+StandardOutput=append:/var/log/__APP__/__APP__-pict-rs.log
 StandardError=inherit
-Restart=always
 
 # Sandboxing options to harden security
 # Depending on specificities of your service/app, you may need to tweak these 
