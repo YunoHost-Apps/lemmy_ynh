@@ -16,8 +16,9 @@ source /usr/share/yunohost/helpers
 #=================================================
 ynh_script_progression --message="Stopping a systemd service..." --weight=1
 
-ynh_systemd_action --service_name=$app --action="stop" --line_match="Stopped" --log_path=systemd
-ynh_systemd_action --service_name=$app-ui --action="stop" --line_match="Stopped" --log_path=systemd
+ynh_systemd_action --service_name=$app --action="stop" --line_match="Stopped" "/var/log/$app/$app.log"
+ynh_systemd_action --service_name=$app-ui --action="stop" --line_match="Stopped" --log_path="/var/log/$app/$app-ui.log"
+ynh_systemd_action --service_name=$app-pict-rs --action="stop" --line_match="Stopped" --log_path="/var/log/$app/$app-pict-rs.log"
 
 #=================================================
 # MODIFY URL IN NGINX CONF
@@ -44,8 +45,9 @@ chown $app:$app "$install_dir/config/config.hjson"
 #=================================================
 ynh_script_progression --message="Starting a systemd service..." --weight=1
 
-ynh_systemd_action --service_name=$app --action="start" --line_match="Starting http server at" --log_path="/var/log/$app/$app.log"
-ynh_systemd_action --service_name=$app-ui --action="start" --line_match="http://0.0.0.0" --log_path="/var/log/$app/$app-ui.log"
+ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$app/$app.log" --line_match="Starting http server at" 
+ynh_systemd_action --service_name=$app-ui --action="start" --log_path="/var/log/$app/$app-ui.log" --line_match="http://0.0.0.0"
+ynh_systemd_action --service_name=$app-pict-rs --action="start" --log_path="/var/log/$app/$app-pict-rs.log" --line_match="starting in Actix runtime"
 
 #=================================================
 # END OF SCRIPT

@@ -1,0 +1,516 @@
+## Server configuration
+[server]
+## Optional: pict-rs binding address
+# default: 0.0.0.0:8080
+address = '127.0.0.1:__PORT_PICTRS__'
+
+## Optional: pict-rs worker id
+# default: pict-rs-1
+#
+# This is used for the internal job queue. It will have more meaning once a shared metadata
+# repository (like postgres) can be defined.
+worker_id = 'pict-rs-1'
+
+## Optional: shared secret for internal endpoints
+# default: empty
+#
+# Not specifying api_key disables internal endpoints
+api_key = ''
+
+## Optional: How many files are allowed to be uploaded per request
+# default: 1
+max_file_count = 1
+
+## Client configuration
+[client]
+## Optional: connection pool size for internal http client
+# default: 100
+#
+# This number is multiplied the number of cores available to pict-rs. Running on a 2 core machine
+# with the default value will result in 200 pooled connections. Running on a 32 core machine with
+# the default value will result in 3200 pooled connections.
+#
+# This number can be lowered to keep pict-rs within ulimit bounds if you encounter errors related to
+# "Too many open files". Alternatively, increasing the ulimit of your system can solve this problem
+# as well.
+pool_size = 100
+
+## Optional: time (in seconds) the client will wait for a response before giving up
+# default: 30
+#
+# This is used for the `/image/download` endpoint when fetching media from another server. It is
+# distinct from the object storage client timeout, which can be configured separately
+timeout = 30
+
+
+## Logging configuration
+[tracing.logging]
+## Optional: log format
+# default: normal
+#
+# available options: compact, json, normal, pretty
+format = 'normal'
+
+## Optional: log targets
+# default: warn,tracing_actix_web=info,actix_server=info,actix_web=info
+#
+# Dictates which traces should print to stdout
+targets = 'warn,tracing_actix_web=info,actix_server=info,actix_web=info'
+
+
+## Console configuration
+#[tracing.console]
+## Optional: console address
+# default: empty
+#
+# Dictates whether console should be enabled, and what address it should be exposed on.
+#
+# When set, tokio-console can connect to the pict-rs service
+#
+# Configure your container to expose the console port
+# ```
+# # docker-compose.yml
+# version: '3.3'
+#
+# services:
+#   pictrs:
+#     image: asonix/pictrs:0.4.1
+#     ports:
+#       - "127.0.0.1:8080:8080"
+#       - "127.0.0.1:6669:6669" # this is the line that exposes console
+#     restart: always
+#     volumes:
+#       - ./volumes/pictrs:/mnt
+# ```
+#
+# Connect from console
+# ```
+# $ tokio-console http://localhost:6669
+# ```
+#address = '0.0.0.0:6669'
+
+## Optional: console buffer capacity
+# default: 102400
+#
+# This is the number of _events_ to buffer, not the number of bytes. In reality, the amount of
+# RAM used will be significatnly larger (in bytes) than the buffer capacity (in events)
+#buffer_capacity = 102400
+
+
+## OpenTelemetry configuration
+#[tracing.opentelemetry]
+## Optional: url for exporting otlp traces
+# default: empty
+#
+# Not specifying opentelemetry_url means no traces will be exported
+# When set, pict-rs will export OpenTelemetry traces to the provided URL. If the URL is
+# inaccessible, this can cause performance degredation in pict-rs, so it is best left unset unless
+# you have an OpenTelemetry collector
+#url = 'http://localhost:4317/'
+
+## Optional: name to relate OpenTelemetry traces
+# default: pict-rs
+#service_name = 'pict-rs'
+
+## Optional: trace level to export
+# default: info
+#
+# Follows the same format as RUST_LOG
+#targets = 'info'
+
+
+## Configuration for migrating from pict-rs 0.2
+#[old_db]
+## Optional: path to old pict-rs directory
+# default: /mnt
+#path = '/mnt'
+
+
+## Media Processing Configuration
+[media]
+## Optional: max file size (in Megabytes)
+# default: 40
+max_file_size = 40
+
+## Optional: preprocessing steps for uploaded images
+# default: empty
+#
+# This configuration is the same format as the process endpoint's query arguments
+preprocess_steps = 'crop=16x9&resize=1200&blur=0.2'
+
+## Optional: set allowed filters for image processing
+# default: ['blur', 'crop', 'identity', 'resize', 'thumbnail']
+filters = ['blur', 'crop', 'identity', 'resize', 'thumbnail']
+
+
+[media.image]
+## Optional: max media width (in pixels)
+# default: 10,000
+max_width = 10000
+
+## Optional: max media height (in pixels)
+# default: 10,000
+max_height = 10000
+
+## Optional: max media area (in pixels)
+# default: 40,000,000
+max_area = 40000000
+
+## Optional: max file size (in Megabytes)
+# default: 40
+max_file_size = 40
+
+## Optional: set file type for all images
+# default: empty
+#
+# available options: avif, png, jpeg, jxl, webp
+# When set, all uploaded still images will be converted to this file type. For balancing quality vs
+# file size vs browser support, 'avif', 'jxl', and 'webp' should be considered. By default, images
+# are stored in their original file type.
+format = "webp"
+
+
+[media.image.quality]
+## Optional: set quality for AVIF images
+# default: empty
+#
+# availabe range: 0-100
+# 100 means best quality and 0 means worst quality. Playing with numbers between 40 and 100 makes
+# the most sense.
+avif = 100
+
+## Optional: set compression for PNG images
+# default: empty
+#
+# availabe range: 0-100
+# 100 means best compression and 0 means worst compression. Since PNG is a lossless format, changing
+# this value will not change how the images look.
+png = 100
+
+## Optional: set quality for JPEG images
+# default: empty
+#
+# availabe range: 0-100
+# 100 means best quality and 0 means worst quality. Playing with numbers between 60 and 100 makes
+# the most sense.
+jpeg = 100
+
+## Optional: set quality for JXL images
+# default: empty
+#
+# availabe range: 0-100
+# 100 means best quality and 0 means worst quality. Playing with numbers between 40 and 100 makes
+# the most sense.
+jxl = 100
+
+## Optional: set quality for WEBP images
+# default: empty
+#
+# availabe range: 0-100
+# 100 means best quality and 0 means worst quality. Playing with numbers between 50 and 100 makes
+# the most sense.
+webp = 100
+
+
+[media.animation]
+## Optional: max animation width (in pixels)
+# default: 256
+#
+# If an animation exceeds this value, it may be converted to a silent video
+max_width = 256
+
+## Optional: max animation height (in pixels)
+# default: 256
+#
+# If an animation exceeds this value, it may be converted to a silent video
+max_height = 256
+
+## Optional: max animation area (in pixels)
+# default: 65,526
+#
+# If an animation exceeds this value, it may be converted to a silent video
+max_area = 65536
+
+## Optional: max animation size (in Megabytes)
+# default: 40
+#
+# If an animation exceeds this value, it may be converted to a silent video
+max_file_size = 40
+
+## Optional: max frame count
+# default: 100
+#
+# If an animation exceeds this value, it may be converted to a silent video
+max_frame_count = 100
+
+## Optional: set file type for all animations
+# default: empty
+#
+# available options: apng, avif, gif, webp
+# When set, all uploaded still images will be converted to this file type. For balancing quality vs
+# file size vs browser support, 'avif', 'jxl', and 'webp' should be considered. By default, images
+# are stored in their original file type.
+format = "webp"
+
+
+[media.animation.quality]
+## Optional: set compression for APNG animations
+# default: empty
+#
+# availabe range: 0-100
+# 100 means best compression and 0 means worst compression. Since APNG is a lossless format,
+# changing this value will not change how the animations look.
+apng = 100
+
+## Optional: set quality for AVIF animations
+# default: empty
+#
+# availabe range: 0-100
+# 100 means best quality and 0 means worst quality. Playing with numbers between 40 and 100 makes
+# the most sense.
+avif = 100
+
+## Optional: set quality for WEBP animations
+# default: empty
+#
+# availabe range: 0-100
+# 100 means best quality and 0 means worst quality. Playing with numbers between 50 and 100 makes
+# the most sense.
+webp = 100
+
+
+[media.video]
+## Optional: enable MP4 and WEBM uploads (without sound)
+# default: true
+#
+# Set this to false to serve static images only
+enable = true
+
+## Optional: enable Sound for MP4 and WEBM uploads
+# default: false
+#
+# this setting does nothing if video is not enabled
+allow_audio = false
+
+## Optional: max video width (in pixels)
+# default: 3,840
+#
+# this setting does nothing if video is not enabled
+max_width = 3840
+
+## Optional: max video height (in pixels)
+# default: 3,840
+#
+# this setting does nothing if video is not enabled
+max_height = 3840
+
+## Optional: max video area (in pixels)
+# default: 8,294,400
+#
+# this setting does nothing if video is not enabled
+max_area = 8294400
+
+## Optional: max video size (in Megabytes)
+# default: 40
+#
+# this setting does nothing if video is not enabled
+max_file_size = 40
+
+## Optional: max frame count
+# default: 900
+#
+# this setting does nothing if video is not enabled
+max_frame_count = 900
+
+## Optional: set the default video codec
+# default: vp9
+#
+# available options: av1, h264, h265, vp8, vp9
+# this setting does nothing if video is not enabled
+video_codec = "vp9"
+
+## Optional: set the default audio codec
+# default: empty
+#
+# available options: aac, opus, vorbis
+# The audio codec is automatically selected based on video codec, but can be overriden to `vorbis`
+# for webm uploads
+# automatic mappings:
+# - av1, vp8, and vp9 map to opus
+# - h264 and h265 map to aac
+# - vorbis is not default for any codec
+# this setting does nothing if full video is not enabled
+audio_codec = "opus"
+
+
+[media.video.quality]
+## Optional: set maximum quality for all videos
+# default: 32
+#
+# This value means different things for different video codecs:
+# - it ranges from 0 to 63 for AV1
+# - it ranges from 4 to 63 for VP8
+# - it ranges from 0 to 63 for VP9
+# - it ranges from 0 to 51 for H265
+# - it ranges from 0 to 51 for 8bit H264
+# - it ranges from 0 to 63 for 10bit H264
+#
+# A lower value (closer to 0) is higher quality, while a higher value (closer to 63) is lower
+# quality. Generally acceptable ranges are 15-38, where lower values are preferred for larger
+# videos
+#
+# This value may be overridden for some videos depending on whether other crf configurations are set
+# For example, if crf_max is set to 32 and crf_720 is set to 34, then all videos smaller than or
+# equal to 720p video will be encoded with a `crf` of 34, while all videos larger than 720p will be
+# encoded with a `crf` of 32
+#
+# The example values here are taken from a google document about reasonable CRF values for VP9
+# video. More information about `crf` can be found on ffmpeg's wiki
+# 
+# - AV1: https://trac.ffmpeg.org/wiki/Encode/AV1#ConstantQuality
+# - H264: https://trac.ffmpeg.org/wiki/Encode/H.264#crf
+# - H265: https://trac.ffmpeg.org/wiki/Encode/H.265#ConstantRateFactorCRF
+# - VP8: https://trac.ffmpeg.org/wiki/Encode/H.265#ConstantRateFactorCRF
+# - VP9: https://trac.ffmpeg.org/wiki/Encode/VP9#constantq
+crf_max = 12
+
+## Optional: set quality for videos up to 240p
+# default: empty
+#
+# This value overrides `crf_max` for videos with a smaller dimension of at most 240px (240p)
+crf_240 = 37
+
+## Optional: set quality for videos up to 360p
+# default: empty
+#
+# This value overrides `crf_max` for videos with a smaller dimension of at most 360px (260p)
+crf_360 = 36
+
+## Optional: set quality for videos up to 480p
+# default: empty
+#
+# This value overrides `crf_max` for videos with a smaller dimension of at most 480px (480p)
+crf_480 = 33
+
+## Optional: set quality for videos up to 720p
+# default: empty
+#
+# This value overrides `crf_max` for videos with a smaller dimension of at most 720px (720p)
+crf_720 = 32
+
+## Optional: set quality for videos up to 1080p
+# default: empty
+#
+# This value overrides `crf_max` for videos with a smaller dimension of at most 1080px (1080p)
+crf_1080 = 31
+
+## Optional: set quality for videos up to 1440p
+# default: empty
+#
+# This value overrides `crf_max` for videos with a smaller dimension of at most 1440px (1440p)
+crf_1440 = 24
+
+## Optional: set quality for videos up to 4K
+# default: empty
+#
+# This value overrides `crf_max` for videos with a smaller dimension of at most 2160px (4K)
+crf_2160 = 15
+
+
+## Database configuration
+[repo]
+## Optional: database backend to use
+# default: sled
+#
+# available options: sled
+type = 'sled'
+
+## Optional: path to sled repository
+# default: /mnt/sled-repo
+path = '__DATA_DIR__/sled'
+
+## Optional: in-memory cache capacity for sled data (in bytes)
+# default: 67,108,864 (1024 * 1024 * 64, or 64MB)
+cache_capacity = 67108864
+
+## Optional: path for storing database exports
+# default: /mnt/exports
+#
+# Used in combination with the /internal/export endpoint to dump the current sled database into a
+# new file. This can be helpful for backing up a running pict-rs server.
+export_path = "__DATA_DIR__/exports"
+
+
+## Media storage configuration
+#[store]
+## Optional: type of media storage to use
+# default: filesystem
+#
+# available options: filesystem, object_storage
+#type = 'filesystem'
+
+## Required: endpoint at which the object storage exists
+# default: empty
+#
+# examples:
+# - `http://localhost:9000` # minio
+# - `https://s3.dualstack.eu-west-1.amazonaws.com` # s3
+#endpoint = 'http://minio:9000'
+
+## Optional: How to format object storage requests
+# default: false
+#
+# When this is true, objects will be fetched from http{s}://{endpoint}:{port}/{bucket_name}/{object}
+# When false, objects will be fetched from http{s}://{bucket_name}.{endpoint}:{port}/{object}
+#
+# Set to true when using minio
+#use_path_style = false
+
+## Required: object storage bucket name
+# default: empty
+#bucket_name = 'pict-rs'
+
+## Required: object storage region
+# default: empty
+#
+# When using minio, this can be set to `minio`
+#region = ''
+
+## Required: object storage access key
+# default: empty
+#access_key = ''
+
+## Required: object storage secret key
+# default: empty
+#secret_key = ''
+
+## Optional: object storage session token
+# default: empty
+#session_token = ''
+
+## Optional: set how long object storage signatures are valid for (in seconds)
+# default: 15
+#
+# This can be useful if your object storage might take a while to process requests. It should not be
+# increased more than needed to prevent replay attacks.
+#signature_expiration = 15
+
+## Optional: set how long pict-rs will wait (in seconds) for a response from object storage
+# default: 30
+#
+# This value is the total wait time, and not additional wait time on top of the
+# signature_expiration.
+#client_timeout = 30
+
+## Filesystem media storage example
+# ## Media storage configuration
+[store]
+# ## Optional: type of media storage to use
+# # default: filesystem
+# #
+# # available options: filesystem, object_storage
+type = 'filesystem'
+#
+# ## Optional: path to uploaded media
+# # default: /mnt/files
+path = '__DATA_DIR__/pictrs-data'

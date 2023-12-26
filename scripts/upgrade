@@ -24,6 +24,7 @@ ynh_script_progression --message="Stopping a systemd service..." --weight=1
 
 ynh_systemd_action --service_name=$app --action="stop" --line_match="Stopped" --log_path=systemd
 ynh_systemd_action --service_name=$app-ui --action="stop" --line_match="Stopped" --log_path=systemd
+ynh_systemd_action --service_name=$app-pict-rs --action="stop" --line_match="Stopped" --log_path=systemd
 
 #=================================================
 # ENSURE DOWNWARD COMPATIBILITY
@@ -40,16 +41,6 @@ then
 	ynh_remove_systemd_config --service=$app-iframely
 fi
 
-# Removing previously installed pict-rs
-if ynh_exec_warn_less yunohost service status $app-pict-rs >/dev/null
-then
-	ynh_script_progression --message="Removing $app-pict-rs service integration..."
-	yunohost service remove $app-pict-rs
-fi
-ynh_remove_systemd_config --service=$app-pict-rs
-ynh_secure_remove --file="$install_dir/pict-rs"
-ynh_app_setting_delete --app=$app --key=port_pictrs
-
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
@@ -62,9 +53,9 @@ then
 	ynh_setup_source --dest_dir="$install_dir/build-lemmy/"
 	ynh_setup_source --dest_dir="$install_dir/build-lemmy-ui/"
 	ynh_setup_source --dest_dir="$install_dir/lemmy-ui/lemmy-translations/" --source_id="lemmy-translations"
+	ynh_setup_source --dest_dir="$install_dir/build-pict-rs/"
 fi
 
-chmod 750 "$install_dir"
 chmod -R o-rwx "$install_dir"
 chown -R $app:$app "$install_dir"
 
@@ -118,6 +109,19 @@ then
 	mkdir -p "$install_dir/lemmy/"
 	mv -f "$install_dir/build-lemmy/output/app/lemmy" "$install_dir/lemmy/lemmy"
 	ynh_secure_remove --file="$install_dir/build-lemmy"
+
+	# Install pict-rs
+	pushd $install_dir/build-pict-rs
+		./docker-image-extract asonix/pictrs:$PICTRS_VERSION
+	popd
+	mkdir -p "$install_dir/pict-rs/"
+	mv -f "$install_dir/build-pict-rs/output/usr/local/bin/pict-rs" "$install_dir/pict-rs/pict-rs"
+	ynh_secure_remove --file="$install_dir/build-pict-rs"
+
+	# (Dirty) Install ImageMagick
+	# Requires 'libfuse2' and 'libimage-exiftool-perl' apt dependencies
+	ynh_script_progression --message="Downloading and installing ImageMagick..." --weight=1
+	download_and_install_appimage --name="magick" --url="https://imagemagick.org/archive/binaries/magick" --directory="$install_dir/pict-rs" --symlink="$install_dir/pict-rs/magick"
 fi
 
 chmod 750 "$install_dir"
@@ -129,11 +133,22 @@ chown -R $app:$app "$install_dir"
 #=================================================
 ynh_script_progression --message="Updating a configuration file..." --weight=1
 
+# Lemmy configuration
 mkdir -p "$install_dir/lemmy/"
 ynh_add_config --template="../conf/lemmy.hjson" --destination="$install_dir/config/config.hjson"
-
 chmod 400 "$install_dir/config/config.hjson"
 chown $app:$app "$install_dir/config/config.hjson"
+
+# Pict-RS configuration
+ynh_add_config --template="../conf/pict-rs.toml" --destination="$install_dir/pict-rs/pict-rs.toml"
+chmod 400 "$install_dir/pict-rs/pict-rs.toml"
+chown $app:$app "$install_dir/pict-rs/pict-rs.toml"
+
+# ImageMagick configuration
+mkdir -p "$install_dir/.config/ImageMagick"
+ynh_add_config --template="../conf/policy.xml" --destination="$install_dir/.config/ImageMagick/policy.xml"
+chmod 400 "$install_dir/.config/ImageMagick/policy.xml"
+chown -R $app:$app "$install_dir/.config"
 
 #=================================================
 # CREATE EXTENSION IF NOT EXISTS pgcrypto
@@ -147,9 +162,13 @@ ynh_psql_execute_as_root --sql="CREATE EXTENSION IF NOT EXISTS pgcrypto;" --data
 #=================================================
 ynh_script_progression --message="Upgrading systemd configuration..." --weight=1
 
+# Prep local path for Pict-RS
+pictrs_path="$install_dir/pict-rs:$PATH"
+
 # Create a dedicated systemd config
 ynh_add_systemd_config --service="$app" --template="lemmy.service"
 ynh_add_systemd_config --service="$app-ui" --template="lemmy-ui.service"
+ynh_add_systemd_config --service="$app-pict-rs" --template="pict-rs.service"
 
 #=================================================
 # GENERIC FINALIZATION
@@ -171,16 +190,25 @@ ynh_use_logrotate --non-append
 #=================================================
 ynh_script_progression --message="Integrating service in YunoHost..." --weight=1
 
-yunohost service add $app --log="/var/log/$app/$app.log"
-yunohost service add $app-ui --log="/var/log/$app/$app-ui.log"
+yunohost service add $app --description="Link aggregator/Reddit clone" --log="/var/log/$app/$app.log"
+yunohost service add $app-ui --description="Link aggregator/Reddit clone" --log="/var/log/$app/$app-ui.log"
+yunohost service add $app-pict-rs --description="Simple image hosting service for Lemmy" --log="/var/log/$app/$app-pict-rs.log"
 
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
+
+# TMP rebuild sharp
+pushd $install_dir/lemmy-ui
+ 	ynh_use_nodejs
+	ynh_exec_warn_less sudo -u $app env $ynh_node_load_PATH npm rebuild sharp
+popd
+
 ynh_script_progression --message="Starting a systemd service..." --weight=1
 
-ynh_systemd_action --service_name=$app --action="start" --line_match="Starting http server at" --log_path="/var/log/$app/$app.log"
-ynh_systemd_action --service_name=$app-ui --action="start" --line_match="http://0.0.0.0" --log_path="/var/log/$app/$app-ui.log"
+ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$app/$app.log" --line_match="Starting http server at"
+ynh_systemd_action --service_name=$app-ui --action="start" --log_path="/var/log/$app/$app-ui.log" --line_match="http://0.0.0.0"
+ynh_systemd_action --service_name=$app-pict-rs --action="start" --log_path="/var/log/$app/$app-pict-rs.log" --line_match="starting in Actix runtime"
 
 #=================================================
 # END OF SCRIPT

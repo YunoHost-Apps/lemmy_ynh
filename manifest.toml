@@ -5,7 +5,7 @@ name = "Lemmy"
 description.en = "Link aggregator/Reddit clone for the fediverse"
 description.fr = "Agrégateur de liens/clone Reddit pour le fedivers"
 
-version = "0.18.5~ynh1"
+version = "0.18.2~ynh1"
 
 maintainers = []
 
@@ -50,17 +50,24 @@ ram.runtime = "50M"
 
     [resources.ports]
     main.default = 8536
+    pictrs.default = 8080
     ui.default = 1235
 
     [resources.system_user]
+    allow_email = true
 
     [resources.install_dir]
 
     [resources.data_dir]
-    subdirs = ["pictrs-data"]
+    subdirs = ["pictrs-data", "sled", "exports", "magick"]
 
     [resources.permissions]
     main.url = "/"
+
+    pict-rs.url = "/pictrs"
+    pict-rs.allowed = "visitors"
+    pict-rs.show_tile = false
+    pict-rs.protected = true
     
     api.url = "/api"
     api.allowed = "visitors"
@@ -75,7 +82,7 @@ ram.runtime = "50M"
     inbox.protected = true
 
     [resources.apt]
-    packages = "postgresql, espeak, rsync"
+    packages = "postgresql, espeak, rsync, libfuse2, libimage-exiftool-perl, ffmpeg"
     extras.yarn.repo = "deb https://dl.yarnpkg.com/debian/ stable main"
     extras.yarn.key = "https://dl.yarnpkg.com/debian/pubkey.gpg"
     extras.yarn.packages = "yarn"
