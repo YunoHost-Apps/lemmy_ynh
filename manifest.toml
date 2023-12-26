@@ -67,10 +67,10 @@ ram.runtime = "50M"
     [resources.permissions]
     main.url = "/"
 
-    pict-rs.url = "/pictrs"
-    pict-rs.allowed = "visitors"
-    pict-rs.show_tile = false
-    pict-rs.protected = true
+    pictrs.url = "/pictrs"
+    pictrs.allowed = "visitors"
+    pictrs.show_tile = false
+    pictrs.protected = true
     
     api.url = "/api"
     api.allowed = "visitors"
