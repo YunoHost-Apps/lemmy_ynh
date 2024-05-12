@@ -4,7 +4,7 @@
 # COMMON VARIABLES
 #=================================================
 
-PICTRS_VERSION=0.4.1-rc.0
+PICTRS_VERSION=0.5.0-rc.2
 
 NODEJS_VERSION=20
 
