@@ -19,7 +19,7 @@ It shall NOT be edited by hand.
 Lemmy is similar to sites like Reddit, Lobste.rs, or Hacker News: you subscribe to forums you're interested in, post links and discussions, then vote, and comment on them. Behind the scenes, it is very different; anyone can easily run a server, and all these servers are federated (think email), and connected to the same universe, called the Fediverse.
 
 
-**Shipped version:** 0.18.2~ynh3
+**Shipped version:** 2023.08.09~ynh1
 
 **Demo:** <https://lemmy.ml/>
 
