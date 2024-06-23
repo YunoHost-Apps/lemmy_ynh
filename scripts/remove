@@ -49,7 +49,6 @@ ynh_remove_nodejs
 #ynh_secure_remove --file="/lib/libc.musl-x86_64.so.1"
 
 # Remove the log files
-ynh_secure_remove --file="/var/log/$app"
 
 #=================================================
 # END OF SCRIPT
