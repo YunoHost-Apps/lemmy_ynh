@@ -43,7 +43,7 @@ chown -R "$app:$app" "$install_dir"
 #=================================================
 
 pushd "$install_dir/lemmy-ui"
-    ynh_exec_warn_less ynh_exec_as "$app" env "$ynh_node_load_PATH" yarn add sharp
+    # ynh_exec_warn_less ynh_exec_as "$app" env "$ynh_node_load_PATH" yarn add sharp
 popd
 
 #=================================================
