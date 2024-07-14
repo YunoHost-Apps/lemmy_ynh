@@ -50,10 +50,10 @@ then
 	ynh_script_progression --message="Upgrading source files..." --weight=1
 
 	# Download, check integrity, uncompress the source of lemmy from app.src to his build directory
-	ynh_setup_source --dest_dir="$install_dir/build-lemmy/"
-	ynh_setup_source --dest_dir="$install_dir/build-lemmy-ui/"
+	ynh_setup_source --source_id="docker-image-extract" --dest_dir="$install_dir/build-lemmy/"
+	ynh_setup_source --source_id="docker-image-extract" --dest_dir="$install_dir/build-lemmy-ui/"
+	ynh_setup_source --source_id="docker-image-extract" --dest_dir="$install_dir/build-pict-rs/"
 	ynh_setup_source --dest_dir="$install_dir/lemmy-ui/lemmy-translations/" --source_id="lemmy-translations"
-	ynh_setup_source --dest_dir="$install_dir/build-pict-rs/"
 fi
 
 chmod -R o-rwx "$install_dir"
