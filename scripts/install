@@ -1,8 +1,6 @@
 #!/bin/bash
 
 #=================================================
-# GENERIC START
-#=================================================
 # IMPORT GENERIC HELPERS
 #=================================================
 
@@ -12,18 +10,19 @@ source /usr/share/yunohost/helpers
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
-ynh_script_progression --message="Installing dependencies..." --weight=1
+ynh_script_progression --message="Installing NodeJS..." --weight=1
 
-ynh_install_nodejs --nodejs_version=$NODEJS_VERSION
-ynh_use_nodejs
+ynh_install_nodejs --nodejs_version="$NODEJS_VERSION"
+ynh_use_nodejs$
+
 ln -fs /usr/lib/x86_64-linux-musl/libc.so /lib/libc.musl-x86_64.so.1
 
 #=================================================
 # CREATE A POSTGRESQL DATABASE
 #=================================================
-ynh_script_progression --message="Creating a PostgreSQL database..." --weight=1
+ynh_script_progression --message="Configuring $app's PostgreSQL database..." --weight=1
 
-ynh_psql_execute_as_root --sql="CREATE EXTENSION IF NOT EXISTS pgcrypto;" --database="$db_name"
+ynh_psql_execute_as_root --database="$db_name" --sql="CREATE EXTENSION IF NOT EXISTS pgcrypto;"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -37,23 +36,14 @@ ynh_setup_source --source_id="docker-image-extract" --dest_dir="$install_dir/bui
 ynh_setup_source --source_id="lemmy-translations" --dest_dir="$install_dir/lemmy-ui/lemmy-translations/"
 
 chmod -R o-rwx "$install_dir"
-chown -R $app:$app "$install_dir"
-
-#=================================================
-# NGINX CONFIGURATION
-#=================================================
-ynh_script_progression --message="Configuring NGINX web server..." --weight=1
-
-# Create a dedicated NGINX config
-ynh_add_nginx_config
+chown -R "$app:$app" "$install_dir"
 
 #=================================================
 # INSTALL SHARP
 #=================================================
 
-pushd $install_dir/lemmy-ui
- 	ynh_use_nodejs
-	ynh_exec_warn_less sudo -u $app env $ynh_node_load_PATH yarn add sharp
+pushd "$install_dir/lemmy-ui"
+    ynh_exec_warn_less ynh_exec_as "$app" env "$ynh_node_load_PATH" yarn add sharp
 popd
 
 #=================================================
@@ -62,24 +52,24 @@ popd
 ynh_script_progression --message="Making install..." --weight=1
 
 # Install lemmy-ui
-pushd $install_dir/build-lemmy-ui
-	./docker-image-extract dessalines/lemmy-ui:$(ynh_app_upstream_version)
+pushd "$install_dir/build-lemmy-ui"
+    ./docker-image-extract "dessalines/lemmy-ui:$(ynh_app_upstream_version)"
 popd
 mkdir -p "$install_dir/lemmy-ui/"
 rsync -a "$install_dir/build-lemmy-ui/output/app/" "$install_dir/lemmy-ui/"
 ynh_secure_remove --file="$install_dir/build-lemmy-ui"
 
 # Install lemmy
-pushd $install_dir/build-lemmy
-	./docker-image-extract dessalines/lemmy:$(ynh_app_upstream_version)
+pushd "$install_dir/build-lemmy"
+    ./docker-image-extract "dessalines/lemmy:$(ynh_app_upstream_version)"
 popd
 mkdir -p "$install_dir/lemmy/"
 mv -f "$install_dir/build-lemmy/output/app/lemmy" "$install_dir/lemmy/lemmy"
 ynh_secure_remove --file="$install_dir/build-lemmy"
 
 # Install pict-rs
-pushd $install_dir/build-pict-rs
-	./docker-image-extract asonix/pictrs:$PICTRS_VERSION
+pushd "$install_dir/build-pict-rs"
+    ./docker-image-extract "asonix/pictrs:$PICTRS_VERSION"
 popd
 mkdir -p "$install_dir/pict-rs/"
 mv -f "$install_dir/build-pict-rs/output/usr/local/bin/pict-rs" "$install_dir/pict-rs/pict-rs"
@@ -87,7 +77,7 @@ ynh_secure_remove --file="$install_dir/build-pict-rs"
 
 chmod 750 "$install_dir"
 chmod -R o-rwx "$install_dir"
-chown -R $app:$app "$install_dir"
+chown -R "$app:$app" "$install_dir"
 
 # (Dirty) Install ImageMagick
 # Requires 'libfuse2' and 'libimage-exiftool-perl' apt dependencies
@@ -97,29 +87,32 @@ download_and_install_appimage --name="magick" --url="https://imagemagick.org/arc
 #=================================================
 # ADD A CONFIGURATION
 #=================================================
-ynh_script_progression --message="Adding a configuration file..." --weight=1
+ynh_script_progression --message="Adding $app's configuration file..." --weight=1
 
 # Lemmy configuration
 mkdir -p "$install_dir/config/"
 ynh_add_config --template="lemmy.hjson" --destination="$install_dir/config/config.hjson"
 chmod 400 "$install_dir/config/config.hjson"
-chown $app:$app "$install_dir/config/config.hjson"
+chown "$app:$app" "$install_dir/config/config.hjson"
 
 # Pict-RS configuration
 ynh_add_config --template="pict-rs.toml" --destination="$install_dir/pict-rs/pict-rs.toml"
 chmod 400 "$install_dir/pict-rs/pict-rs.toml"
-chown $app:$app "$install_dir/pict-rs/pict-rs.toml"
+chown "$app:$app" "$install_dir/pict-rs/pict-rs.toml"
 
 # ImageMagick configuration
 mkdir -p "$install_dir/.config/ImageMagick"
 ynh_add_config --template="policy.xml" --destination="$install_dir/.config/ImageMagick/policy.xml"
 chmod 400 "$install_dir/.config/ImageMagick/policy.xml"
-chown -R $app:$app "$install_dir/.config"
+chown -R "$app:$app" "$install_dir/.config"
 
 #=================================================
-# SETUP SYSTEMD
+# SYSTEM CONFIGURATION
 #=================================================
-ynh_script_progression --message="Configuring a systemd service..." --weight=1
+ynh_script_progression --message="Adding system configurations related to $app..." --weight=1
+
+# Create a dedicated NGINX config
+ynh_add_nginx_config
 
 # Prep local path for Pict-RS
 pictrs_path="$install_dir/pict-rs:$PATH"
@@ -128,47 +121,30 @@ pictrs_path="$install_dir/pict-rs:$PATH"
 ynh_add_systemd_config --service="$app" --template="lemmy.service"
 ynh_add_systemd_config --service="$app-ui" --template="lemmy-ui.service"
 ynh_add_systemd_config --service="$app-pict-rs" --template="pict-rs.service"
-
-#=================================================
-# GENERIC FINALIZATION
-#=================================================
-# SETUP LOGROTATE
-#=================================================
-ynh_script_progression --message="Configuring log rotation..." --weight=1
-
-mkdir -p "/var/log/$app"
-chmod 750 "/var/log/$app"
-chmod -R o-rwx "/var/log/$app"
-chown -R $app:$app "/var/log/$app"
+yunohost service add "$app" --description="Link aggregator/Reddit clone" --log="/var/log/$app/$app.log"
+yunohost service add "$app-ui" --description="Link aggregator/Reddit clone" --log="/var/log/$app/$app-ui.log"
+yunohost service add "$app-pict-rs" --description="Simple image hosting service for Lemmy" --log="/var/log/$app/$app-pict-rs.log"
 
 # Use logrotate to manage application logfile(s)
 ynh_use_logrotate
+chmod 750 "/var/log/$app"
+chmod -R o-rwx "/var/log/$app"
+chown -R "$app:$app" "/var/log/$app"
 
-#=================================================
-# INTEGRATE SERVICE IN YUNOHOST
-#=================================================
-ynh_script_progression --message="Integrating service in YunoHost..." --weight=1
-
-yunohost service add $app --description="Link aggregator/Reddit clone" --log="/var/log/$app/$app.log"
-yunohost service add $app-ui --description="Link aggregator/Reddit clone" --log="/var/log/$app/$app-ui.log"
-yunohost service add $app-pict-rs --description="Simple image hosting service for Lemmy" --log="/var/log/$app/$app-pict-rs.log"
+# FIXME: TMP rebuild sharp
+pushd "$install_dir/lemmy-ui"
+    ynh_exec_warn_less ynh_exec_as "$app" env "$ynh_node_load_PATH" npm rebuild sharp
+popd
 
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
-
-# TMP rebuild sharp
-pushd $install_dir/lemmy-ui
- 	ynh_use_nodejs
-	ynh_exec_warn_less sudo -u $app env $ynh_node_load_PATH npm rebuild sharp
-popd
-
-ynh_script_progression --message="Starting a systemd service..." --weight=1
+ynh_script_progression --message="Starting $app's systemd services..." --weight=1
 
 # Start a systemd service
-ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$app/$app.log" --line_match="Starting http server at"
-ynh_systemd_action --service_name=$app-ui --action="start" --log_path="/var/log/$app/$app-ui.log" --line_match="http://0.0.0.0"
-ynh_systemd_action --service_name=$app-pict-rs --action="start" --log_path="/var/log/$app/$app-pict-rs.log" --line_match="starting in Actix runtime"
+ynh_systemd_action --service_name="$app" --action="start" --log_path="/var/log/$app/$app.log" --line_match="Starting http server at"
+ynh_systemd_action --service_name="$app-ui" --action="start" --log_path="/var/log/$app/$app-ui.log" --line_match="http://0.0.0.0"
+ynh_systemd_action --service_name="$app-pict-rs" --action="start" --log_path="/var/log/$app/$app-pict-rs.log" --line_match="starting in Actix runtime"
 
 #=================================================
 # END OF SCRIPT

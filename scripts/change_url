@@ -1,8 +1,6 @@
 #!/bin/bash
 
 #=================================================
-# GENERIC STARTING
-#=================================================
 # IMPORT GENERIC HELPERS
 #=================================================
 
@@ -10,15 +8,13 @@ source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# STANDARD MODIFICATIONS
-#=================================================
 # STOP SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Stopping a systemd service..." --weight=1
+ynh_script_progression --message="Stopping $app's systemd services..." --weight=1
 
-ynh_systemd_action --service_name=$app --action="stop" --line_match="Stopped" "/var/log/$app/$app.log"
-ynh_systemd_action --service_name=$app-ui --action="stop" --line_match="Stopped" --log_path="/var/log/$app/$app-ui.log"
-ynh_systemd_action --service_name=$app-pict-rs --action="stop" --line_match="Stopped" --log_path="/var/log/$app/$app-pict-rs.log"
+ynh_systemd_action --service_name="$app" --action="stop" --line_match="Stopped" "/var/log/$app/$app.log"
+ynh_systemd_action --service_name="$app-ui" --action="stop" --line_match="Stopped" --log_path="/var/log/$app/$app-ui.log"
+ynh_systemd_action --service_name="$app-pict-rs" --action="stop" --line_match="Stopped" --log_path="/var/log/$app/$app-pict-rs.log"
 
 #=================================================
 # MODIFY URL IN NGINX CONF
@@ -30,24 +26,22 @@ ynh_change_url_nginx_config
 #=================================================
 # ADD A CONFIGURATION
 #=================================================
-ynh_script_progression --message="Adding a configuration file..." --weight=1
+ynh_script_progression --message="Updating $app's configuration file..." --weight=1
 
 mkdir -p "$install_dir/config/"
-ynh_add_config --template="../conf/lemmy.hjson" --destination="$install_dir/config/config.hjson"
+ynh_add_config --template="lemmy.hjson" --destination="$install_dir/config/config.hjson"
 
 chmod 400 "$install_dir/config/config.hjson"
-chown $app:$app "$install_dir/config/config.hjson"
+chown "$app:$app" "$install_dir/config/config.hjson"
 
-#=================================================
-# GENERIC FINALISATION
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Starting a systemd service..." --weight=1
+ynh_script_progression --message="Starting $app's systemd services..." --weight=1
 
-ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$app/$app.log" --line_match="Starting http server at"
-ynh_systemd_action --service_name=$app-ui --action="start" --log_path="/var/log/$app/$app-ui.log" --line_match="http://0.0.0.0"
-ynh_systemd_action --service_name=$app-pict-rs --action="start" --log_path="/var/log/$app/$app-pict-rs.log" --line_match="starting in Actix runtime"
+ynh_systemd_action --service_name="$app" --action="start" --log_path="/var/log/$app/$app.log" --line_match="Starting http server at"
+ynh_systemd_action --service_name="$app-ui" --action="start" --log_path="/var/log/$app/$app-ui.log" --line_match="http://0.0.0.0"
+ynh_systemd_action --service_name="$app-pict-rs" --action="start" --log_path="/var/log/$app/$app-pict-rs.log" --line_match="starting in Actix runtime"
 
 #=================================================
 # END OF SCRIPT
