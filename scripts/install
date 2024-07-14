@@ -13,7 +13,7 @@ source /usr/share/yunohost/helpers
 ynh_script_progression --message="Installing NodeJS..." --weight=1
 
 ynh_install_nodejs --nodejs_version="$NODEJS_VERSION"
-ynh_use_nodejs$
+ynh_use_nodejs
 
 ln -fs /usr/lib/x86_64-linux-musl/libc.so /lib/libc.musl-x86_64.so.1
 
