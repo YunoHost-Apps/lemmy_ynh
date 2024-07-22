@@ -18,7 +18,7 @@ Il NE doit PAS être modifié à la main.
 
 Lemmy est similaire à des sites comme Reddit, Lobste.rs ou Hacker News : vous vous abonnez aux forums qui vous intéressent, publiez des liens et des discussions, puis votez et commentez-les. Dans les coulisses, c'est très différent ; n'importe qui peut facilement exécuter un serveur, et tous ces serveurs sont fédérés (pensez au courrier électronique) et connectés au même univers, appelé Fediverse.
 
-**Version incluse :** 0.19.5~ynh1
+**Version incluse :** 0.19.5~ynh2
 
 **Démo :** <https://lemmy.ml/>
 
