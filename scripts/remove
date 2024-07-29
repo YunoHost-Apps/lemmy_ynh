@@ -1,8 +1,6 @@
 #!/bin/bash
 
 #=================================================
-# GENERIC START
-#=================================================
 # IMPORT GENERIC HELPERS
 #=================================================
 
@@ -10,33 +8,25 @@ source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# STANDARD REMOVE
-#=================================================
 # REMOVE SERVICE INTEGRATION IN YUNOHOST
 #=================================================
 ynh_script_progression --message="Removing system configurations related to $app..." --weight=10
 
 # Remove the service from the list of services known by YunoHost (added from `yunohost service add`)
-if ynh_exec_warn_less yunohost service status $app >/dev/null
-then
-	ynh_script_progression --message="Removing $app service integration..." --weight=1
-	yunohost service remove $app
+if ynh_exec_warn_less yunohost service status "$app" >/dev/null; then
+    yunohost service remove "$app"
 fi
-if ynh_exec_warn_less yunohost service status $app-ui >/dev/null
-then
-	ynh_script_progression --message="Removing $app-ui service integration..." --weight=1
-	yunohost service remove $app-ui
-fi
-if ynh_exec_warn_less yunohost service status $app-pict-rs >/dev/null
-then
-	ynh_script_progression --message="Removing $app-pict-rs service integration..." --weight=1
-	yunohost service remove $app-pict-rs
-fi
-
-# Remove the dedicated systemd config
 ynh_remove_systemd_config
-ynh_remove_systemd_config --service=$app-ui
-ynh_remove_systemd_config --service=$app-pict-rs
+
+if ynh_exec_warn_less yunohost service status "$app-ui" >/dev/null; then
+    yunohost service remove "$app-ui"
+fi
+ynh_remove_systemd_config --service="$app-ui"
+
+if ynh_exec_warn_less yunohost service status "$app-pict-rs" >/dev/null; then
+    yunohost service remove "$app-pict-rs"
+fi
+ynh_remove_systemd_config --service="$app-pict-rs"
 
 # Remove the app-specific logrotate config
 ynh_remove_logrotate
@@ -46,9 +36,6 @@ ynh_remove_nginx_config
 
 # Remove metapackage and its dependencies
 ynh_remove_nodejs
-#ynh_secure_remove --file="/lib/libc.musl-x86_64.so.1"
-
-# Remove the log files
 
 #=================================================
 # END OF SCRIPT
