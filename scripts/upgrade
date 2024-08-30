@@ -1,53 +1,41 @@
 #!/bin/bash
 
-#=================================================
-# GENERIC START
-#=================================================
-# IMPORT GENERIC HELPERS
-#=================================================
-
 source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# CHECK VERSION
-#=================================================
-
-upgrade_type=$(ynh_check_app_version_changed)
-
-#=================================================
-# STANDARD UPGRADE STEPS
-#=================================================
 # STOP SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Stopping a systemd service..." --weight=1
+ynh_script_progression "Stopping $app's systemd service..."
 
-ynh_systemd_action --service_name=$app --action="stop" --line_match="Stopped" --log_path="/var/log/$app/$app.log"
-ynh_systemd_action --service_name=$app-ui --action="stop" --line_match="Stopped" --log_path="/var/log/$app/$app-ui.log"
-ynh_systemd_action --service_name=$app-pict-rs --action="stop" --line_match="Stopped" --log_path="/var/log/$app/$app-pict-rs.log"
+ynh_systemctl --service=$app --action="stop" --wait_until="Stopped"
+
+ynh_systemctl --service=$app-ui --action="stop" --wait_until="Stopped" --log_path="/var/log/$app/$app-ui.log"
+ynh_systemctl --service=$app-pict-rs --action="stop" --wait_until="Stopped" --log_path="/var/log/$app/$app-pict-rs.log"
 
 #=================================================
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
-ynh_script_progression --message="Ensuring downward compatibility..." --weight=1
+ynh_script_progression "Ensuring downward compatibility..."
 
 # Removing previously installed iframely
-if ynh_exec_warn_less yunohost service status $app-iframely >/dev/null
+if ynh_hide_warnings yunohost service status $app-iframely >/dev/null
 then
-	ynh_script_progression --message="Removing $app-iframely service integration..."
+	ynh_script_progression "Removing $app-iframely service integration..."
 	yunohost service remove $app-iframely
-	ynh_app_setting_delete --app=$app  --key=random
-	ynh_app_setting_delete --app=$app  --key=port_iframely
-	ynh_remove_systemd_config --service=$app-iframely
+	ynh_app_setting_delete  --key=random
+	ynh_app_setting_delete  --key=port_iframely
+	ynh_config_remove_systemd$app-iframely
 fi
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 
-if [ "$upgrade_type" == "UPGRADE_APP" ]
+# FIXME: this is still supported but the recommendation is now to *always* re-setup the app sources wether or not the upstream sources changed
+if ynh_app_upstream_version_changed
 then
-	ynh_script_progression --message="Upgrading source files..." --weight=1
+	ynh_script_progression "Upgrading source files..."
 
 	# Download, check integrity, uncompress the source of lemmy from app.src to his build directory
 	ynh_setup_source --dest_dir="$install_dir/build-lemmy/"
@@ -56,43 +44,41 @@ then
 	ynh_setup_source --dest_dir="$install_dir/build-pict-rs/"
 fi
 
-chmod -R o-rwx "$install_dir"
-chown -R $app:$app "$install_dir"
-
+#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod -R o-rwx "$install_dir"
+#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown -R $app:$app "$install_dir"
 #=================================================
 # UPGRADE DEPENDENCIES
 #=================================================
-ynh_script_progression --message="Upgrading dependencies..." --weight=1
+ynh_script_progression "Upgrading dependencies..."
 
-ynh_install_nodejs --nodejs_version=$NODEJS_VERSION
-ynh_use_nodejs
+ynh_nodejs_install
+
 ln -fs /usr/lib/x86_64-linux-musl/libc.so /lib/libc.musl-x86_64.so.1
 
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
-ynh_script_progression --message="Upgrading NGINX web server configuration..." --weight=1
+ynh_script_progression "Upgrading NGINX web server configuration..."
 
 # Create a dedicated NGINX config
-ynh_add_nginx_config
+ynh_config_add_nginx
 
 #=================================================
 # INSTALL SHARP
 #=================================================
 
 pushd $install_dir/lemmy-ui
- 	ynh_use_nodejs
-	ynh_exec_warn_less sudo -u $app env $ynh_node_load_PATH yarn add sharp
+
+	ynh_hide_warnings ynh_exec_as_app node_load_PATH yarn add sharp
 popd
 
 #=================================================
-# SPECIFIC UPGRADE
-#=================================================
 # MAKE UPGRADE
 #=================================================
-ynh_script_progression --message="Making upgrade..." --weight=1
+ynh_script_progression "Making upgrade..."
 
-if [ "$upgrade_type" == "UPGRADE_APP" ]
+# FIXME: this is still supported but the recommendation is now to *always* re-setup the app sources wether or not the upstream sources changed
+if ynh_app_upstream_version_changed
 then
 	# Install lemmy-ui
 	pushd $install_dir/build-lemmy-ui
@@ -100,7 +86,7 @@ then
 	popd
 	mkdir -p "$install_dir/lemmy-ui/"
 	rsync -a "$install_dir/build-lemmy-ui/output/app/" "$install_dir/lemmy-ui/"
-	ynh_secure_remove --file="$install_dir/build-lemmy-ui"
+	ynh_safe_rm "$install_dir/build-lemmy-ui"
 
 	# Install lemmy
 	pushd $install_dir/build-lemmy
@@ -108,7 +94,7 @@ then
 	popd
 	mkdir -p "$install_dir/lemmy/"
 	mv -f "$install_dir/build-lemmy/output/app/lemmy" "$install_dir/lemmy/lemmy"
-	ynh_secure_remove --file="$install_dir/build-lemmy"
+	ynh_safe_rm "$install_dir/build-lemmy"
 
 	# Install pict-rs
 	pushd $install_dir/build-pict-rs
@@ -116,83 +102,80 @@ then
 	popd
 	mkdir -p "$install_dir/pict-rs/"
 	mv -f "$install_dir/build-pict-rs/output/usr/local/bin/pict-rs" "$install_dir/pict-rs/pict-rs"
-	ynh_secure_remove --file="$install_dir/build-pict-rs"
+	ynh_safe_rm "$install_dir/build-pict-rs"
 
 	# (Dirty) Install ImageMagick
 	# Requires 'libfuse2' and 'libimage-exiftool-perl' apt dependencies
-	ynh_script_progression --message="Downloading and installing ImageMagick..." --weight=1
+	ynh_script_progression "Downloading and installing ImageMagick..."
 	download_and_install_appimage --name="magick" --url="https://imagemagick.org/archive/binaries/magick" --directory="$install_dir/pict-rs" --symlink="$install_dir/pict-rs/magick"
 fi
 
-chmod 750 "$install_dir"
-chmod -R o-rwx "$install_dir"
-chown -R $app:$app "$install_dir"
-
+#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod 750 "$install_dir"
+#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod -R o-rwx "$install_dir"
+#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown -R $app:$app "$install_dir"
 #=================================================
 # UPDATE A CONFIG FILE
 #=================================================
-ynh_script_progression --message="Updating a configuration file..." --weight=1
+ynh_script_progression "Updating configuration..."
 
 # Lemmy configuration
 mkdir -p "$install_dir/lemmy/"
 chown $app:$app "$install_dir/lemmy"
-ynh_add_config --template="lemmy.hjson" --destination="$install_dir/config/config.hjson"
-chmod 400 "$install_dir/config/config.hjson"
-chown $app:$app "$install_dir/config/config.hjson"
+ynh_config_add --template="lemmy.hjson" --destination="$install_dir/config/config.hjson"
+#REMOVEME? Assuming the file is setup using ynh_config_add, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod 400 "$install_dir/config/config.hjson"
+#REMOVEME? Assuming the file is setup using ynh_config_add, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown $app:$app "$install_dir/config/config.hjson"
 
 # Pict-RS configuration
 mkdir -p "$install_dir/pict-rs"
 chown $app:$app "$install_dir/pict-rs"
-ynh_add_config --template="pict-rs.toml" --destination="$install_dir/pict-rs/pict-rs.toml"
+ynh_config_add --template="pict-rs.toml" --destination="$install_dir/pict-rs/pict-rs.toml"
 chmod 400 "$install_dir/pict-rs/pict-rs.toml"
 chown $app:$app "$install_dir/pict-rs/pict-rs.toml"
 
 # ImageMagick configuration
 mkdir -p "$install_dir/.config/ImageMagick"
-chown $app:$app -R "$install_dir/.config"
-ynh_add_config --template="policy.xml" --destination="$install_dir/.config/ImageMagick/policy.xml"
-chmod 400 "$install_dir/.config/ImageMagick/policy.xml"
+#REMOVEME? Assuming the file is setup using ynh_config_add, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown $app:$app -R "$install_dir/.config"
+ynh_config_add --template="policy.xml" --destination="$install_dir/.config/ImageMagick/policy.xml"
+#REMOVEME? Assuming the file is setup using ynh_config_add, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod 400 "$install_dir/.config/ImageMagick/policy.xml"
 chown -R $app:$app "$install_dir/.config"
 
 #=================================================
 # CREATE EXTENSION IF NOT EXISTS pgcrypto
 #=================================================
-ynh_script_progression --message="Creating pgcrypto extension if needed..." --weight=1
+ynh_script_progression "Creating pgcrypto extension if needed..."
 
-ynh_psql_execute_as_root --sql="CREATE EXTENSION IF NOT EXISTS pgcrypto;" --database="$db_name"
+ynh_psql_db_shell <<< "CREATE EXTENSION IF NOT EXISTS pgcrypto;"
 
 #=================================================
 # SETUP SYSTEMD
 #=================================================
-ynh_script_progression --message="Upgrading systemd configuration..." --weight=1
+ynh_script_progression "Upgrading systemd configuration..."
 
 # Prep local path for Pict-RS
 pictrs_path="$install_dir/pict-rs:$PATH"
 
 # Create a dedicated systemd config
-ynh_add_systemd_config --service="$app" --template="lemmy.service"
-ynh_add_systemd_config --service="$app-ui" --template="lemmy-ui.service"
-ynh_add_systemd_config --service="$app-pict-rs" --template="pict-rs.service"
+ynh_config_add_systemd  --template="lemmy.service"
+ynh_config_add_systemd --service="$app-ui" --template="lemmy-ui.service"
+ynh_config_add_systemd --service="$app-pict-rs" --template="pict-rs.service"
 
-#=================================================
-# GENERIC FINALIZATION
 #=================================================
 # SETUP LOGROTATE
 #=================================================
-ynh_script_progression --message="Upgrading logrotate configuration..." --weight=1
+ynh_script_progression "Upgrading logrotate configuration..."
 
 mkdir -p "/var/log/$app"
-chmod 750 "/var/log/$app"
-chmod -R o-rwx "/var/log/$app"
-chown -R $app:$app "/var/log/$app"
+#REMOVEME? Assuming ynh_config_add_logrotate is called, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod 750 "/var/log/$app"
+#REMOVEME? Assuming ynh_config_add_logrotate is called, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod -R o-rwx "/var/log/$app"
+#REMOVEME? Assuming ynh_config_add_logrotate is called, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown -R $app:$app "/var/log/$app"
 
 # Use logrotate to manage app-specific logfile(s)
-ynh_use_logrotate --non-append
+ynh_config_add_logrotate
 
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST
 #=================================================
-ynh_script_progression --message="Integrating service in YunoHost..." --weight=1
+ynh_script_progression "Integrating service in YunoHost..."
 
 yunohost service add $app --description="Link aggregator/Reddit clone" --log="/var/log/$app/$app.log"
 yunohost service add $app-ui --description="Link aggregator/Reddit clone" --log="/var/log/$app/$app-ui.log"
@@ -204,18 +187,18 @@ yunohost service add $app-pict-rs --description="Simple image hosting service fo
 
 # TMP rebuild sharp
 pushd $install_dir/lemmy-ui
- 	ynh_use_nodejs
-	ynh_exec_warn_less sudo -u $app env $ynh_node_load_PATH npm rebuild sharp
+
+	ynh_hide_warnings ynh_exec_as_app node_load_PATH npm rebuild sharp
 popd
 
-ynh_script_progression --message="Starting a systemd service..." --weight=1
+ynh_script_progression "Starting $app's systemd service..."
 
-ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$app/$app.log" --line_match="Starting http server at"
-ynh_systemd_action --service_name=$app-ui --action="start" --log_path="/var/log/$app/$app-ui.log" --line_match="http://0.0.0.0"
-ynh_systemd_action --service_name=$app-pict-rs --action="start" --log_path="/var/log/$app/$app-pict-rs.log" --line_match="starting in Actix runtime"
+ynh_systemctl --service=$app --action="start"  --wait_until="Starting http server at"
+ynh_systemctl --service=$app-ui --action="start" --log_path="/var/log/$app/$app-ui.log" --wait_until="http://0.0.0.0"
+ynh_systemctl --service=$app-pict-rs --action="start" --log_path="/var/log/$app/$app-pict-rs.log" --wait_until="starting in Actix runtime"
 
 #=================================================
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Upgrade of $app completed" --last
+ynh_script_progression "Upgrade of $app completed"
