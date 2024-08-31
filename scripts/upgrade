@@ -9,7 +9,6 @@ source /usr/share/yunohost/helpers
 ynh_script_progression "Stopping $app's systemd service..."
 
 ynh_systemctl --service=$app --action="stop" --wait_until="Stopped"
-
 ynh_systemctl --service=$app-ui --action="stop" --wait_until="Stopped" --log_path="/var/log/$app/$app-ui.log"
 ynh_systemctl --service=$app-pict-rs --action="stop" --wait_until="Stopped" --log_path="/var/log/$app/$app-pict-rs.log"
 
@@ -31,21 +30,13 @@ fi
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
+ynh_script_progression "Upgrading source files..."
 
-# FIXME: this is still supported but the recommendation is now to *always* re-setup the app sources wether or not the upstream sources changed
-if ynh_app_upstream_version_changed
-then
-	ynh_script_progression "Upgrading source files..."
+ynh_setup_source --dest_dir="$install_dir/build-lemmy/"
+ynh_setup_source --dest_dir="$install_dir/build-lemmy-ui/"
+ynh_setup_source --dest_dir="$install_dir/lemmy-ui/lemmy-translations/" --source_id="lemmy-translations"
+ynh_setup_source --dest_dir="$install_dir/build-pict-rs/"
 
-	# Download, check integrity, uncompress the source of lemmy from app.src to his build directory
-	ynh_setup_source --dest_dir="$install_dir/build-lemmy/"
-	ynh_setup_source --dest_dir="$install_dir/build-lemmy-ui/"
-	ynh_setup_source --dest_dir="$install_dir/lemmy-ui/lemmy-translations/" --source_id="lemmy-translations"
-	ynh_setup_source --dest_dir="$install_dir/build-pict-rs/"
-fi
-
-#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod -R o-rwx "$install_dir"
-#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown -R $app:$app "$install_dir"
 #=================================================
 # UPGRADE DEPENDENCIES
 #=================================================
@@ -60,7 +51,6 @@ ln -fs /usr/lib/x86_64-linux-musl/libc.so /lib/libc.musl-x86_64.so.1
 #=================================================
 ynh_script_progression "Upgrading NGINX web server configuration..."
 
-# Create a dedicated NGINX config
 ynh_config_add_nginx
 
 #=================================================
@@ -68,8 +58,7 @@ ynh_config_add_nginx
 #=================================================
 
 pushd $install_dir/lemmy-ui
-
-	ynh_hide_warnings ynh_exec_as_app node_load_PATH yarn add sharp
+	ynh_hide_warnings ynh_exec_as_app yarn add sharp
 popd
 
 #=================================================
@@ -110,9 +99,6 @@ then
 	download_and_install_appimage --name="magick" --url="https://imagemagick.org/archive/binaries/magick" --directory="$install_dir/pict-rs" --symlink="$install_dir/pict-rs/magick"
 fi
 
-#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod 750 "$install_dir"
-#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod -R o-rwx "$install_dir"
-#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown -R $app:$app "$install_dir"
 #=================================================
 # UPDATE A CONFIG FILE
 #=================================================
@@ -122,8 +108,6 @@ ynh_script_progression "Updating configuration..."
 mkdir -p "$install_dir/lemmy/"
 chown $app:$app "$install_dir/lemmy"
 ynh_config_add --template="lemmy.hjson" --destination="$install_dir/config/config.hjson"
-#REMOVEME? Assuming the file is setup using ynh_config_add, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod 400 "$install_dir/config/config.hjson"
-#REMOVEME? Assuming the file is setup using ynh_config_add, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown $app:$app "$install_dir/config/config.hjson"
 
 # Pict-RS configuration
 mkdir -p "$install_dir/pict-rs"
@@ -165,11 +149,7 @@ ynh_config_add_systemd --service="$app-pict-rs" --template="pict-rs.service"
 ynh_script_progression "Upgrading logrotate configuration..."
 
 mkdir -p "/var/log/$app"
-#REMOVEME? Assuming ynh_config_add_logrotate is called, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod 750 "/var/log/$app"
-#REMOVEME? Assuming ynh_config_add_logrotate is called, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod -R o-rwx "/var/log/$app"
-#REMOVEME? Assuming ynh_config_add_logrotate is called, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown -R $app:$app "/var/log/$app"
 
-# Use logrotate to manage app-specific logfile(s)
 ynh_config_add_logrotate
 
 #=================================================

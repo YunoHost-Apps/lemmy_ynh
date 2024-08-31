@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Keep this path for calling _common.sh inside the execution's context of backup and restore scripts
 source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 
@@ -11,8 +10,6 @@ ynh_script_progression "Restoring the app main directory..."
 
 ynh_restore "$install_dir"
 
-#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod -R o-rwx "$install_dir"
-#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown -R $app:$app "$install_dir"
 #=================================================
 # RESTORE THE DATA DIRECTORY
 #=================================================
@@ -29,7 +26,6 @@ chown -R $app:$app "$data_dir"
 #=================================================
 ynh_script_progression "Reinstalling dependencies..."
 
-# Define and install dependencies
 ynh_nodejs_install
 
 ln -fs /usr/lib/x86_64-linux-musl/libc.so /lib/libc.musl-x86_64.so.1
@@ -56,8 +52,10 @@ ynh_script_progression "Restoring $app's systemd service..."
 
 ynh_restore "/etc/systemd/system/$app.service"
 systemctl enable $app.service --quiet
+
 ynh_restore "/etc/systemd/system/$app-ui.service"
 systemctl enable $app-ui.service --quiet
+
 ynh_restore "/etc/systemd/system/$app-pict-rs.service"
 systemctl enable $app-pict-rs.service --quiet
 
@@ -67,9 +65,6 @@ systemctl enable $app-pict-rs.service --quiet
 ynh_script_progression "Restoring the logrotate configuration..."
 
 mkdir -p "/var/log/$app"
-#REMOVEME? Assuming ynh_config_add_logrotate is called, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod 750 "/var/log/$app"
-#REMOVEME? Assuming ynh_config_add_logrotate is called, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod -R o-rwx "/var/log/$app"
-#REMOVEME? Assuming ynh_config_add_logrotate is called, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown -R $app:$app "/var/log/$app"
 
 ynh_restore "/etc/logrotate.d/$app"
 

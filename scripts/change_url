@@ -27,9 +27,6 @@ ynh_script_progression "Adding $app's configuration..."
 mkdir -p "$install_dir/config/"
 ynh_config_add --template="lemmy.hjson" --destination="$install_dir/config/config.hjson"
 
-#REMOVEME? Assuming the file is setup using ynh_config_add, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod 400 "$install_dir/config/config.hjson"
-#REMOVEME? Assuming the file is setup using ynh_config_add, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown $app:$app "$install_dir/config/config.hjson"
-
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
