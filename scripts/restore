@@ -4,6 +4,17 @@ source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
+# REINSTALL DEPENDENCIES
+#=================================================
+ynh_script_progression --message="Reinstalling NodeJS..." --weight=1
+
+# Define and install dependencies
+ynh_install_nodejs --nodejs_version="$NODEJS_VERSION"
+ynh_use_nodejs
+
+ln -fs /usr/lib/x86_64-linux-musl/libc.so /lib/libc.musl-x86_64.so.1
+
+#=================================================
 # RESTORE THE APP MAIN DIR
 #=================================================
 ynh_script_progression "Restoring the app main directory..."
@@ -46,7 +57,7 @@ ynh_psql_db_shell " < "./db.sql""
 ynh_psql_db_shell <<< "CREATE EXTENSION IF NOT EXISTS pgcrypto;"
 
 #=================================================
-# RESTORE SYSTEMD
+# RESTORE SYSTEM CONFIGURATIONS
 #=================================================
 ynh_script_progression "Restoring $app's systemd service..."
 

@@ -34,7 +34,6 @@ ynh_setup_source --dest_dir="$install_dir/build-pict-rs/"
 #=================================================
 ynh_script_progression "Configuring NGINX web server..."
 
-# Create a dedicated NGINX config
 ynh_config_add_nginx
 
 #=================================================
@@ -51,27 +50,28 @@ popd
 ynh_script_progression "Making install..."
 
 # Install lemmy-ui
-pushd $install_dir/build-lemmy-ui
-	./docker-image-extract dessalines/lemmy-ui:$(ynh_app_upstream_version)
+pushd "$install_dir/build-lemmy-ui"
+    ./docker-image-extract "dessalines/lemmy-ui:$(ynh_app_upstream_version)"
 popd
 mkdir -p "$install_dir/lemmy-ui/"
 rsync -a "$install_dir/build-lemmy-ui/output/app/" "$install_dir/lemmy-ui/"
 ynh_safe_rm "$install_dir/build-lemmy-ui"
 
 # Install lemmy
-pushd $install_dir/build-lemmy
-	./docker-image-extract dessalines/lemmy:$(ynh_app_upstream_version)
+pushd "$install_dir/build-lemmy"
+    ./docker-image-extract "dessalines/lemmy:$(ynh_app_upstream_version)"
 popd
 mkdir -p "$install_dir/lemmy/"
 mv -f "$install_dir/build-lemmy/output/app/lemmy" "$install_dir/lemmy/lemmy"
 ynh_safe_rm "$install_dir/build-lemmy"
 
 # Install pict-rs
-pushd $install_dir/build-pict-rs
-	./docker-image-extract asonix/pictrs:$PICTRS_VERSION
+pushd "$install_dir/build-pict-rs"
+    ./docker-image-extract "asonix/pictrs:$PICTRS_VERSION"
 popd
 mkdir -p "$install_dir/pict-rs/"
 mv -f "$install_dir/build-pict-rs/output/usr/local/bin/pict-rs" "$install_dir/pict-rs/pict-rs"
+
 ynh_safe_rm "$install_dir/build-pict-rs"
 
 # (Dirty) Install ImageMagick
@@ -91,7 +91,7 @@ ynh_config_add --template="lemmy.hjson" --destination="$install_dir/config/confi
 # Pict-RS configuration
 ynh_config_add --template="pict-rs.toml" --destination="$install_dir/pict-rs/pict-rs.toml"
 chmod 400 "$install_dir/pict-rs/pict-rs.toml"
-chown $app:$app "$install_dir/pict-rs/pict-rs.toml"
+chown "$app:$app" "$install_dir/pict-rs/pict-rs.toml"
 
 # ImageMagick configuration
 mkdir -p "$install_dir/.config/ImageMagick"
@@ -100,7 +100,7 @@ ynh_config_add --template="policy.xml" --destination="$install_dir/.config/Image
 chown -R $app:$app "$install_dir/.config"
 
 #=================================================
-# SETUP SYSTEMD
+# SYSTEM CONFIGURATION
 #=================================================
 ynh_script_progression "Configuring $app's systemd service..."
 

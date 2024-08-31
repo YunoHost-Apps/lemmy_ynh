@@ -47,7 +47,7 @@ ynh_nodejs_install
 ln -fs /usr/lib/x86_64-linux-musl/libc.so /lib/libc.musl-x86_64.so.1
 
 #=================================================
-# NGINX CONFIGURATION
+# DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 ynh_script_progression "Upgrading NGINX web server configuration..."
 
@@ -113,8 +113,9 @@ ynh_config_add --template="lemmy.hjson" --destination="$install_dir/config/confi
 mkdir -p "$install_dir/pict-rs"
 chown $app:$app "$install_dir/pict-rs"
 ynh_config_add --template="pict-rs.toml" --destination="$install_dir/pict-rs/pict-rs.toml"
+
 chmod 400 "$install_dir/pict-rs/pict-rs.toml"
-chown $app:$app "$install_dir/pict-rs/pict-rs.toml"
+chown "$app:$app" "$install_dir/pict-rs/pict-rs.toml"
 
 # ImageMagick configuration
 mkdir -p "$install_dir/.config/ImageMagick"
@@ -124,7 +125,7 @@ ynh_config_add --template="policy.xml" --destination="$install_dir/.config/Image
 chown -R $app:$app "$install_dir/.config"
 
 #=================================================
-# CREATE EXTENSION IF NOT EXISTS pgcrypto
+# REAPPLY SYSTEM CONFIGURATIONS
 #=================================================
 ynh_script_progression "Creating pgcrypto extension if needed..."
 
@@ -164,6 +165,7 @@ yunohost service add $app-pict-rs --description="Simple image hosting service fo
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
+ynh_script_progression --message="Starting $app's systemd services..." --weight=1
 
 # TMP rebuild sharp
 pushd $install_dir/lemmy-ui

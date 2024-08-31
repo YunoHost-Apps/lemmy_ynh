@@ -23,6 +23,7 @@ then
 	ynh_script_progression "Removing $app-pict-rs service integration..."
 	yunohost service remove $app-pict-rs
 fi
+ynh_remove_systemd_config --service="$app-ui"
 
 ynh_config_remove_systemd
 ynh_config_remove_systemd$app-ui
