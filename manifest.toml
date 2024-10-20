@@ -7,7 +7,7 @@ name = "Lemmy"
 description.en = "Link aggregator/Reddit clone for the fediverse"
 description.fr = "Agrégateur de liens/clone Reddit pour le fedivers"
 
-version = "0.19.5~ynh2"
+version = "0.19.5~ynh3"
 
 maintainers = []
 
@@ -56,8 +56,8 @@ ram.runtime = "50M"
     autoupdate.strategy = "latest_github_commit"
 
     [resources.sources.lemmy-translations]
-    url = "https://github.com/LemmyNet/lemmy-translations/archive/088a27703ffa65e069dfbf341ee9bd44ec4c45c5.tar.gz"
-    sha256 = "b504c50878a7914bdc49ea578a8c4855152de6f50a94c3cf053954ef903cd93e"
+    url = "https://github.com/LemmyNet/lemmy-translations/archive/86848b113e6b9a104ad67cae21a863fb7730d64e.tar.gz"
+    sha256 = "af7422c38e7f157c6ec3b22d45553f2ce5efef8d6f6f46969270bc68cec78dbd"
 
     autoupdate.upstream = "https://github.com/LemmyNet/lemmy-translations/"
     autoupdate.strategy = "latest_github_commit"
