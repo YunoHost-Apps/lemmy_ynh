@@ -5,7 +5,9 @@ Ini TIDAK boleh diedit dengan tangan.
 
 # Lemmy untuk YunoHost
 
-[![Tingkat integrasi](https://dash.yunohost.org/integration/lemmy.svg)](https://ci-apps.yunohost.org/ci/apps/lemmy/) ![Status kerja](https://ci-apps.yunohost.org/ci/badges/lemmy.status.svg) ![Status pemeliharaan](https://ci-apps.yunohost.org/ci/badges/lemmy.maintain.svg)
+[![Tingkat integrasi](https://apps.yunohost.org/badge/integration/lemmy)](https://ci-apps.yunohost.org/ci/apps/lemmy/)
+![Status kerja](https://apps.yunohost.org/badge/state/lemmy)
+![Status pemeliharaan](https://apps.yunohost.org/badge/maintained/lemmy)
 
 [![Pasang Lemmy dengan YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=lemmy)
 
@@ -19,7 +21,7 @@ Ini TIDAK boleh diedit dengan tangan.
 Lemmy is similar to sites like Reddit, Lobste.rs, or Hacker News: you subscribe to forums you're interested in, post links and discussions, then vote, and comment on them. Behind the scenes, it is very different; anyone can easily run a server, and all these servers are federated (think email), and connected to the same universe, called the Fediverse.
 
 
-**Versi terkirim:** 0.19.5~ynh2
+**Versi terkirim:** 0.19.8~ynh1
 
 **Demo:** <https://lemmy.ml/>
 

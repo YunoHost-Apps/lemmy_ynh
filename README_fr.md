@@ -5,7 +5,9 @@ Il NE doit PAS être modifié à la main.
 
 # Lemmy pour YunoHost
 
-[![Niveau d’intégration](https://dash.yunohost.org/integration/lemmy.svg)](https://ci-apps.yunohost.org/ci/apps/lemmy/) ![Statut du fonctionnement](https://ci-apps.yunohost.org/ci/badges/lemmy.status.svg) ![Statut de maintenance](https://ci-apps.yunohost.org/ci/badges/lemmy.maintain.svg)
+[![Niveau d’intégration](https://apps.yunohost.org/badge/integration/lemmy)](https://ci-apps.yunohost.org/ci/apps/lemmy/)
+![Statut du fonctionnement](https://apps.yunohost.org/badge/state/lemmy)
+![Statut de maintenance](https://apps.yunohost.org/badge/maintained/lemmy)
 
 [![Installer Lemmy avec YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=lemmy)
 
@@ -18,7 +20,7 @@ Il NE doit PAS être modifié à la main.
 
 Lemmy est similaire à des sites comme Reddit, Lobste.rs ou Hacker News : vous vous abonnez aux forums qui vous intéressent, publiez des liens et des discussions, puis votez et commentez-les. Dans les coulisses, c'est très différent ; n'importe qui peut facilement exécuter un serveur, et tous ces serveurs sont fédérés (pensez au courrier électronique) et connectés au même univers, appelé Fediverse.
 
-**Version incluse :** 0.19.5~ynh2
+**Version incluse :** 0.19.8~ynh1
 
 **Démo :** <https://lemmy.ml/>
 
