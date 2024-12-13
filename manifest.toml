@@ -7,7 +7,7 @@ name = "Lemmy"
 description.en = "Link aggregator/Reddit clone for the fediverse"
 description.fr = "Agrégateur de liens/clone Reddit pour le fedivers"
 
-version = "0.19.5~ynh2"
+version = "0.19.8~ynh1"
 
 maintainers = []
 
@@ -42,8 +42,8 @@ ram.runtime = "50M"
     [resources.sources]
 
     [resources.sources.main]
-    url = "https://github.com/LemmyNet/lemmy/archive/refs/tags/0.19.5.tar.gz"
-    sha256 = "55fc078688867ce662416f6eaf1fabe33d6a9551226abbc341ec4b42dcf78610"
+    url = "https://github.com/LemmyNet/lemmy/archive/refs/tags/0.19.8.tar.gz"
+    sha256 = "4106ae4b76e68c3e462dd260d5e6e88debcaf0ebde13a3cf3d86420b6333ca00"
     # Actually not used, just here for autoupdate
     prefetch = false
     autoupdate.strategy = "latest_github_release"
