@@ -5,7 +5,7 @@ name = "Lemmy"
 description.en = "Link aggregator/Reddit clone for the fediverse"
 description.fr = "Agrégateur de liens/clone Reddit pour le fedivers"
 
-version = "0.18.2~ynh4"
+version = "0.19.8~ynh1"
 
 maintainers = []
 
@@ -43,8 +43,8 @@ ram.runtime = "50M"
     format = "docker"
     extract = true
     prefetch = false
-    amd64.url = "dessalines/lemmy:0.18.2"
-    amd64.sha256 = "37e6273dca9cbe4fa8af2c9ade7800150582ba7e472c26ca27473d28e7029e0d"
+    amd64.url = "dessalines/lemmy:0.19.8"
+    amd64.sha256 = "2f62d39c3d5caba14fcae3e41a792ba47fbac9078ff3320a7faa080274b8fdfe"
     autoupdate.upstream = "https://github.com/LemmyNet/lemmy/"
     autoupdate.strategy = "latest_github_release"
 
@@ -52,19 +52,19 @@ ram.runtime = "50M"
     format = "docker"
     extract = true
     prefetch = false
-    amd64.url = "dessalines/lemmy-ui:0.18.2"
-    amd64.sha256 = "6f648b51d0970597b7413b321e48e6fedbcb1f7791702ca8bc698536496d7878"
+    amd64.url = "dessalines/lemmy-ui:0.19.8"
+    amd64.sha256 = "b15394337ed4f5f161d863329d1838d5c9526e7ee5aa36cb7abe48d4666c962b"
 
     [resources.sources.pict-rs]
     format = "docker"
     extract = true
     prefetch = false
-    amd64.url = "asonix/pictrs:0.4.1-rc.0"
-    amd64.sha256 = "39b4ab065a8c0197dc5ace05eca32e7f9e91a8133164189392b343f37ec7636f"
+    amd64.url = "asonix/pictrs:0.5.16"
+    amd64.sha256 = "76e14dacd8c73be4a3764a0e7bd5ce1fe0379ce20cc3328557eca070aeef1108"
 
     [resources.sources.lemmy-translations]
-    url = "https://github.com/LemmyNet/lemmy-translations/archive/f1602a5993c426d56ebb7c98a8453fbfb482e9a7.tar.gz"
-    sha256 = "570d3f8c1ab13dbf72fd2f2f6d7a930a5fd7233259fbd0f1b156205524f0e4c3"
+    url = "https://github.com/LemmyNet/lemmy-translations/archive/bf3d6527fb3fd9225dfd16fa3a1a7ecf03264ed8.tar.gz"
+    sha256 = "b8108b7d149c53df37d4b20708811f6af7498d6cca877a0e4d87d30a46e2efd3"
     autoupdate.upstream = "https://github.com/LemmyNet/lemmy-translations/"
     autoupdate.strategy = "latest_github_commit"
 
