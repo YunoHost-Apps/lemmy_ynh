@@ -4,8 +4,6 @@
 # COMMON VARIABLES
 #=================================================
 
-PICTRS_VERSION=0.4.1-rc.0
-
 NODEJS_VERSION=20
 
 main_domain=$(cat /etc/yunohost/current_host)
