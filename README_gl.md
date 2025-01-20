@@ -5,7 +5,9 @@ NON debe editarse manualmente.
 
 # Lemmy para YunoHost
 
-[![Nivel de integración](https://dash.yunohost.org/integration/lemmy.svg)](https://dash.yunohost.org/appci/app/lemmy) ![Estado de funcionamento](https://ci-apps.yunohost.org/ci/badges/lemmy.status.svg) ![Estado de mantemento](https://ci-apps.yunohost.org/ci/badges/lemmy.maintain.svg)
+[![Nivel de integración](https://apps.yunohost.org/badge/integration/lemmy)](https://ci-apps.yunohost.org/ci/apps/lemmy/)
+![Estado de funcionamento](https://apps.yunohost.org/badge/state/lemmy)
+![Estado de mantemento](https://apps.yunohost.org/badge/maintained/lemmy)
 
 [![Instalar Lemmy con YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=lemmy)
 

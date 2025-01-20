@@ -5,7 +5,9 @@
 
 # YunoHost 上的 Lemmy
 
-[![集成程度](https://dash.yunohost.org/integration/lemmy.svg)](https://dash.yunohost.org/appci/app/lemmy) ![工作状态](https://ci-apps.yunohost.org/ci/badges/lemmy.status.svg) ![维护状态](https://ci-apps.yunohost.org/ci/badges/lemmy.maintain.svg)
+[![集成程度](https://apps.yunohost.org/badge/integration/lemmy)](https://ci-apps.yunohost.org/ci/apps/lemmy/)
+![工作状态](https://apps.yunohost.org/badge/state/lemmy)
+![维护状态](https://apps.yunohost.org/badge/maintained/lemmy)
 
 [![使用 YunoHost 安装 Lemmy](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=lemmy)
 

@@ -5,7 +5,9 @@ No se debe editar a mano.
 
 # Lemmy para Yunohost
 
-[![Nivel de integración](https://dash.yunohost.org/integration/lemmy.svg)](https://dash.yunohost.org/appci/app/lemmy) ![Estado funcional](https://ci-apps.yunohost.org/ci/badges/lemmy.status.svg) ![Estado En Mantención](https://ci-apps.yunohost.org/ci/badges/lemmy.maintain.svg)
+[![Nivel de integración](https://apps.yunohost.org/badge/integration/lemmy)](https://ci-apps.yunohost.org/ci/apps/lemmy/)
+![Estado funcional](https://apps.yunohost.org/badge/state/lemmy)
+![Estado En Mantención](https://apps.yunohost.org/badge/maintained/lemmy)
 
 [![Instalar Lemmy con Yunhost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=lemmy)
 
@@ -37,7 +39,7 @@ Lemmy is similar to sites like Reddit, Lobste.rs, or Hacker News: you subscribe 
 
 ## Información para desarrolladores
 
-Por favor enviar sus correcciones a la [`branch testing`](https://github.com/YunoHost-Apps/lemmy_ynh/tree/testing
+Por favor enviar sus correcciones a la [rama `testing`](https://github.com/YunoHost-Apps/lemmy_ynh/tree/testing).
 
 Para probar la rama `testing`, sigue asÍ:
 

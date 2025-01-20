@@ -5,7 +5,9 @@ EZ editatu eskuz.
 
 # Lemmy YunoHost-erako
 
-[![Integrazio maila](https://dash.yunohost.org/integration/lemmy.svg)](https://dash.yunohost.org/appci/app/lemmy) ![Funtzionamendu egoera](https://ci-apps.yunohost.org/ci/badges/lemmy.status.svg) ![Mantentze egoera](https://ci-apps.yunohost.org/ci/badges/lemmy.maintain.svg)
+[![Integrazio maila](https://apps.yunohost.org/badge/integration/lemmy)](https://ci-apps.yunohost.org/ci/apps/lemmy/)
+![Funtzionamendu egoera](https://apps.yunohost.org/badge/state/lemmy)
+![Mantentze egoera](https://apps.yunohost.org/badge/maintained/lemmy)
 
 [![Instalatu Lemmy YunoHost-ekin](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=lemmy)
 
