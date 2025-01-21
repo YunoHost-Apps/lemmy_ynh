@@ -22,9 +22,9 @@ upgrade_type=$(ynh_check_app_version_changed)
 #=================================================
 ynh_script_progression --message="Stopping a systemd service..." --weight=1
 
-ynh_systemd_action --service_name=$app --action="stop" --line_match="Stopped" --log_path="/var/log/$app/$app.log"
-ynh_systemd_action --service_name=$app-ui --action="stop" --line_match="Stopped" --log_path="/var/log/$app/$app-ui.log"
-ynh_systemd_action --service_name=$app-pict-rs --action="stop" --line_match="Stopped" --log_path="/var/log/$app/$app-pict-rs.log"
+ynh_systemd_action --service_name=$app --action="stop" --log_path="/var/log/$app/$app.log"
+ynh_systemd_action --service_name=$app-ui --action="stop" --log_path="/var/log/$app/$app-ui.log"
+ynh_systemd_action --service_name=$app-pict-rs --action="stop" --log_path="/var/log/$app/$app-pict-rs.log"
 
 #=================================================
 # ENSURE DOWNWARD COMPATIBILITY
@@ -42,24 +42,6 @@ then
 fi
 
 #=================================================
-# DOWNLOAD, CHECK AND UNPACK SOURCE
-#=================================================
-
-if [ "$upgrade_type" == "UPGRADE_APP" ]
-then
-	ynh_script_progression --message="Upgrading source files..." --weight=1
-
-	# Download, check integrity, uncompress the source of lemmy from app.src to his build directory
-	ynh_setup_source --dest_dir="$install_dir/build-lemmy/"
-	ynh_setup_source --dest_dir="$install_dir/build-lemmy-ui/"
-	ynh_setup_source --dest_dir="$install_dir/lemmy-ui/lemmy-translations/" --source_id="lemmy-translations"
-	ynh_setup_source --dest_dir="$install_dir/build-pict-rs/"
-fi
-
-chmod -R o-rwx "$install_dir"
-chown -R $app:$app "$install_dir"
-
-#=================================================
 # UPGRADE DEPENDENCIES
 #=================================================
 ynh_script_progression --message="Upgrading dependencies..." --weight=1
@@ -67,6 +49,27 @@ ynh_script_progression --message="Upgrading dependencies..." --weight=1
 ynh_install_nodejs --nodejs_version=$NODEJS_VERSION
 ynh_use_nodejs
 ln -fs /usr/lib/x86_64-linux-musl/libc.so /lib/libc.musl-x86_64.so.1
+
+#=================================================
+# CREATE EXTENSION IF NOT EXISTS pgcrypto
+#=================================================
+ynh_script_progression --message="Creating pgcrypto extension if needed..." --weight=1
+
+ynh_psql_execute_as_root --sql="CREATE EXTENSION IF NOT EXISTS pgcrypto;" --database="$db_name"
+
+#=================================================
+# DOWNLOAD, CHECK AND UNPACK SOURCE
+#=================================================
+ynh_script_progression --message="Upgrading source files..." --weight=1
+
+# Download, check integrity, uncompress the source of lemmy from app.src to his build directory
+ynh_setup_source --dest_dir="$install_dir/build-lemmy/" --source_id="lemmy"
+ynh_setup_source --dest_dir="$install_dir/build-lemmy-ui/" --source_id="lemmy-ui"
+ynh_setup_source --dest_dir="$install_dir/lemmy-ui/lemmy-translations/" --source_id="lemmy-translations"  --full_replace
+ynh_setup_source --dest_dir="$install_dir/build-pict-rs/" --source_id="pict-rs"
+
+chmod -R o-rwx "$install_dir"
+chown -R $app:$app "$install_dir"
 
 #=================================================
 # NGINX CONFIGURATION
@@ -77,56 +80,44 @@ ynh_script_progression --message="Upgrading NGINX web server configuration..." -
 ynh_add_nginx_config
 
 #=================================================
-# INSTALL SHARP
-#=================================================
-
-pushd $install_dir/lemmy-ui
- 	ynh_use_nodejs
-	ynh_exec_warn_less sudo -u $app env $ynh_node_load_PATH yarn add sharp
-popd
-
-#=================================================
 # SPECIFIC UPGRADE
 #=================================================
 # MAKE UPGRADE
 #=================================================
 ynh_script_progression --message="Making upgrade..." --weight=1
 
-if [ "$upgrade_type" == "UPGRADE_APP" ]
-then
-	# Install lemmy-ui
-	pushd $install_dir/build-lemmy-ui
-		./docker-image-extract dessalines/lemmy-ui:$(ynh_app_upstream_version)
-	popd
-	mkdir -p "$install_dir/lemmy-ui/"
-	rsync -a "$install_dir/build-lemmy-ui/output/app/" "$install_dir/lemmy-ui/"
-	ynh_secure_remove --file="$install_dir/build-lemmy-ui"
+# Install lemmy-ui
+mkdir -p "$install_dir/lemmy-ui/"
+rsync -a "$install_dir/build-lemmy-ui/app/" "$install_dir/lemmy-ui/"
+ynh_secure_remove --file="$install_dir/build-lemmy-ui"
 
-	# Install lemmy
-	pushd $install_dir/build-lemmy
-		./docker-image-extract dessalines/lemmy:$(ynh_app_upstream_version)
-	popd
-	mkdir -p "$install_dir/lemmy/"
-	mv -f "$install_dir/build-lemmy/output/app/lemmy" "$install_dir/lemmy/lemmy"
-	ynh_secure_remove --file="$install_dir/build-lemmy"
+# Install lemmy
+mkdir -p "$install_dir/lemmy/"
+mv -f "$install_dir/build-lemmy/app/lemmy" "$install_dir/lemmy/lemmy"
+ynh_secure_remove --file="$install_dir/build-lemmy"
 
-	# Install pict-rs
-	pushd $install_dir/build-pict-rs
-		./docker-image-extract asonix/pictrs:$PICTRS_VERSION
-	popd
-	mkdir -p "$install_dir/pict-rs/"
-	mv -f "$install_dir/build-pict-rs/output/usr/local/bin/pict-rs" "$install_dir/pict-rs/pict-rs"
-	ynh_secure_remove --file="$install_dir/build-pict-rs"
+# Install pict-rs
+mkdir -p "$install_dir/pict-rs/"
+mv -f "$install_dir/build-pict-rs/usr/local/bin/pict-rs" "$install_dir/pict-rs/pict-rs"
+ynh_secure_remove --file="$install_dir/build-pict-rs"
 
-	# (Dirty) Install ImageMagick
-	# Requires 'libfuse2' and 'libimage-exiftool-perl' apt dependencies
-	ynh_script_progression --message="Downloading and installing ImageMagick..." --weight=1
-	download_and_install_appimage --name="magick" --url="https://imagemagick.org/archive/binaries/magick" --directory="$install_dir/pict-rs" --symlink="$install_dir/pict-rs/magick"
-fi
+# (Dirty) Install ImageMagick
+# Requires 'libfuse2' and 'libimage-exiftool-perl' apt dependencies
+ynh_script_progression --message="Downloading and installing ImageMagick..." --weight=1
+download_and_install_appimage --name="magick" --url="https://imagemagick.org/archive/binaries/magick" --directory="$install_dir/pict-rs" --symlink="$install_dir/pict-rs/magick"
 
 chmod 750 "$install_dir"
 chmod -R o-rwx "$install_dir"
 chown -R $app:$app "$install_dir"
+
+#=================================================
+# INSTALL SHARP
+#=================================================
+
+pushd $install_dir/lemmy-ui
+	ynh_use_nodejs
+	ynh_exec_warn_less sudo -u $app env $ynh_node_load_PATH $ynh_npm rebuild sharp
+popd
 
 #=================================================
 # UPDATE A CONFIG FILE
@@ -134,32 +125,21 @@ chown -R $app:$app "$install_dir"
 ynh_script_progression --message="Updating a configuration file..." --weight=1
 
 # Lemmy configuration
-mkdir -p "$install_dir/lemmy/"
-chown $app:$app "$install_dir/lemmy"
+mkdir -p "$install_dir/config/"
 ynh_add_config --template="lemmy.hjson" --destination="$install_dir/config/config.hjson"
 chmod 400 "$install_dir/config/config.hjson"
 chown $app:$app "$install_dir/config/config.hjson"
 
 # Pict-RS configuration
-mkdir -p "$install_dir/pict-rs"
-chown $app:$app "$install_dir/pict-rs"
 ynh_add_config --template="pict-rs.toml" --destination="$install_dir/pict-rs/pict-rs.toml"
 chmod 400 "$install_dir/pict-rs/pict-rs.toml"
 chown $app:$app "$install_dir/pict-rs/pict-rs.toml"
 
 # ImageMagick configuration
 mkdir -p "$install_dir/.config/ImageMagick"
-chown $app:$app -R "$install_dir/.config"
 ynh_add_config --template="policy.xml" --destination="$install_dir/.config/ImageMagick/policy.xml"
 chmod 400 "$install_dir/.config/ImageMagick/policy.xml"
 chown -R $app:$app "$install_dir/.config"
-
-#=================================================
-# CREATE EXTENSION IF NOT EXISTS pgcrypto
-#=================================================
-ynh_script_progression --message="Creating pgcrypto extension if needed..." --weight=1
-
-ynh_psql_execute_as_root --sql="CREATE EXTENSION IF NOT EXISTS pgcrypto;" --database="$db_name"
 
 #=================================================
 # SETUP SYSTEMD
@@ -201,15 +181,9 @@ yunohost service add $app-pict-rs --description="Simple image hosting service fo
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
-
-# TMP rebuild sharp
-pushd $install_dir/lemmy-ui
- 	ynh_use_nodejs
-	ynh_exec_warn_less sudo -u $app env $ynh_node_load_PATH npm rebuild sharp
-popd
-
 ynh_script_progression --message="Starting a systemd service..." --weight=1
 
+# Start a systemd service
 ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$app/$app.log" --line_match="Starting http server at"
 ynh_systemd_action --service_name=$app-ui --action="start" --log_path="/var/log/$app/$app-ui.log" --line_match="http://0.0.0.0"
 ynh_systemd_action --service_name=$app-pict-rs --action="start" --log_path="/var/log/$app/$app-pict-rs.log" --line_match="starting in Actix runtime"
