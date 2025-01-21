@@ -29,12 +29,26 @@ disk = "50M"
 ram.build = "500M"
 ram.runtime = "50M"
 
+[install]
     [install.domain]
     type = "domain"
 
     [install.init_main_permission]
     type = "group"
     default = "visitors"
+
+    [install.admin]
+    type = "user"
+
+    [install.password]
+    type = "password"
+
+    [install.instance_name]
+    ask.en = "Choose a name for your Lemmy instance"
+    ask.fr = "Choisissez un nom pour votre instance Lemmy"
+    type = "string"
+    example = "My lemmy"
+    default = "My lemmy"
 
 [resources]
     [resources.sources]
