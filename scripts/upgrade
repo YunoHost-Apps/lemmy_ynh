@@ -63,10 +63,10 @@ ynh_psql_execute_as_root --sql="CREATE EXTENSION IF NOT EXISTS pgcrypto;" --data
 ynh_script_progression --message="Upgrading source files..." --weight=1
 
 # Download, check integrity, uncompress the source of lemmy from app.src to his build directory
-ynh_setup_source --dest_dir="$install_dir/build-lemmy/"
-ynh_setup_source --dest_dir="$install_dir/build-lemmy-ui/"
+ynh_setup_source --dest_dir="$install_dir/build-lemmy/" --source_id="lemmy"
+ynh_setup_source --dest_dir="$install_dir/build-lemmy-ui/" --source_id="lemmy-ui"
 ynh_setup_source --dest_dir="$install_dir/lemmy-ui/lemmy-translations/" --source_id="lemmy-translations"  --full_replace
-ynh_setup_source --dest_dir="$install_dir/build-pict-rs/"
+ynh_setup_source --dest_dir="$install_dir/build-pict-rs/" --source_id="pict-rs"
 
 chmod -R o-rwx "$install_dir"
 chown -R $app:$app "$install_dir"
@@ -125,22 +125,18 @@ popd
 ynh_script_progression --message="Updating a configuration file..." --weight=1
 
 # Lemmy configuration
-mkdir -p "$install_dir/lemmy/"
-chown $app:$app "$install_dir/lemmy"
+mkdir -p "$install_dir/config/"
 ynh_add_config --template="lemmy.hjson" --destination="$install_dir/config/config.hjson"
 chmod 400 "$install_dir/config/config.hjson"
 chown $app:$app "$install_dir/config/config.hjson"
 
 # Pict-RS configuration
-mkdir -p "$install_dir/pict-rs"
-chown $app:$app "$install_dir/pict-rs"
 ynh_add_config --template="pict-rs.toml" --destination="$install_dir/pict-rs/pict-rs.toml"
 chmod 400 "$install_dir/pict-rs/pict-rs.toml"
 chown $app:$app "$install_dir/pict-rs/pict-rs.toml"
 
 # ImageMagick configuration
 mkdir -p "$install_dir/.config/ImageMagick"
-chown $app:$app -R "$install_dir/.config"
 ynh_add_config --template="policy.xml" --destination="$install_dir/.config/ImageMagick/policy.xml"
 chmod 400 "$install_dir/.config/ImageMagick/policy.xml"
 chown -R $app:$app "$install_dir/.config"
