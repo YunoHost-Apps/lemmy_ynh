@@ -93,7 +93,7 @@ ynh_secure_remove --file="$install_dir/build-lemmy-ui"
 
 # Install lemmy
 mkdir -p "$install_dir/lemmy/"
-mv -f "$install_dir/build-lemmy/app/lemmy" "$install_dir/lemmy/lemmy"
+mv -f "$install_dir/build-lemmy/usr/local/bin/lemmy_server" "$install_dir/lemmy/lemmy"
 ynh_secure_remove --file="$install_dir/build-lemmy"
 
 # Install pict-rs
