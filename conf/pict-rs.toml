@@ -4,12 +4,18 @@
 # default: 0.0.0.0:8080
 address = '127.0.0.1:__PORT_PICTRS__'
 
-## Optional: pict-rs worker id
-# default: pict-rs-1
+## Optional: whether to reject any operations that would change the state of pict-rs.
+# default: false
 #
-# This is used for the internal job queue. It will have more meaning once a shared metadata
-# repository (like postgres) can be defined.
-worker_id = 'pict-rs-1'
+# This can be useful if you need to run a copy of pict-rs while performing maintenance.
+read_only = false
+
+## Optional: whether to run pict-rs without dependencies.
+# default: false
+#
+# This means pict-rs will not be able to inspect metadata of uploaded media, or perform processing
+# on it. This mode is provided for use in test environments. It should not be used in production.
+danger_dummy_mode = false
 
 ## Optional: shared secret for internal endpoints
 # default: empty
@@ -21,26 +27,42 @@ api_key = ''
 # default: 1
 max_file_count = 1
 
+## Optional: directory pict-rs will use to create temporary files
+# default: The system's advertised temporary directory ("/tmp" on most linuxes)
+temporary_directory = "/tmp"
+
+## Optional: whether to delete the contents of $temporary_directory/pict-rs on launch
+# default: true
+cleanup_temporary_directory = true
+
+## Optional: path to server certificate to enable TLS
+# default: empty
+#
+# Note that both certificate and private_key must be set to enable TLS
+#certificate = "/path/to/server.crt"
+
+## Optional: path to server key to enable TLS
+# default: empty
+#
+# Note that both private_key and certificate must be set to enable TLS
+#private_key = "/path/to/server.key"
+
 ## Client configuration
 [client]
-## Optional: connection pool size for internal http client
-# default: 100
-#
-# This number is multiplied the number of cores available to pict-rs. Running on a 2 core machine
-# with the default value will result in 200 pooled connections. Running on a 32 core machine with
-# the default value will result in 3200 pooled connections.
-#
-# This number can be lowered to keep pict-rs within ulimit bounds if you encounter errors related to
-# "Too many open files". Alternatively, increasing the ulimit of your system can solve this problem
-# as well.
-pool_size = 100
-
 ## Optional: time (in seconds) the client will wait for a response before giving up
 # default: 30
 #
 # This is used for the `/image/download` endpoint when fetching media from another server. It is
 # distinct from the object storage client timeout, which can be configured separately
 timeout = 30
+
+[upgrade]
+## Optional: How many hashes will be migrated from the previous version of pict-rs at the same time
+# default: 32
+#
+# Increasing this value will increase the number of concurrent connections to the Repo, and to the
+# Store, so make sure your deployment can handle more throughput before tweaking this.
+concurrency = 32
 
 
 ## Logging configuration
@@ -52,14 +74,27 @@ timeout = 30
 format = 'normal'
 
 ## Optional: log targets
-# default: warn,tracing_actix_web=info,actix_server=info,actix_web=info
+# default: info
 #
 # Dictates which traces should print to stdout
-targets = 'warn,tracing_actix_web=info,actix_server=info,actix_web=info'
+# Follows the same format as RUST_LOG
+targets = 'info'
+
+## Optional: whether pict-rs should log the new & close span events for tracing spans to stdout
+# default: false
+log_spans = false
+
+## Optional: whether to disable colorized log output
+# default: false
+no_ansi = false
+
+## Optional: whether to log upon request completion
+# default: false
+log_requests = false
 
 
 ## Console configuration
-#[tracing.console]
+[tracing.console]
 ## Optional: console address
 # default: empty
 #
@@ -118,19 +153,39 @@ targets = 'warn,tracing_actix_web=info,actix_server=info,actix_web=info'
 # Follows the same format as RUST_LOG
 #targets = 'info'
 
+[metrics]
+## Optional: enable a prometheus scrape endpoint for pict-rs
+# default: empty
+#
+# Setting this value enables pointing prometheus at pict-rs to receive metrics. It can also be
+# queried with curl.
+#prometheus_address = "0.0.0.0:9000"
 
-## Configuration for migrating from pict-rs 0.2
-#[old_db]
-## Optional: path to old pict-rs directory
-# default: /mnt
-#path = '/mnt'
+
+## Configuration for migrating from pict-rs 0.4
+#[old_repo]
+## Optional: path to sled repository
+# default: /mnt/sled-repo
+#path = '/mnt/sled-repo'
 
 
 ## Media Processing Configuration
 [media]
+## Optional: URL for external validation of media
+# default: empty
+#
+# The expected API for external validators is to accept a POST with the media as the request body,
+# and a valid `Content-Type` header. The validator should return a 2XX response when the media
+# passes validation. Any other status code is considered a validation failure.
+#external_validation = 'http://localhost:8076'
+
 ## Optional: max file size (in Megabytes)
 # default: 40
 max_file_size = 40
+
+## Optional: Timeout (in seconds) for all spawned media processing operations
+# default: 30
+process_timeout = 30
 
 ## Optional: preprocessing steps for uploaded images
 # default: empty
@@ -141,6 +196,86 @@ preprocess_steps = 'crop=16x9&resize=1200&blur=0.2'
 ## Optional: set allowed filters for image processing
 # default: ['blur', 'crop', 'identity', 'resize', 'thumbnail']
 filters = ['blur', 'crop', 'identity', 'resize', 'thumbnail']
+
+
+[media.retention]
+## Optional: retention period for image variants
+# default: 7d
+#
+# Variants are any image served from the process.{ext} endpoint. These images are generated based on
+# an original upload, and can be regenerated when needed. The retention period is after last access
+# rather than after generation, so a value of "7d" means "7 days after the last access of this
+# variant"
+#
+# Available units are
+# - m (minutes)
+# - h (hours)
+# - d (days)
+# - y (years)
+variants = "7d"
+
+## Optional: retention period for proxied images
+# default: 7d
+#
+# Proxied images reside originally on other servers, and can be re-fetched if needed. The retention
+# period is after last access rather than after fetch, so a value of "7d" means "7 days after the
+# last access of this image"
+#
+# Available units are
+# - m (minutes)
+# - h (hours)
+# - d (days)
+# - y (years)
+proxy = "7d"
+
+
+[media.magick]
+## Optional: maximum width, in pixels, of media that imagemagick will attempt to process
+# default: 10_000
+#
+# This value should be at least as large as the greatest max_width set for images, animations, and
+# videos. Any image that exceeds this limit will cause imagemagick to abort processing, which could
+# lead to less clear errors, especially on image upload. In order for pict-rs to return helpful
+# validation errors for images that don't meet other requirements, imagemagick must be allowed to
+# process the image.
+max_width = 10000
+
+## Optional: maximum height, in pixels, of media that imagemagick will attempt to process
+# default: 10_000
+#
+# This value should be at least as large as the greatest max_height set for images, animations, and
+# videos. Any image that exceeds this limit will cause imagemagick to abort processing, which could
+# lead to less clear errors, especially on image upload. In order for pict-rs to return helpful
+# validation errors for images that don't meet other requirements, imagemagick must be allowed to
+# process the image.
+max_height = 10000
+
+## Optional: maximum area, in pixels, of media that imagemagick will keep in memory at a time
+# default: 20_000
+#
+# Images that exceed this area will have their pixels cached to disk
+max_area = 20000
+
+## Optional: maximum size, in MiB, that imagemagick is allowed to allocate in memory to store pixels
+## while processing media.
+# default: 256
+#
+# If this limit is exceeded, imagemagick will fall back to memory-mapped disk for storing pixels
+memory = 256
+
+## Optional: maximim size, in MiB, that imagemagick is allowed to allocate in memory-mapped disk to
+## store pixels while processing media
+# default: 512
+#
+# If this limit is exceeded, imagemagick will fall back to unmapped disk for storing pixels
+map = 512
+
+## Optional: maximum size, in MiB, that imagemagick is allowed to allocate on disk to store pixels
+## while processing media
+# default: 1024
+#
+# If this limit is exceeded, media processing will be aborted
+disk = 1024
 
 
 [media.image]
@@ -214,42 +349,32 @@ webp = 100
 
 [media.animation]
 ## Optional: max animation width (in pixels)
-# default: 256
-#
-# If an animation exceeds this value, it may be converted to a silent video
-max_width = 256
+# default: 1920
+max_width = 1920
 
 ## Optional: max animation height (in pixels)
-# default: 256
-#
-# If an animation exceeds this value, it may be converted to a silent video
-max_height = 256
+# default: 1920
+max_height = 1920
 
 ## Optional: max animation area (in pixels)
-# default: 65,526
-#
-# If an animation exceeds this value, it may be converted to a silent video
-max_area = 65536
+# default: 2,073,600
+max_area = 2073600
 
 ## Optional: max animation size (in Megabytes)
 # default: 40
-#
-# If an animation exceeds this value, it may be converted to a silent video
 max_file_size = 40
 
 ## Optional: max frame count
 # default: 100
-#
-# If an animation exceeds this value, it may be converted to a silent video
-max_frame_count = 100
+max_frame_count = 900
 
 ## Optional: set file type for all animations
 # default: empty
 #
 # available options: apng, avif, gif, webp
-# When set, all uploaded still images will be converted to this file type. For balancing quality vs
-# file size vs browser support, 'avif', 'jxl', and 'webp' should be considered. By default, images
-# are stored in their original file type.
+# When set, all uploaded animated images will be converted to this file type. For balancing quality
+# vs file size vs browser support, 'avif', 'jxl', and 'webp' should be considered. By default,
+# images are stored in their original file type.
 format = "webp"
 
 
@@ -323,7 +448,7 @@ max_file_size = 40
 max_frame_count = 900
 
 ## Optional: set the default video codec
-# default: vp9
+# default: empty
 #
 # available options: av1, h264, h265, vp8, vp9
 # this setting does nothing if video is not enabled
@@ -417,12 +542,14 @@ crf_1440 = 24
 crf_2160 = 15
 
 
-## Database configuration
+### Database configuration
+
+## Sled repo configuration example
 [repo]
 ## Optional: database backend to use
 # default: sled
 #
-# available options: sled
+# available options: sled, postgres
 type = 'sled'
 
 ## Optional: path to sled repository
@@ -441,13 +568,49 @@ cache_capacity = 67108864
 export_path = "__DATA_DIR__/exports"
 
 
-## Media storage configuration
+## Postgres repo configuration example
+#[repo]
+## Optional: database backend to use
+# default: sled
+#
+# available options: sled, postgres
+#type = 'postgres'
+
+## Required: URL to postgres database
+# default: empty
+#url = 'postgres://user:password@host:5432/db'
+
+## Optional: Whether to use TLS when connecting to postgres
+# default: false
+#use_tls = false
+
+## Optional: The CA Certificate used to verify the postgres TLS certificate
+# default: empty
+#certificate_file = '/etc/ca-certificate.crt'
+
+
+### Media storage configuration
+
+## Filesystem media storage example
+[store]
+## Optional: type of media storage to use
+# default: filesystem
+#
+# available options: filesystem, object_storage
+type = 'filesystem'
+
+## Optional: path to uploaded media
+# default: /mnt/files
+path = '__DATA_DIR__/pictrs-data'
+
+
+## Object media storage example
 #[store]
 ## Optional: type of media storage to use
 # default: filesystem
 #
 # available options: filesystem, object_storage
-#type = 'filesystem'
+#type = 'object_storage'
 
 ## Required: endpoint at which the object storage exists
 # default: empty
@@ -502,15 +665,14 @@ export_path = "__DATA_DIR__/exports"
 # signature_expiration.
 #client_timeout = 30
 
-## Filesystem media storage example
-# ## Media storage configuration
-[store]
-# ## Optional: type of media storage to use
-# # default: filesystem
-# #
-# # available options: filesystem, object_storage
-type = 'filesystem'
+## Optional: URL to a CDN at which pict-rs files are available for web consumption
+# default: empty
 #
-# ## Optional: path to uploaded media
-# # default: /mnt/files
-path = '__DATA_DIR__/pictrs-data'
+# When enabled, instaed of serving files itself, pict-rs will serve redirects to this URL with the
+# path of the requested file. This can greatly reduce egress costs, and shorten the number of hops
+# between the media and the client.
+#
+# Note that in order for clients to fetch media from this URL directly, any server between the
+# client and pict-rs must not be configured to follow redirects, or else that server will fetch from
+# this public URL and serve the file itself.
+#public_endpoint = "https://pict-rs.some.cdn.example.com/subpath/"

@@ -63,6 +63,7 @@ ynh_psql_execute_as_root --sql="CREATE EXTENSION IF NOT EXISTS pgcrypto;" --data
 ynh_script_progression --message="Upgrading source files..." --weight=1
 
 # Download, check integrity, uncompress the source of lemmy from app.src to his build directory
+ynh_secure_remove --file="$install_dir/lemmy-ui"
 ynh_setup_source --dest_dir="$install_dir/build-lemmy/" --source_id="lemmy"
 ynh_setup_source --dest_dir="$install_dir/build-lemmy-ui/" --source_id="lemmy-ui"
 ynh_setup_source --dest_dir="$install_dir/lemmy-ui/lemmy-translations/" --source_id="lemmy-translations"  --full_replace
@@ -93,7 +94,7 @@ ynh_secure_remove --file="$install_dir/build-lemmy-ui"
 
 # Install lemmy
 mkdir -p "$install_dir/lemmy/"
-mv -f "$install_dir/build-lemmy/app/lemmy" "$install_dir/lemmy/lemmy"
+mv -f "$install_dir/build-lemmy/usr/local/bin/lemmy_server" "$install_dir/lemmy/lemmy"
 ynh_secure_remove --file="$install_dir/build-lemmy"
 
 # Install pict-rs
@@ -111,22 +112,13 @@ chmod -R o-rwx "$install_dir"
 chown -R $app:$app "$install_dir"
 
 #=================================================
-# INSTALL SHARP
-#=================================================
-
-pushd $install_dir/lemmy-ui
-	ynh_use_nodejs
-	ynh_exec_warn_less sudo -u $app env $ynh_node_load_PATH $ynh_npm rebuild sharp
-popd
-
-#=================================================
 # UPDATE A CONFIG FILE
 #=================================================
 ynh_script_progression --message="Updating a configuration file..." --weight=1
 
 # Lemmy configuration
 mkdir -p "$install_dir/config/"
-ynh_add_config --template="lemmy.hjson" --destination="$install_dir/config/config.hjson"
+ynh_add_config --template="lemmy-upgrade.hjson" --destination="$install_dir/config/config.hjson"
 chmod 400 "$install_dir/config/config.hjson"
 chown $app:$app "$install_dir/config/config.hjson"
 
@@ -184,9 +176,9 @@ yunohost service add $app-pict-rs --description="Simple image hosting service fo
 ynh_script_progression --message="Starting a systemd service..." --weight=1
 
 # Start a systemd service
-ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$app/$app.log" --line_match="Starting http server at"
+ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$app/$app.log" --line_match="Starting HTTP server at"
 ynh_systemd_action --service_name=$app-ui --action="start" --log_path="/var/log/$app/$app-ui.log" --line_match="http://0.0.0.0"
-ynh_systemd_action --service_name=$app-pict-rs --action="start" --log_path="/var/log/$app/$app-pict-rs.log" --line_match="starting in Actix runtime"
+ynh_systemd_action --service_name=$app-pict-rs --action="start" --log_path="/var/log/$app/$app-pict-rs.log" --line_match="starting in existing Tokio runtime"
 
 #=================================================
 # END OF SCRIPT
