@@ -605,7 +605,7 @@ path = '__DATA_DIR__/pictrs-data'
 
 
 ## Object media storage example
-[store]
+#[store]
 ## Optional: type of media storage to use
 # default: filesystem
 #
