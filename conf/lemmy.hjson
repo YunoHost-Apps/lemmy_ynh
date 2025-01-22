@@ -147,7 +147,7 @@
   # the domain name of your instance (mandatory)
   hostname: "__DOMAIN__"
   # Address where lemmy should listen for incoming requests
-  bind: "0.0.0.0"
+  bind: "127.0.0.1"
   # Port where lemmy should listen for incoming requests
   port: __PORT__
   # Whether the site is available over TLS. Needs to be true for federation to work.
