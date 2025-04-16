@@ -59,8 +59,8 @@ ram.runtime = "197M"
     prefetch = false
     amd64.url = "dessalines/lemmy:0.19.8"
     amd64.sha256 = "2f62d39c3d5caba14fcae3e41a792ba47fbac9078ff3320a7faa080274b8fdfe"
-    autoupdate.upstream = "https://github.com/LemmyNet/lemmy/"
-    autoupdate.strategy = "latest_github_release"
+    # Autoupdater doesn't work with docker images so far
+    #autoupdate.strategy = "latest_github_release"
 
     [resources.sources.lemmy-ui]
     format = "docker"
