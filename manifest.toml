@@ -5,7 +5,7 @@ name = "Lemmy"
 description.en = "Link aggregator/Reddit clone for the fediverse"
 description.fr = "Agrégateur de liens/clone Reddit pour le fedivers"
 
-version = "0.19.8~ynh1"
+version = "0.19.8~ynh2"
 
 maintainers = []
 
@@ -59,8 +59,8 @@ ram.runtime = "197M"
     prefetch = false
     amd64.url = "dessalines/lemmy:0.19.8"
     amd64.sha256 = "2f62d39c3d5caba14fcae3e41a792ba47fbac9078ff3320a7faa080274b8fdfe"
-    autoupdate.upstream = "https://github.com/LemmyNet/lemmy/"
-    autoupdate.strategy = "latest_github_release"
+    # Autoupdater doesn't work with docker images so far
+    #autoupdate.strategy = "latest_github_release"
 
     [resources.sources.lemmy-ui]
     format = "docker"
@@ -77,8 +77,8 @@ ram.runtime = "197M"
     amd64.sha256 = "76e14dacd8c73be4a3764a0e7bd5ce1fe0379ce20cc3328557eca070aeef1108"
 
     [resources.sources.lemmy-translations]
-    url = "https://github.com/LemmyNet/lemmy-translations/archive/bf3d6527fb3fd9225dfd16fa3a1a7ecf03264ed8.tar.gz"
-    sha256 = "b8108b7d149c53df37d4b20708811f6af7498d6cca877a0e4d87d30a46e2efd3"
+    url = "https://github.com/LemmyNet/lemmy-translations/archive/9d1a5a82c11262f2db5c4cc4961efda687297ce1.tar.gz"
+    sha256 = "871a5daebe2661ec07e395b34a81f1dafeff8ddb6f0aedcf7e241afcd2317d9f"
     autoupdate.upstream = "https://github.com/LemmyNet/lemmy-translations/"
     autoupdate.strategy = "latest_github_commit"
 
