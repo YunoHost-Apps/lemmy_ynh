@@ -1,26 +1,18 @@
 #!/bin/bash
 
 #=================================================
-# COMMON VARIABLES
+# COMMON VARIABLES AND CUSTOM HELPERS
 #=================================================
 
-NODEJS_VERSION=20
+nodejs_version=20
 
 main_domain=$(cat /etc/yunohost/current_host)
-
-#=================================================
-# PERSONAL HELPERS
-#=================================================
-
-#=================================================
-# EXPERIMENTAL HELPERS
-#=================================================
 
 # Downloads an AppImage from an url, unpacks and extracts it in a destination directory, and creates a symlink to its executable
 download_and_install_appimage() {
 
     # Declare an array to define the options of this helper.
-    local legacy_args=nud
+    #REMOVEME? local legacy_args=nud
     local -A args_array=([n]=name= [u]=url= [d]=directory= [s]=symlink=)
     local url
     local directory
@@ -29,13 +21,13 @@ download_and_install_appimage() {
     ynh_handle_getopts_args "$@"
 
     # Cleanup
-    ynh_secure_remove --file="$install_dir/pict-rs/$name"
-    ynh_secure_remove --file="$install_dir/pict-rs/$name.appimage"
-    ynh_secure_remove --file="$install_dir/pict-rs/$name.appimageextract"
+    ynh_safe_rm "$install_dir/pict-rs/$name"
+    ynh_safe_rm "$install_dir/pict-rs/$name.appimage"
+    ynh_safe_rm "$install_dir/pict-rs/$name.appimageextract"
 
     # Download and make executable
     curl -f "$url" -o "$directory/$name.appimage" -s
-    [ ! -f "$directory/$name.appimage" ] && ynh_print_err --message="AppImage could not be downloaded"
+    [ ! -f "$directory/$name.appimage" ] && ynh_print_warn "AppImage could not be downloaded"
     chmod +x "$directory/$name.appimage"
 
     # Extract and create link
@@ -45,7 +37,3 @@ download_and_install_appimage() {
         ln -s "$directory/$name.appimageextract/AppRun" "$directory/$name"
     popd
 }
-
-#=================================================
-# FUTURE OFFICIAL HELPERS
-#=================================================
