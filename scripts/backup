@@ -24,21 +24,15 @@ ynh_backup "$data_dir"
 
 ynh_backup "/etc/nginx/conf.d/$domain.d/$app.conf"
 
-#=================================================
-# SPECIFIC BACKUP
-#=================================================
-# BACKUP LOGROTATE
-#=================================================
-
-ynh_backup "/etc/logrotate.d/$app"
-
-#=================================================
-# BACKUP SYSTEMD
-#=================================================
-
 ynh_backup "/etc/systemd/system/$app.service"
 ynh_backup "/etc/systemd/system/$app-ui.service"
 ynh_backup "/etc/systemd/system/$app-pict-rs.service"
+
+#=================================================
+# SPECIFIC BACKUP
+#=================================================
+
+ynh_backup "/etc/logrotate.d/$app"
 
 #=================================================
 # BACKUP THE POSTGRESQL DATABASE
