@@ -5,7 +5,7 @@ name = "Lemmy"
 description.en = "Link aggregator/Reddit clone for the fediverse"
 description.fr = "Agrégateur de liens/clone Reddit pour le fedivers"
 
-version = "0.19.8~ynh3"
+version = "0.19.11~ynh1"
 
 maintainers = []
 
@@ -17,7 +17,7 @@ admindoc = "https://join-lemmy.org/docs/en/"
 code = "https://github.com/LemmyNet/lemmy"
 
 [integration]
-yunohost = ">= 12.0"
+yunohost = ">= 12.0.9"
 architectures = ["amd64"]
 multi_instance = false
 
@@ -57,8 +57,8 @@ ram.runtime = "197M"
     format = "docker"
     extract = true
     prefetch = false
-    amd64.url = "dessalines/lemmy:0.19.8"
-    amd64.sha256 = "2f62d39c3d5caba14fcae3e41a792ba47fbac9078ff3320a7faa080274b8fdfe"
+    amd64.url = "dessalines/lemmy:0.19.11"
+    amd64.sha256 = "88dcd645150a33d42327650c2d08f87376d1c8f36c2e1865c917144c96b72147"
     # Autoupdater doesn't work with docker images so far
     #autoupdate.strategy = "latest_github_release"
 
@@ -66,15 +66,15 @@ ram.runtime = "197M"
     format = "docker"
     extract = true
     prefetch = false
-    amd64.url = "dessalines/lemmy-ui:0.19.8"
-    amd64.sha256 = "b15394337ed4f5f161d863329d1838d5c9526e7ee5aa36cb7abe48d4666c962b"
+    amd64.url = "dessalines/lemmy-ui:0.19.11"
+    amd64.sha256 = "0659553273eda7b41395e0877fcba54a8f85ab4be8a402eb463d115113f580b6"
 
     [resources.sources.pict-rs]
     format = "docker"
     extract = true
     prefetch = false
-    amd64.url = "asonix/pictrs:0.5.16"
-    amd64.sha256 = "76e14dacd8c73be4a3764a0e7bd5ce1fe0379ce20cc3328557eca070aeef1108"
+    amd64.url = "asonix/pictrs:0.5.17"
+    amd64.sha256 = "6536411492107baa1146fe577bd33c7f56c52baa323e38bae5c6e61806c7b09b"
 
     [resources.sources.lemmy-translations]
     url = "https://github.com/LemmyNet/lemmy-translations/archive/9b53b21e1732b04c503bb1f451216953ad429907.tar.gz"
