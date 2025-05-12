@@ -18,7 +18,7 @@ code = "https://github.com/LemmyNet/lemmy"
 
 [integration]
 yunohost = ">= 12.0.9"
-architectures = ["amd64"]
+architectures = ["amd64", "arm64"]
 multi_instance = false
 
 ldap = false
@@ -59,8 +59,8 @@ ram.runtime = "197M"
     prefetch = false
     amd64.url = "dessalines/lemmy:0.19.11"
     amd64.sha256 = "88dcd645150a33d42327650c2d08f87376d1c8f36c2e1865c917144c96b72147"
-    # Autoupdater doesn't work with docker images so far
-    #autoupdate.strategy = "latest_github_release"
+    arm64.url = "dessalines/lemmy:0.19.11"
+    arm64.sha256 = "c4d4af08b1a0d1beda0b5d48ad384bfd49c8a1b87e7ba1ca486cd11dde659d62"
 
     [resources.sources.lemmy-ui]
     format = "docker"
@@ -68,6 +68,8 @@ ram.runtime = "197M"
     prefetch = false
     amd64.url = "dessalines/lemmy-ui:0.19.11"
     amd64.sha256 = "0659553273eda7b41395e0877fcba54a8f85ab4be8a402eb463d115113f580b6"
+    arm64.url = "dessalines/lemmy-ui:0.19.11"
+    arm64.sha256 = "555d73f78065d0c56796b9bccf24ff7106f44520244f50021edc8713ac770b73"
 
     [resources.sources.pict-rs]
     format = "docker"
@@ -75,6 +77,8 @@ ram.runtime = "197M"
     prefetch = false
     amd64.url = "asonix/pictrs:0.5.17"
     amd64.sha256 = "6536411492107baa1146fe577bd33c7f56c52baa323e38bae5c6e61806c7b09b"
+    arm64.url = "asonix/pictrs:0.5.17"
+    arm64.sha256 = "f143ec57573d1bf70ca7dbcdb30f63c4a0f24e91974a767a36189b83f0e0a43e"
 
     [resources.sources.lemmy-translations]
     url = "https://github.com/LemmyNet/lemmy-translations/archive/9b53b21e1732b04c503bb1f451216953ad429907.tar.gz"
