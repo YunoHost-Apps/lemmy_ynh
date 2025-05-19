@@ -56,8 +56,9 @@ ynh_setup_source --dest_dir="$install_dir/build-lemmy-ui/" --source_id="lemmy-ui
 ynh_setup_source --dest_dir="$install_dir/lemmy-ui/lemmy-translations/" --source_id="lemmy-translations"  --full_replace
 ynh_setup_source --dest_dir="$install_dir/build-pict-rs/" --source_id="pict-rs"
 
-#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod -R o-rwx "$install_dir"
-#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown -R $app:$app "$install_dir"
+#chmod -R o-rwx "$install_dir"
+#chown -R $app:$app "$install_dir"
+
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
@@ -91,9 +92,10 @@ ynh_safe_rm "$install_dir/build-pict-rs"
 ynh_script_progression "Downloading and installing ImageMagick..."
 download_and_install_appimage --name="magick" --url="https://imagemagick.org/archive/binaries/magick" --directory="$install_dir/pict-rs" --symlink="$install_dir/pict-rs/magick"
 
-#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod 750 "$install_dir"
-#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod -R o-rwx "$install_dir"
-#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown -R $app:$app "$install_dir"
+#chmod 750 "$install_dir"
+#chmod -R o-rwx "$install_dir"
+#chown -R $app:$app "$install_dir"
+
 #=================================================
 # UPDATE A CONFIG FILE
 #=================================================
@@ -102,8 +104,8 @@ ynh_script_progression "Updating configuration..."
 # Lemmy configuration
 mkdir -p "$install_dir/config/"
 ynh_config_add --template="lemmy-upgrade.hjson" --destination="$install_dir/config/config.hjson"
-#REMOVEME? Assuming the file is setup using ynh_config_add, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod 400 "$install_dir/config/config.hjson"
-#REMOVEME? Assuming the file is setup using ynh_config_add, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown $app:$app "$install_dir/config/config.hjson"
+#chmod 400 "$install_dir/config/config.hjson"
+#chown $app:$app "$install_dir/config/config.hjson"
 
 # Pict-RS configuration
 ynh_config_add --template="pict-rs.toml" --destination="$install_dir/pict-rs/pict-rs.toml"
@@ -113,7 +115,7 @@ chown $app:$app "$install_dir/pict-rs/pict-rs.toml"
 # ImageMagick configuration
 mkdir -p "$install_dir/.config/ImageMagick"
 ynh_config_add --template="policy.xml" --destination="$install_dir/.config/ImageMagick/policy.xml"
-#REMOVEME? Assuming the file is setup using ynh_config_add, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod 400 "$install_dir/.config/ImageMagick/policy.xml"
+#chmod 400 "$install_dir/.config/ImageMagick/policy.xml"
 chown -R $app:$app "$install_dir/.config"
 
 #=================================================
@@ -135,9 +137,9 @@ ynh_config_add_systemd --service="$app-pict-rs" --template="pict-rs.service"
 ynh_script_progression "Upgrading logrotate configuration..."
 
 mkdir -p "/var/log/$app"
-#REMOVEME? Assuming ynh_config_add_logrotate is called, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod 750 "/var/log/$app"
-#REMOVEME? Assuming ynh_config_add_logrotate is called, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod -R o-rwx "/var/log/$app"
-#REMOVEME? Assuming ynh_config_add_logrotate is called, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown -R $app:$app "/var/log/$app"
+#chmod 750 "/var/log/$app"
+#chmod -R o-rwx "/var/log/$app"
+#chown -R $app:$app "/var/log/$app"
 
 # Use logrotate to manage app-specific logfile(s)
 ynh_config_add_logrotate

@@ -12,7 +12,7 @@ main_domain=$(cat /etc/yunohost/current_host)
 download_and_install_appimage() {
 
     # Declare an array to define the options of this helper.
-    #REMOVEME? local legacy_args=nud
+    #local legacy_args=nud
     local -A args_array=([n]=name= [u]=url= [d]=directory= [s]=symlink=)
     local url
     local directory
