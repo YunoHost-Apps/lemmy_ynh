@@ -17,13 +17,12 @@ admindoc = "https://join-lemmy.org/docs/en/"
 code = "https://github.com/LemmyNet/lemmy"
 
 [integration]
-yunohost = ">= 12.0.9"
+yunohost = ">= 12.1.17"
 helpers_version = "2.1"
 architectures = ["amd64", "arm64"]
 multi_instance = false
 
 ldap = false
-
 sso = false
 
 disk = "825M"
@@ -125,3 +124,6 @@ ram.runtime = "197M"
 
     [resources.database]
     type = "postgresql"
+
+    [resources.nodejs]
+    version = "20"
