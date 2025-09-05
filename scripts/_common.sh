@@ -4,8 +4,6 @@
 # COMMON VARIABLES AND CUSTOM HELPERS
 #=================================================
 
-#REMOVEME? nodejs_version=20
-
 main_domain=$(cat /etc/yunohost/current_host)
 
 # Downloads an AppImage from an url, unpacks and extracts it in a destination directory, and creates a symlink to its executable

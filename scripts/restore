@@ -23,9 +23,6 @@ ynh_restore "$data_dir"
 #=================================================
 ynh_script_progression "Reinstalling dependencies..."
 
-# Define and install dependencies
-#REMOVEME? ynh_nodejs_install
-
 ln -fs /usr/lib/x86_64-linux-musl/libc.so /lib/libc.musl-x86_64.so.1
 
 #=================================================
