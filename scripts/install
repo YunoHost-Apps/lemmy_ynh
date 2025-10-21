@@ -14,8 +14,6 @@ admin_email=$(ynh_user_get_info --username="$admin" --key="mail")
 #=================================================
 ynh_script_progression "Installing dependencies..."
 
-ynh_nodejs_install
-
 ln -fs /usr/lib/x86_64-linux-musl/libc.so /lib/libc.musl-x86_64.so.1
 
 #=================================================
