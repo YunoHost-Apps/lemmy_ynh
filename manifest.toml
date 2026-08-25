@@ -5,7 +5,7 @@ name = "Lemmy"
 description.en = "Link aggregator/Reddit clone for the fediverse"
 description.fr = "Agrégateur de liens/clone Reddit pour le fedivers"
 
-version = "0.19.11~ynh24"
+version = "0.19.20~ynh1"
 
 maintainers = []
 
@@ -57,28 +57,28 @@ ram.runtime = "197M"
     format = "docker"
     extract = true
     prefetch = false
-    amd64.url = "dessalines/lemmy:0.19.11"
-    amd64.sha256 = "88dcd645150a33d42327650c2d08f87376d1c8f36c2e1865c917144c96b72147"
-    arm64.url = "dessalines/lemmy:0.19.11"
-    arm64.sha256 = "c4d4af08b1a0d1beda0b5d48ad384bfd49c8a1b87e7ba1ca486cd11dde659d62"
+    amd64.url = "dessalines/lemmy:0.19.20"
+    amd64.sha256 = "255402f5c12aa59fa6b70a99e148618880c4a7c99f19de1e7ac7ff62edebc718"
+    arm64.url = "dessalines/lemmy:0.19.20"
+    arm64.sha256 = "829937d9d4a4755f1f13922bb3380e2cdc40d03a44a2de9d4d74162543f9d99f"
 
     [resources.sources.lemmy-ui]
     format = "docker"
     extract = true
     prefetch = false
-    amd64.url = "dessalines/lemmy-ui:0.19.11"
-    amd64.sha256 = "0659553273eda7b41395e0877fcba54a8f85ab4be8a402eb463d115113f580b6"
-    arm64.url = "dessalines/lemmy-ui:0.19.11"
-    arm64.sha256 = "555d73f78065d0c56796b9bccf24ff7106f44520244f50021edc8713ac770b73"
+    amd64.url = "dessalines/lemmy-ui:0.19.20"
+    amd64.sha256 = "e5e67f73ad589f24712a2eb56ef9ce2854cc7c770bd28af59804335283257592"
+    arm64.url = "dessalines/lemmy-ui:0.19.20"
+    arm64.sha256 = "0c93fda584bc97c96b10fb3646fb1793dad49f46d0fa68a722be13ef87a9972c"
 
     [resources.sources.pict-rs]
     format = "docker"
     extract = true
     prefetch = false
-    amd64.url = "asonix/pictrs:0.5.17"
-    amd64.sha256 = "6536411492107baa1146fe577bd33c7f56c52baa323e38bae5c6e61806c7b09b"
-    arm64.url = "asonix/pictrs:0.5.17"
-    arm64.sha256 = "f143ec57573d1bf70ca7dbcdb30f63c4a0f24e91974a767a36189b83f0e0a43e"
+    amd64.url = "asonix/pictrs:0.5.24"
+    amd64.sha256 = "ccaf207cb6bc859893db0b51738a17f955e14569de64b50c41d3cd66f171a90a"
+    arm64.url = "asonix/pictrs:0.5.24"
+    arm64.sha256 = "6ed41534b903fedb7e48824b85358e5abbaa3b756a621987d0bfd34355b2f7bd"
 
     [resources.sources.lemmy-translations]
     url = "https://github.com/LemmyNet/lemmy-translations/archive/f03dfd1a4e73015b564ed230577d2fd8b23974f5.tar.gz"
