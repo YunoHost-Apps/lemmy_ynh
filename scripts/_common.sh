@@ -24,8 +24,16 @@ download_and_install_appimage() {
     ynh_safe_rm "$install_dir/pict-rs/$name.appimageextract"
 
     # Download and make executable
-    curl -f "$url" -o "$directory/$name.appimage" -s
-    [ ! -f "$directory/$name.appimage" ] && ynh_print_warn "AppImage could not be downloaded"
+    # The upstream binary is served from a single host with no CDN, which has
+    # been unreachable for hours at a time. Retry briefly, then fail loudly:
+    # without this the next line is a chmod on a file that does not exist, and
+    # the log shows only that, not the download that caused it.
+    if ! curl -fsSL "$url" -o "$directory/$name.appimage" \
+        --retry 5 --retry-delay 15 --retry-all-errors \
+        --connect-timeout 30 --max-time 900
+    then
+        ynh_die "Could not download the $name AppImage from $url"
+    fi
     chmod +x "$directory/$name.appimage"
 
     # Extract and create link
